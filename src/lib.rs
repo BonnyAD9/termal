@@ -13,12 +13,32 @@ macro_rules! printcln {
     };
 }
 
+#[macro_export]
+macro_rules! printc {
+    ($l:literal) => {
+        print!("{}", $crate::termal_macros::colorize!($l));
+    };
+    ($l:literal, $($e:expr),+) => {
+        print!("{}", $crate::termal_macros::colorize!($l, $($e),+));
+    };
+}
+
+#[macro_export]
+macro_rules! formatc {
+    ($l:literal) => {
+        $crate::termal_macros::colorize!($l);
+    };
+    ($l:literal, $($e:expr),+) => {
+        $crate::termal_macros::colorize!($l, $($e),+);
+    };
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn it_works() {
-        printcln!("{'red}{}{'reset}", "hello");
+        printcln!("{'red}{}{'reset}","hello");
     }
 }
