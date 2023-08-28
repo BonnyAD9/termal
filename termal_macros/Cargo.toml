@@ -5,4 +5,9 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[lib]
+proc-macro = true
+
 [dependencies]
+ansi_codes = { path = "../ansi_codes" }
+litrs = "0.4"
