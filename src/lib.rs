@@ -3,6 +3,14 @@ pub use ansi_codes;
 
 pub use termal_macros;
 
+/// Works as [`println!`], in addition can generate ansi escape codes.
+/// To generate the ansi codes use `"{'...}"`.
+///
+/// # Examples
+/// ```rust
+/// // Print 'hello' in yellow:
+/// printcln!("{'yellow}hello{'reset}");
+/// ```
 #[macro_export]
 macro_rules! printcln {
     ($l:literal) => {
@@ -13,6 +21,14 @@ macro_rules! printcln {
     };
 }
 
+/// Works as [`print!`], in addition can generate ansi escape codes.
+/// To generate the ansi codes use `"{'...}"`.
+///
+/// # Examples
+/// ```rust
+/// // Print 'hello' in yellow:
+/// printc!("{'yellow}hello{'reset}");
+/// ```
 #[macro_export]
 macro_rules! printc {
     ($l:literal) => {
@@ -23,6 +39,14 @@ macro_rules! printc {
     };
 }
 
+/// Works as [`format!`], in addition can generate ansi escape codes.
+/// To generate the ansi codes use `"{'...}"`.
+///
+/// # Examples
+/// ```rust
+/// // Generate 'hello' in yellow:
+/// formatc!("{'yellow}hello{'reset}");
+/// ```
 #[macro_export]
 macro_rules! formatc {
     ($l:literal) => {

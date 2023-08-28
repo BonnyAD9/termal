@@ -122,11 +122,11 @@ where
         "gray_fg" | "grayfg" | "gray" => codes::GRAY_FG,
         "gray_bright_fg" | "graybrightfg" | "bgray" => codes::GRAY_BRIGHT_FG,
         "red_fg" | "redfg" | "red" => codes::RED_FG,
-        "green_fg" | "greenfg" | "green" => codes::RED_FG,
-        "yellow_fg" | "yellowfg" | "yellow" => codes::RED_FG,
-        "blue_fg" | "bluefg" | "blue" => codes::RED_FG,
-        "magenta_fg" | "magentafg" | "magenta" => codes::RED_FG,
-        "cyan_fg" | "cyanfg" | "cyan" => codes::RED_FG,
+        "green_fg" | "greenfg" | "green" => codes::GREEN_FG,
+        "yellow_fg" | "yellowfg" | "yellow" => codes::YELLOW_BG,
+        "blue_fg" | "bluefg" | "blue" => codes::BLUE_FG,
+        "magenta_fg" | "magentafg" | "magenta" => codes::MAGENTA_FG,
+        "cyan_fg" | "cyanfg" | "cyan" => codes::CYAN_FG,
         _ => panic!("Unsupported color format variable {}", s),
     };
 
