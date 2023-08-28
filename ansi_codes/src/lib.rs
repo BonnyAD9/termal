@@ -227,7 +227,7 @@ pub const MAGENTA_DARK_FG: &str = "\x1b[35m";
 pub const CYAN_DARK_FG: &str = "\x1b[36m";
 
 /// Reset the foreground color
-pub const REST_FG: &str = "\x1b[39m";
+pub const RESET_FG: &str = "\x1b[39m";
 
 /// Set the background color to black (dark black)
 pub const BLACK_BG: &str = "\x1b[40m";
@@ -265,7 +265,7 @@ pub const MAGENTA_DARK_BG: &str = "\x1b[45m";
 pub const CYAN_DARK_BG: &str = "\x1b[46m";
 
 /// Reset the background color
-pub const REST_BG: &str = "\x1b[49m";
+pub const RESET_BG: &str = "\x1b[49m";
 
 /// creates a foreground color, color is value in range 0..256
 #[macro_export]

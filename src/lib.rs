@@ -7,7 +7,8 @@ pub use termal_macros;
 /// To generate the ansi codes use `"{'...}"`.
 ///
 /// # Examples
-/// ```rust
+/// ```
+/// use termal::*;
 /// // Print 'hello' in yellow:
 /// printcln!("{'yellow}hello{'reset}");
 /// ```
@@ -25,7 +26,8 @@ macro_rules! printcln {
 /// To generate the ansi codes use `"{'...}"`.
 ///
 /// # Examples
-/// ```rust
+/// ```
+/// use termal::*;
 /// // Print 'hello' in yellow:
 /// printc!("{'yellow}hello{'reset}");
 /// ```
@@ -43,7 +45,8 @@ macro_rules! printc {
 /// To generate the ansi codes use `"{'...}"`.
 ///
 /// # Examples
-/// ```rust
+/// ```
+/// use termal::*;
 /// // Generate 'hello' in yellow:
 /// formatc!("{'yellow}hello{'reset}");
 /// ```
@@ -63,6 +66,6 @@ mod tests {
 
     #[test]
     fn it_works() {
-        printcln!("{'red}{}{'reset}","hello");
+        printcln!("{'y bold dbb}{}{'_}","hello");
     }
 }
