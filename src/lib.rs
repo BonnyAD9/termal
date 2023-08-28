@@ -2,6 +2,8 @@
 
 pub use ansi_codes;
 
+pub use termal_macros::*;
+
 #[cfg(test)]
 mod tests {
     use super::*;
