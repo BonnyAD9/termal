@@ -113,7 +113,7 @@ where
                 s.push(*c);
                 i.next();
             }
-            ',' | '}' | ' ' => break,
+            '}' | ' ' => break,
             _ => {
                 panic!("Invalid color format, didn't expect character '{}'", c)
             }
@@ -126,7 +126,7 @@ where
         "bold" => codes::BOLD,
         "faint" | "f" => codes::FAINT,
         "italic" | "i" => codes::ITALIC,
-        "underline" | "un" => codes::UNDERLINE,
+        "underline" | "u" => codes::UNDERLINE,
         "blinking" | "blink" => codes::BLINKING,
         "inverse" => codes::INVERSE,
         "invisible" | "invis" => codes::INVISIBLE,
@@ -201,7 +201,7 @@ where
                 s.push(*c);
                 i.next();
             }
-            ',' | '}' | ' ' | '_' => break,
+            '}' | ' ' | '_' => break,
             _ => {
                 panic!("Invalid hex color, didn't expect character '{}'", c)
             }

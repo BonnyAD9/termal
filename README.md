@@ -1,10 +1,27 @@
 # Termal
 Rust library for terminal features with ansi escape codes.
 
-Currently the library only contains the ansii codes, but you can already use
-them as a more readable way of using the ansi codes.
+Currently the library contains the ansii codes, and a special macro works only
+for colors.
 
 ## Example
+### With macro
+```rust
+// you can use a special macro to inline the color codes, this will write
+// italic text with yellow foreground and reset at the end.
+printcln!("{'yellow italic}hello{'reset}");
+
+// the macro also supports standard formatting
+printcln!("{'yellow italic}{}{'reset}", "hello");
+
+// you can also use short versions of the codes
+printcln!("{'y i}{}{'_}", "hello");
+
+// you can also use true colors with their hex codes
+printcln!("{'#dd0 i}{}{'_}", "hello");
+```
+
+### Without macro
 ```rust
 // Move cursor to position column 5 on line 7 and write 'hello' in italic
 // yellow
@@ -27,3 +44,86 @@ let b = move_to!(2 + 3, 7);
 // expands to:
 let a = format!("\x1b[{};{}H", 2 + 3, 7);
 ```
+
+## Macro syntax
+In there are now 3 macros: `formatc`, `printc` and `printcln`. They are
+equivalent to `format`, `print` and `println` respectively.
+
+### In all of them the same sintax applies:
+- braces starting with `'` are color formats (e.g. `{'yellow}`)
+- other braces are interpreted by the macro `format`
+
+#### The color format can contain
+- names with ascii letters (e.g. `yellow`)
+- hex colors (e.g. `#FF125C`)
+
+the names and hex colors are separated by spaces
+
+##### Hex colors
+The hex colors may have either 1, 2, 3 or 6 digits. They are interpreted as
+follows:
+- Single digit colors are interpreted as the digit repeated 6 times (e.g. `#B`
+  is same as `#BBBBBB`)
+- Two digit colors are interpreted as the two digits repeated 3 times (e.g.
+  `#AB` is same as `#ABABAB`)
+- Three digit colors are interpreted as each digit being repeated once (e.g.
+  `#ABC` is same as `#AABBCC`)
+- Six digit colors are interpreted as typical rgb value (that is `#RRGGBB`)
+
+If you want to set the foreground color you just type the hex code (e.g.
+`#ABCDEF`), if you want to set the background color you immidietly follow the
+hex color by uncerscore (`_`) (e.g. `#ABCDEF_`)
+
+##### List of names
+Most of the names have aliases (e.g. writing `white` and `w` is the same).
+Some can be reset, that is done by the same name but starting with underscore
+(`_`).
+
+- `reset`, `_`: resets all colors and styles
+- `bold`: sets style to bold
+- `faint`, `f`: sets style to faint
+- `italic`, `i`: sets style to italic
+- `underline`, `u`: sets style to underline
+- `blinking`, `blink`: sets style to blinking
+- `inverse`: sets style to inverse (swap background and foreground)
+- `invisible`, `invis`: sets the style to invisible (foreground and background
+  are same)
+- `striketrough`, `strike`: sets the style to striketrough
+- `double_underline`, `dunderline`, `dun`: sets the style to double underline
++ `_bold`: resets bold and faint
++ `_italic`, `_i`: resets italic
++ `_underline`, `_u`: resets underline and double underline
++ `_blinking`, `_blink`: resets blinking
++ `_inverse`: resets inverse
++ `_invisible`, `_invis`: resets invisible
++ `_striketrough`, `_strike`: resets striketrough
+- `black_fg`, `black`, `bl`: sets the foreground to black
+- `white_fg`, `white`, `w`: sets the foreground to white
+- `gray_fg`, `gray`, `gr`: sets the foreground to green
+- `bright_gray_fg`, `bgray`, `bgr`: sets the foreground to bright gray
++ `red_fg`, `red`, `r`: sets the foreground to red
++ `green_fg`, `green`, `g`: sets the foreground to green
++ `yellow_fg`, `yellow`, `y`: sets the foreground to yellow
++ `magenta_fg`, `magenta`, `m`: sets the foreground to magenta
++ `cyan_fg`, `cyan`, `c`: sets the foreground to cyan
+- `dark_red_fg`, `dred`, `dr`: sets the foreground to dark red
+- `dark_green_fg`, `dgreen`, `dg`: sets the foreground to dark green
+- `dark_yellow_fg`, `dyellow`, `dy`: sets the foreground to dark yellow
+- `dark_magenta_fg`, `dmagenta`, `dm`: sets the foreground to dark magenta
+- `dark_cyan_fg`, `dcyan`, `dc`: sets the foreground to dark cyan
++ `_fg`: resets the foreground color
+- `black_bg`, `blackb`, `blb`: sets the background to black
+- `white_bg`, `whiteb`, `wb`: sets the background to white
+- `gray_bg`, `grayb`, `grb`: sets the background to green
+- `bright_gray_bg`, `bgrayb`, `bgrb`: sets the background to bright gray
++ `red_bg`, `redb`, `rb`: sets the background to red
++ `green_bg`, `greenb`, `gb`: sets the background to green
++ `yellow_bg`, `yellowb`, `yb`: sets the background to yellow
++ `magenta_bg`, `magentab`, `mb`: sets the background to magenta
++ `cyan_bg`, `cyanb`, `cb`: sets the background to cyan
+- `dark_red_bg`, `dredb`, `drb`: sets the background to dark red
+- `dark_green_bg`, `dgreenb`, `dgb`: sets the background to dark green
+- `dark_yellow_bg`, `dyellowb`, `dyb`: sets the background to dark yellow
+- `dark_magenta_bg`, `dmagentab`, `dmb`: sets the background to dark magenta
+- `dark_cyan_bg`, `dcyanb`, `dcb`: sets the background to dark cyan
++ `_bg`: resets the background
