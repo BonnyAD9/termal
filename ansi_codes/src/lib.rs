@@ -1,3 +1,6 @@
+///! Module with ansi escape codes. Most of them are taken from:
+///! https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
+
 // Sequences:
 
 /// The escape character
@@ -14,7 +17,7 @@ pub const OCS: &str = "\x1b]";
 #[macro_export]
 macro_rules! csi {
     ($i:literal, $($a:expr),+) => {
-        seq!("\x1b[", $i, $($a),+)
+        $crate::seq!("\x1b[", $i, $($a),+)
     };
 }
 
@@ -26,7 +29,7 @@ macro_rules! seq {
         concat!($sq, $f $(, ';', $a)*, $i)
     };
     ($sq:literal, $i:literal, $f:expr, $($a:expr),*) => {
-        seq!($sq, $i, $f, $(";{}"; $a),*)
+        $crate::seq!($sq, $i, $f, $(";{}"; $a),*)
     };
     ($sq:literal, $i:literal, $f:expr, $($l:literal; $e:expr),*) => {
         format!(concat!($sq, "{}", $($l),*, $i), $f $(,$e)*)
@@ -64,7 +67,7 @@ pub const DELETE: char = '\x7f';
 #[macro_export]
 macro_rules! move_to {
     ($x:expr, $y:expr) => {
-        csi!('H', $y, $x)
+        $crate::csi!('H', $y, $x)
     };
 }
 
@@ -72,7 +75,7 @@ macro_rules! move_to {
 #[macro_export]
 macro_rules! move_up {
     ($n:expr) => {
-        csi!('A', $n)
+        $crate::csi!('A', $n)
     };
 }
 
@@ -80,7 +83,7 @@ macro_rules! move_up {
 #[macro_export]
 macro_rules! move_down {
     ($n:expr) => {
-        csi!('B', $n)
+        $crate::csi!('B', $n)
     };
 }
 
@@ -88,7 +91,7 @@ macro_rules! move_down {
 #[macro_export]
 macro_rules! move_right {
     ($n:expr) => {
-        csi!('C', $n)
+        $crate::csi!('C', $n)
     };
 }
 
@@ -96,7 +99,7 @@ macro_rules! move_right {
 #[macro_export]
 macro_rules! move_left {
     ($n:expr) => {
-        csi!('D', $n)
+        $crate::csi!('D', $n)
     };
 }
 
@@ -104,7 +107,7 @@ macro_rules! move_left {
 #[macro_export]
 macro_rules! set_down {
     ($n:expr) => {
-        csi!('E', $n)
+        $crate::csi!('E', $n)
     };
 }
 
@@ -112,7 +115,7 @@ macro_rules! set_down {
 #[macro_export]
 macro_rules! set_up {
     ($n:expr) => {
-        csi!('F', $n)
+        $crate::csi!('F', $n)
     };
 }
 
@@ -120,7 +123,7 @@ macro_rules! set_up {
 #[macro_export]
 macro_rules! column {
     ($n:expr) => {
-        csi!('G', $n)
+        $crate::csi!('G', $n)
     };
 }
 
@@ -268,7 +271,7 @@ pub const REST_BG: &str = "\x1b[49m";
 #[macro_export]
 macro_rules! fg256 {
     ($c:expr) => {
-        csi!('m', 38, 5, $c)
+        $crate::csi!('m', 38, 5, $c)
     };
 }
 
@@ -276,7 +279,7 @@ macro_rules! fg256 {
 #[macro_export]
 macro_rules! bg256 {
     ($c:expr) => {
-        csi!('m', 48, 5, $c)
+        $crate::csi!('m', 48, 5, $c)
     };
 }
 
@@ -285,7 +288,7 @@ macro_rules! bg256 {
 #[macro_export]
 macro_rules! fg {
     ($r:expr, $g:expr, $b:expr) => {
-        csi!('m', 38, 2, $r, $g, $b)
+        $crate::csi!('m', 38, 2, $r, $g, $b)
     };
 }
 
@@ -294,7 +297,7 @@ macro_rules! fg {
 #[macro_export]
 macro_rules! bg {
     ($r:expr, $g:expr, $b:expr) => {
-        csi!('m', 48, 2, $r, $g, $b)
+        $crate::csi!('m', 48, 2, $r, $g, $b)
     };
 }
 
@@ -325,7 +328,7 @@ pub const DISABLE_ALTERNATIVE_BUFFER: &str = "\x1b[?1049l";
 /*#[macro_export]
 macro_rules! resize_window {
     ($x:expr, $y:expr) => {
-        csi!('t', 8, $y, $x)
+        $crate::csi!('t', 8, $y, $x)
     };
 }*/
 
@@ -345,5 +348,27 @@ impl GetString for &str {
 impl GetString for String {
     fn get_string(self) -> String {
         self
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::any::TypeId;
+
+    fn type_id_of<T: 'static>(_: T) -> TypeId {
+        TypeId::of::<T>()
+    }
+
+    use super::*;
+
+    #[test]
+    fn test_macros() {
+        assert_eq!(csi!('a', 1, 2, 3, 4, 5), "\x1b[1;2;3;4;5a");
+        assert_eq!(csi!('a', 1 + 0, 2, 3, 4, 5), "\x1b[1;2;3;4;5a");
+        assert_eq!(type_id_of(csi!('a', 1, 2, 3, 4, 5)), TypeId::of::<&str>());
+        assert_eq!(
+            type_id_of(csi!('a', 1 + 0, 2, 3, 4, 5)),
+            TypeId::of::<String>()
+        );
     }
 }
