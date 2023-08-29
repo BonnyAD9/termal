@@ -7,6 +7,8 @@ for colors.
 ## Example
 ### With macro
 ```rust
+use termal::*;
+
 // you can use a special macro to inline the color codes, this will write
 // italic text with yellow foreground and reset at the end.
 printcln!("{'yellow italic}hello{'reset}");
@@ -36,6 +38,8 @@ Its main feature is that if you supply literals, it expands to a string
 literal with the ansi code.
 If you however supply dynamic values it expands to a `format!` macro:
 ```rust
+use termal::codes::*;
+
 let a = move_to!(5, 7);
 // expands to:
 let a = "\x1b[5;7H";
@@ -43,6 +47,19 @@ let a = "\x1b[5;7H";
 let b = move_to!(2 + 3, 7);
 // expands to:
 let a = format!("\x1b[{};{}H", 2 + 3, 7);
+```
+
+### Gradients
+Youn can create gradients with the function `termal::gradient`:
+```rust
+use termal::*;
+
+// This will create foreground gradient from the rgb color `(250, 50, 170)`
+// to the rgb color `(180, 50, 240)`
+printcln!(
+    "{}{'_}",
+    gradient("BonnyAD9", gradient("BonnyAD9", (250, 50, 170), (180, 50, 240)))
+)
 ```
 
 ## Macro syntax
