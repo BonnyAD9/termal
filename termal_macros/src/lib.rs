@@ -1,4 +1,4 @@
-use ansi_codes as codes;
+use termal_codes as codes;
 use std::iter::Peekable;
 
 use litrs::StringLit;

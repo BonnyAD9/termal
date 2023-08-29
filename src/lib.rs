@@ -1,5 +1,5 @@
 ///! Library for working with ansi codes to create beutiful terminal outputs
-pub use ansi_codes as codes;
+pub use termal_codes as codes;
 
 pub use termal_macros;
 
