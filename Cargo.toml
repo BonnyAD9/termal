@@ -2,9 +2,14 @@
 name = "termal"
 version = "0.1.0"
 edition = "2021"
+license-file = "LICENSE"
+description = "Rust library for fancy colored cli using ansi codes"
+homepage = "https://github.com/BonnyAD9/termal"
+repository = "https://github.com/BonnyAD9/termal"
+readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-ansi_codes = { path = "ansi_codes" }
-termal_macros = { path = "termal_macros" }
+ansi_codes = { path = "ansi_codes", version = "*"}
+termal_macros = { path = "termal_macros", version = "*"}
