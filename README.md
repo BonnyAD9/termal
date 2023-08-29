@@ -77,9 +77,55 @@ hex color by uncerscore (`_`) (e.g. `#ABCDEF_`)
 ##### List of names
 Most of the names have aliases (e.g. writing `white` and `w` is the same).
 Some can be reset, that is done by the same name but starting with underscore
-(`_`).
+(`_`). Some names may/must have arguments. These are numbers and are supplied
+by directly writing them after the name, multiple arguments are separated by
+commas. If the argument is optional it will have the default value written
+next to it. The commas must be present even if there are no arguments. (e.g.
+`mt5,7` is valid, `mt,7` is valid, `mt5,` is valid, `mt,` is valid, but `mt`
+is not valid)
 
-- `reset`, `_`: resets all colors and styles
+###### Ascii
+- `bell`: console bell (create sound)
+- `backspace`: move left by one
+- `htab`, `tab`: horizontal tabulator
+- `move_down_scrl`, `mds`: move down by one line scrolling if needed
+- `newline`, `nl`: move to the start of the next line
+- `vtab`: vertical tabulator
+- `carriage_return` | `cr`: move to the start of the current line
+
+###### Moving the cursor
+- `move_to`, `mt`: moves the cursor to the given position, has two arguments,
+  default values are `0`.
+- `move_up`, `mu`: moves the cursor up by the given amount, has one argument,
+  default value is `1`
+- `move_down`, `md`: moves the cursor down by the given amount, has one
+  argument, default value is `1`
+- `move_right`, `mr`: moves the cursor right by the given amount, has one
+  argument, default value is `1`
+- `move_left`, `ml`: moves the cursor left by the given amount, has one
+  argument, default value is `1`
+- `set_down`, `sd`: moves the cursor to the start of line n lines down, has one
+  argument, default value is `1`
+- `set_up`, `su`: moves the cursor to the start of line n lines up, has one
+  argument, default value is `1`
+- `move_to_column`, `mc`: moves the cursor to the given x coordinate, has one
+  argument, default value is `0`
++ `move_up_scrl`, `mus`: moves the cursor up by one line, scrolling if needed
++ `save_cur`, `save`, `s`: saves the current cursor position (single slot, not
+  lifo)
++ `load_cur`, `loat`, `l`: loads the last saved cursor position
+
+###### Erasing
+- `erase_to_end`, `e_`: erases from the cursor to the end of the screen
+- `erase_from_start`, `_e`: erases from the start of the screen to the cursor
+- `erase_screen`, `_e_`: erases the whole screen
+- `erase_all`, `e`: erases the whole screen and the scroll buffer
+- `erase_ln_end`, `el_`: erases from the cursor to the end of the line
+- `erase_ln_start`, `_el`: erases from the start of the line to the cursor
+- `erase_line`, `erase_ln`, `_el_`, `el`: erases the current line
+
+###### Styles and colors
++ `reset`, `_`: resets all colors and styles
 - `bold`: sets style to bold
 - `faint`, `f`: sets style to faint
 - `italic`, `i`: sets style to italic
@@ -127,3 +173,19 @@ Some can be reset, that is done by the same name but starting with underscore
 - `dark_magenta_bg`, `dmagentab`, `dmb`: sets the background to dark magenta
 - `dark_cyan_bg`, `dcyanb`, `dcb`: sets the background to dark cyan
 + `_bg`: resets the background
+- `fg`: sets the foreground color to one of the 256 colors, has one argument
+- `bg`: sets the background color to one of the 256 colors, has one argument
+
+###### Other
+- `line_wrap`, `wrap`: enable line wrapping
+- `_line_wrap`, `_wrap`: disable line wrapping
++ `hide_cursor`, `nocur`: hide the cursor
++ `show_cursor`, `_nocur`: show the cursor
++ `save_screen`, `sscr`: saves the screen view
++ `load_screen`, `lscr`: restores the last saved screen view
++ `alt_buf`, `abuf`: enable alternative buffer
++ `_alt_buf`, `_abuf`: disable alternative buffer
+
+###### Compound
+- `clear`, `cls`: erases the screen and the buffer and moves the cursor to the
+  topleft position (equivalent of `e mt,`)

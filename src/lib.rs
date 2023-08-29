@@ -66,6 +66,6 @@ mod tests {
 
     #[test]
     fn it_works() {
-        printcln!("{'y bold dbb}{}{'_}","hello");
+        printcln!("hello{'ml4 y}{}{'_ mr i} there{'_}","ell");
     }
 }

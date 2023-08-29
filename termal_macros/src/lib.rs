@@ -93,12 +93,14 @@ where
                 return;
             }
             '#' => parse_color(res, i),
-            ',' | ' ' => _ = i.next(),
+            ' ' => _ = i.next(),
             _ => {
                 panic!("Invalid color format, didn't expect character '{}'", c)
             }
         }
     }
+
+    panic!("Missing '}}' at the end of color pattern");
 }
 
 fn parse_variable<I>(res: &mut String, i: &mut Peekable<I>)
@@ -114,13 +116,62 @@ where
                 i.next();
             }
             '}' | ' ' => break,
+            c if c.is_ascii_digit() => break,
             _ => {
                 panic!("Invalid color format, didn't expect character '{}'", c)
             }
         }
     }
 
+    /// macro, default, owner
+    macro_rules! m_arm {
+        ($m:ident, $d:literal, $o:ident) => {{
+            $o = codes::$m!(maybe_read_num(i).unwrap_or($d));
+            &$o
+        }};
+    }
+
+    let owner;
+
     let var = match s.to_lowercase().as_str() {
+        "bell" => "\x07",
+        "backspace" => "\x08",
+        "htab" | "tab" => "\t",
+        "move_down_scrl" | "mds" => "\n",
+        "newline" | "nl" => "\n\r",
+        "vtab" => "\x0b",
+        "carriage_return" | "cr" => "\r",
+        "delete" | "del" => "\x7f",
+
+        "move_to" | "mt" => {
+            let x = maybe_read_num(i).unwrap_or_default();
+            if !matches!(i.next(), Some(',')) {
+                panic!("'{}', takes two arguments", s);
+            }
+            let y = maybe_read_num(i).unwrap_or_default();
+            owner = codes::move_to!(x, y);
+            &owner
+        },
+        "move_up" | "mu" => m_arm!(move_up, 1, owner),
+        "move_down" | "md" => m_arm!(move_down, 1, owner),
+        "move_right" | "mr" => m_arm!(move_right, 1, owner),
+        "move_left" | "ml" => m_arm!(move_left, 1, owner),
+        "set_down" | "sd" => m_arm!(set_down, 1, owner),
+        "set_up" | "su" => m_arm!(set_up, 1, owner),
+        "move_to_column" | "mc" => m_arm!(column, 0, owner),
+
+        "move_up_scrl" | "mus" => codes::UP_SCRL,
+        "save_cur" | "save" | "s" => codes::CUR_SAVE,
+        "load_cur" | "load" | "l" => codes::CUR_LOAD,
+
+        "erase_to_end" | "e_" => codes::ERASE_TO_END,
+        "erase_from_start" | "_e" => codes::ERASE_FROM_START,
+        "erase_screen" | "_e_" => codes::ERASE_SCREEN,
+        "erase_all" | "e" => codes::ERASE_ALL,
+        "erase_ln_end" | "el_" => codes::ERASE_TO_LN_END,
+        "erase_ln_start" | "_el" => codes::ERASE_FROM_LN_START,
+        "erase_line" | "erase_ln" | "_el_" | "el" => codes::ERASE_LINE,
+
         "reset" | "_" => codes::RESET,
 
         "bold" => codes::BOLD,
@@ -182,8 +233,52 @@ where
         "dark_cyan_bg" | "dcyanb" | "dcb" => codes::CYAN_DARK_BG,
 
         "_bg" => codes::RESET_BG,
+
+        "fg" => {
+            let c = match maybe_read_num(i) {
+                Some(c) if c >= 0 && c < 256 => c,
+                _ => panic!(
+                    "The '{}' in color format expects value in range 0..256",
+                    s,
+                ),
+            };
+            owner = codes::fg256!(c);
+            &owner
+        }
+        "bg" => {
+            let c = match maybe_read_num(i) {
+                Some(c) if c >= 0 && c < 256 => c,
+                _ => panic!(
+                    "The '{}' in color format expects value in range 0..256",
+                    s,
+                ),
+            };
+            owner = codes::bg256!(c);
+            &owner
+        }
+
+        "line_wrap" | "wrap" => codes::ENABLE_LINE_WRAP,
+        "_line_wrap" | "_wrap" => codes::DISABLE_LINE_WRAP,
+
+        "hide_cursor" | "nocur" => codes::HIDE_CURSOR,
+        "show_cursor" | "_nocur" => codes::SHOW_CURSOR,
+        "save_screen" | "sscr" => codes::SAVE_SCREEN,
+        "load_screen" | "lscr" => codes::LOAD_SCREEN,
+        "alt_buf" | "abuf" => codes::ENABLE_ALTERNATIVE_BUFFER,
+        "_alt_buf" | "_abuf" => codes::DISABLE_ALTERNATIVE_BUFFER,
+
+        "clear" | "cls" => {
+            owner = format!("{}\x1b[H", codes::ERASE_ALL);
+            &owner
+        }
         _ => panic!("Unsupported color format variable {}", s),
     };
+
+    match i.peek() {
+        Some(' ' | '}') => {},
+        Some(c) => panic!("Invalid character '{}', expected ' ' or '}}'", c),
+        None => panic!("Unexpected end, expected ' ' or '}}'"),
+    }
 
     res.push_str(var);
 }
@@ -239,6 +334,32 @@ where
             i.next();
             res.push_str(codes::bg!(r, g, b).as_str());
         }
-        _ => res.push_str(codes::fg!(r, g, b).as_str()),
+        Some(' ' | '}') => res.push_str(codes::fg!(r, g, b).as_str()),
+        Some(c) => panic!("Invalid character, didn't expect '{}'", c),
+        None => panic!("color format not ended with '}}'"),
+    }
+}
+
+fn maybe_read_num<I>(i: &mut Peekable<I>) -> Option<i32>
+where
+    I: Iterator<Item = char>,
+{
+    let mut s = String::new();
+    read_while(&mut s, i, |c| c.is_ascii_digit());
+    s.parse().ok()
+}
+
+fn read_while<I, F>(res: &mut String, i: &mut Peekable<I>, f: F)
+where
+    I: Iterator<Item = char>,
+    F: Fn(char) -> bool,
+{
+    while let Some(c) = i.peek() {
+        if f(*c) {
+            res.push(*c);
+            i.next();
+        } else {
+            break;
+        }
     }
 }

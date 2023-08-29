@@ -28,11 +28,11 @@ macro_rules! seq {
     ($sq:literal, $i:literal, $f:literal, $($a:literal),*) => {
         concat!($sq, $f $(, ';', $a)*, $i)
     };
-    ($sq:literal, $i:literal, $f:expr, $($a:expr),*) => {
+    ($sq:literal, $i:literal, $f:expr $(,$a:expr)*) => {
         $crate::seq!($sq, $i, $f, $(";{}"; $a),*)
     };
     ($sq:literal, $i:literal, $f:expr, $($l:literal; $e:expr),*) => {
-        format!(concat!($sq, "{}", $($l),*, $i), $f $(,$e)*)
+        format!(concat!($sq, "{}" $(,$l)*, $i), $f $(,$e)*)
     }
 }
 
