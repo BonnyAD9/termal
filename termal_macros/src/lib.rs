@@ -151,7 +151,7 @@ where
             let y = maybe_read_num(i).unwrap_or_default();
             owner = codes::move_to!(x, y);
             &owner
-        },
+        }
         "move_up" | "mu" => m_arm!(move_up, 1, owner),
         "move_down" | "md" => m_arm!(move_down, 1, owner),
         "move_right" | "mr" => m_arm!(move_right, 1, owner),
@@ -275,7 +275,7 @@ where
     };
 
     match i.peek() {
-        Some(' ' | '}') => {},
+        Some(' ' | '}') => {}
         Some(c) => panic!("Invalid character '{}', expected ' ' or '}}'", c),
         None => panic!("Unexpected end, expected ' ' or '}}'"),
     }
