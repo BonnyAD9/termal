@@ -206,3 +206,13 @@ is not valid)
 ###### Compound
 - `clear`, `cls`: erases the screen and the buffer and moves the cursor to the
   topleft position (equivalent of `e mt,`)
+
+## How to get it
+It is available on [crates.io](https://crates.io/crates/termal).
+
+## Links
+- **Author:** [BonnyAD9](https://github.com/BonnyAD9)
+- **GitHub repository:** [BonnyAD/raplay](https://github.com/BonnyAD9/termal)
+- **Package:** [crates.io](https://crates.io/crates/termal)
+- **Documentation:** [docs.rs](https://docs.rs/termal/latest/termal/)
+- **My Website:** [bonnyad9.github.io](https://bonnyad9.github.io/)
