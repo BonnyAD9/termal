@@ -1,6 +1,23 @@
 ///! Module with ansi escape codes. Most of them are taken from:
 ///! https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 
+use place_macro::place;
+
+/// Creates the given sequence, this is used internally, you should use
+/// the macro [`csi!`]
+#[macro_export]
+macro_rules! seq {
+    ($sq:literal, $i:literal, $f:literal, $($a:literal),*) => {
+        concat!($sq, $f $(, ';', $a)*, $i)
+    };
+    ($sq:literal, $i:literal, $f:expr $(,$a:expr)*) => {
+        $crate::seq!($sq, $i, $f, $(";{}"; $a),*)
+    };
+    ($sq:literal, $i:literal, $f:expr, $($l:literal; $e:expr),*) => {
+        format!(concat!($sq, "{}" $(,$l)*, $i), $f $(,$e)*)
+    }
+}
+
 // Sequences:
 
 /// The escape character
@@ -19,21 +36,6 @@ macro_rules! csi {
     ($i:literal, $($a:expr),+) => {
         $crate::seq!("\x1b[", $i, $($a),+)
     };
-}
-
-/// Creates the given sequence, this is used internally, you should use
-/// the macro [`csi!`]
-#[macro_export]
-macro_rules! seq {
-    ($sq:literal, $i:literal, $f:literal, $($a:literal),*) => {
-        concat!($sq, $f $(, ';', $a)*, $i)
-    };
-    ($sq:literal, $i:literal, $f:expr $(,$a:expr)*) => {
-        $crate::seq!($sq, $i, $f, $(";{}"; $a),*)
-    };
-    ($sq:literal, $i:literal, $f:expr, $($l:literal; $e:expr),*) => {
-        format!(concat!($sq, "{}" $(,$l)*, $i), $f $(,$e)*)
-    }
 }
 
 // General ASCII codes
@@ -63,6 +65,24 @@ pub const DELETE: char = '\x7f';
 // `.get_string()` method from the trait [`GetString`] to get [`String`] in
 // both cases
 
+macro_rules! csi_macro {
+    ($(
+        $name:ident
+        $(, $($nam:ident)? $($lit:literal)?)+ ;
+        $i:literal $(?$doc:literal)?),+ $(,)?
+    ) => {
+        place! {$(
+            $(#[doc = __repnl__($doc, " ")])?
+            #[macro_export]
+            macro_rules! $name {
+                (__start__($($(__s__ $nam:expr,)?)+)) => {
+                    __s__ crate::csi!($i, $($(__s__ $nam)? $($lit)?),+)
+                }
+            }
+        )+}
+    };
+}
+
 /// Moves cursor to the given position.
 #[macro_export]
 macro_rules! move_to {
@@ -71,61 +91,15 @@ macro_rules! move_to {
     };
 }
 
-/// Moves cursor up by N positions
-#[macro_export]
-macro_rules! move_up {
-    ($n:expr) => {
-        $crate::csi!('A', $n)
-    };
-}
-
-/// Moves cursor down by N positions
-#[macro_export]
-macro_rules! move_down {
-    ($n:expr) => {
-        $crate::csi!('B', $n)
-    };
-}
-
-/// Moves cursor right by N positions
-#[macro_export]
-macro_rules! move_right {
-    ($n:expr) => {
-        $crate::csi!('C', $n)
-    };
-}
-
-/// Moves cursor left by N positions
-#[macro_export]
-macro_rules! move_left {
-    ($n:expr) => {
-        $crate::csi!('D', $n)
-    };
-}
-
-/// Moves cursor to the start of line N lines down
-#[macro_export]
-macro_rules! set_down {
-    ($n:expr) => {
-        $crate::csi!('E', $n)
-    };
-}
-
-/// Moves cursor to the start of line N lines up
-#[macro_export]
-macro_rules! set_up {
-    ($n:expr) => {
-        $crate::csi!('F', $n)
-    };
-}
-
-/// Moves cursor to the given column
-#[macro_export]
-macro_rules! column {
-    ($n:expr) => {
-        $crate::csi!('G', $n)
-    };
-}
+csi_macro!(
+    move_up, n; 'A' ? "Moves cursor up by N positions",
+    move_down, n; 'B' ? "Moves cursor up by N positions",
+    move_right, n; 'C' ? "Moves cursor up by N positions",
+    move_left, n; 'D' ? "Moves cursor up by N positions",
+    set_down, n; 'E' ? "Moves cursor to the start of line N lines down",
+    set_up, n; 'E' ? "Moves cursor to the start of line N lines up",
+    column, n; 'G' ? "Moves cursor to the given column",
+);
 
 /// Moves cursor one line up, scrolling if needed
 pub const UP_SCRL: &str = "\x1bM";
@@ -267,38 +241,20 @@ pub const CYAN_DARK_BG: &str = "\x1b[46m";
 /// Reset the background color
 pub const RESET_BG: &str = "\x1b[49m";
 
-/// creates a foreground color, color is value in range 0..256
-#[macro_export]
-macro_rules! fg256 {
-    ($c:expr) => {
-        $crate::csi!('m', 38, 5, $c)
-    };
-}
+csi_macro! {
+    fg256, 38, 5, c; 'm'
+        ? "creates a foreground color, color is value in range 0..256",
 
-/// creates a background color, color is value in range 0..256
-#[macro_export]
-macro_rules! bg256 {
-    ($c:expr) => {
-        $crate::csi!('m', 48, 5, $c)
-    };
-}
+    bg256, 48, 5, c; 'm'
+        ? "creates a background color, color is value in range 0..256",
 
-/// creates a true rgb foreground color. R, G and B must be values in range
-/// 0..256
-#[macro_export]
-macro_rules! fg {
-    ($r:expr, $g:expr, $b:expr) => {
-        $crate::csi!('m', 38, 2, $r, $g, $b)
-    };
-}
+    fg, 38, 2, r, g, b; 'm'
+        ? "creates a true rgb foreground color. R, G and B must be values in
+           range 0..256",
 
-/// creates a true rgb foreground color. R, G and B must be values in range
-/// 0..256
-#[macro_export]
-macro_rules! bg {
-    ($r:expr, $g:expr, $b:expr) => {
-        $crate::csi!('m', 48, 2, $r, $g, $b)
-    };
+    bg, 48, 2, r, g, b; 'm'
+        ? "creates a true rgb background color. R, G and B must be values in
+           range 0..256",
 }
 
 // Screen modes
