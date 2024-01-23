@@ -2,5 +2,8 @@ use proc_macro::TokenStream;
 
 #[proc_macro]
 pub fn colorize(input: TokenStream) -> TokenStream {
-    termal_core::proc::colorize(input.into()).into()
+    match termal_core::proc::colorize(input.into()) {
+        Ok(r) => r.into(),
+        Err(r) => r.to_stream().into(),
+    }
 }

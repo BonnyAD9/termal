@@ -2,21 +2,91 @@ use crate::{
     codes::{self as codes},
     move_to,
 };
-use std::iter::Peekable;
+use std::{borrow::Cow, fmt::Display, iter::Peekable};
 
 use litrs::StringLit;
 use proc_macro2::{
     Delimiter, Group, Ident, Literal, Punct, Spacing, Span, TokenStream,
     TokenTree,
 };
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub struct ProcError {
+    msg: Cow<'static, str>,
+    span: Span,
+}
+
+impl Display for ProcError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.msg.as_ref())
+    }
+}
+
+impl Into<TokenStream> for ProcError {
+    fn into(self) -> TokenStream {
+        error_at(self.span, self.msg)
+    }
+}
+
+impl ProcError {
+    pub fn spanned<S>(span: Span, msg: S) -> Self
+    where
+        S: Into<Cow<'static, str>>,
+    {
+        Self {
+            msg: msg.into(),
+            span,
+        }
+    }
+
+    pub fn msg<S>(msg: S) -> Self
+    where
+        S: Into<Cow<'static, str>>,
+    {
+        Self::spanned(Span::call_site(), msg)
+    }
+
+    pub fn to_stream(self) -> TokenStream {
+        self.into()
+    }
+}
+
+fn spanned(mut tree: TokenTree, span: Span) -> TokenTree {
+    tree.set_span(span);
+    tree
+}
+
+fn error_at<S>(span: Span, msg: S) -> TokenStream
+where
+    S: AsRef<str>,
+{
+    [
+        TokenTree::Ident(Ident::new("compile_error", span)),
+        TokenTree::Punct(Punct::new('!', Spacing::Alone)),
+        spanned(
+            TokenTree::Group(Group::new(
+                Delimiter::Parenthesis,
+                [TokenTree::Literal(Literal::string(msg.as_ref()))]
+                    .into_iter()
+                    .collect(),
+            )),
+            span,
+        ),
+    ]
+    .into_iter()
+    .collect()
+}
+
+pub type ProcResult<T> = Result<T, ProcError>;
 
 /// Creates formatted and colorized string
-pub fn colorize(item: TokenStream) -> TokenStream {
+pub fn colorize(item: TokenStream) -> ProcResult<TokenStream> {
     let mut i = item.into_iter();
 
-    let (pat, span) = get_first_string_iteral(&mut i);
+    let (pat, span) = get_first_string_iteral(&mut i)?;
 
-    let s = parse_template(pat.value());
+    let s = parse_template(pat.value())?;
     let mut s = Literal::string(&s);
     s.set_span(span);
 
@@ -36,17 +106,19 @@ pub fn colorize(item: TokenStream) -> TokenStream {
         .into_iter(),
     );
 
-    res
+    Ok(res)
 }
 
 fn get_first_string_iteral(
     i: &mut impl Iterator<Item = TokenTree>,
-) -> (StringLit<String>, Span) {
-    let first = i.next();
-    if first.is_none() {
-        panic!("This macro must have at least one argument");
-    }
-    let first = first.unwrap();
+) -> ProcResult<(StringLit<String>, Span)> {
+    let first = if let Some(first) = i.next() {
+        first
+    } else {
+        return Err(ProcError::msg(
+            "This macro must have at least one argument",
+        ));
+    };
 
     let (arg, span) = match first {
         TokenTree::Literal(l) => {
@@ -56,23 +128,31 @@ fn get_first_string_iteral(
         TokenTree::Group(g) => {
             return get_first_string_iteral(&mut g.stream().into_iter())
         }
-        _ => panic!("The first argument must be string literal"),
+        _ => {
+            return Err(ProcError::spanned(
+                first.span(),
+                "The first argument must be string literal",
+            ))
+        }
     };
 
     match arg {
-        Ok(l) => (l, span),
-        Err(_) => panic!("The first argument must be string literal"),
+        Ok(l) => Ok((l, span)),
+        Err(_) => Err(ProcError::spanned(
+            span,
+            "The first argument must be string literal",
+        )),
     }
 }
 
-fn parse_template(s: &str) -> String {
+fn parse_template(s: &str) -> ProcResult<String> {
     let mut i = s.chars().peekable();
     let mut res = String::new();
 
     while let Some(c) = i.next() {
         match c {
             '{' => match i.next() {
-                Some('\'') => parse_block(&mut res, &mut i),
+                Some('\'') => parse_block(&mut res, &mut i)?,
                 Some(c) => {
                     res.push('{');
                     res.push(c);
@@ -83,34 +163,37 @@ fn parse_template(s: &str) -> String {
         }
     }
 
-    res
+    Ok(res)
 }
 
-fn parse_block<I>(res: &mut String, i: &mut Peekable<I>)
+fn parse_block<I>(res: &mut String, i: &mut Peekable<I>) -> ProcResult<()>
 where
     I: Iterator<Item = char>,
 {
     while let Some(c) = i.peek() {
         match c {
             c if c.is_ascii_alphabetic() || *c == '_' => {
-                parse_variable(res, i)
+                parse_variable(res, i)?
             }
             '}' => {
                 i.next();
-                return;
+                return Ok(());
             }
-            '#' => parse_color(res, i),
+            '#' => parse_color(res, i)?,
             ' ' => _ = i.next(),
             _ => {
-                panic!("Invalid color format, didn't expect character '{}'", c)
+                return Err(ProcError::msg(format!(
+                    "Invalid color format, didn't expect character '{}'",
+                    c
+                )));
             }
         }
     }
 
-    panic!("Missing '}}' at the end of color pattern");
+    Err(ProcError::msg("Missing '}}' at the end of color pattern"))
 }
 
-fn parse_variable<I>(res: &mut String, i: &mut Peekable<I>)
+fn parse_variable<I>(res: &mut String, i: &mut Peekable<I>) -> ProcResult<()>
 where
     I: Iterator<Item = char>,
 {
@@ -125,7 +208,10 @@ where
             '}' | ' ' => break,
             c if c.is_ascii_digit() => break,
             _ => {
-                panic!("Invalid color format, didn't expect character '{}'", c)
+                return Err(ProcError::msg(format!(
+                    "Invalid color format, didn't expect character '{}'",
+                    c
+                )));
             }
         }
     }
@@ -153,7 +239,10 @@ where
         "move_to" | "mt" => {
             let x = maybe_read_num(i).unwrap_or_default();
             if !matches!(i.next(), Some(',')) {
-                panic!("'{}', takes two arguments", s);
+                return Err(ProcError::msg(format!(
+                    "'{}', takes two arguments",
+                    s
+                )));
             }
             let y = maybe_read_num(i).unwrap_or_default();
             owner = move_to!(x, y);
@@ -244,10 +333,12 @@ where
         "fg" => {
             let c = match maybe_read_num(i) {
                 Some(c) if c >= 0 && c < 256 => c,
-                _ => panic!(
+                _ => {
+                    return Err(ProcError::msg(format!(
                     "The '{}' in color format expects value in range 0..256",
                     s,
-                ),
+                )))
+                }
             };
             owner = codes::fg256!(c);
             &owner
@@ -255,10 +346,12 @@ where
         "bg" => {
             let c = match maybe_read_num(i) {
                 Some(c) if c >= 0 && c < 256 => c,
-                _ => panic!(
+                _ => {
+                    return Err(ProcError::msg(format!(
                     "The '{}' in color format expects value in range 0..256",
                     s,
-                ),
+                )))
+                }
             };
             owner = codes::bg256!(c);
             &owner
@@ -278,19 +371,35 @@ where
             owner = format!("{}\x1b[H", codes::ERASE_ALL);
             &owner
         }
-        _ => panic!("Unsupported color format variable {}", s),
+        _ => {
+            return Err(ProcError::msg(format!(
+                "Unknown color format variable {}",
+                s
+            )))
+        }
     };
 
     match i.peek() {
         Some(' ' | '}') => {}
-        Some(c) => panic!("Invalid character '{}', expected ' ' or '}}'", c),
-        None => panic!("Unexpected end, expected ' ' or '}}'"),
+        Some(c) => {
+            return Err(ProcError::msg(format!(
+                "Invalid character '{}', expected ' ' or '}}'",
+                c
+            )))
+        }
+        None => {
+            return Err(ProcError::msg(format!(
+                "Unexpected end, expected ' ' or '}}'"
+            )))
+        }
     }
 
     res.push_str(var);
+
+    Ok(())
 }
 
-fn parse_color<I>(res: &mut String, i: &mut Peekable<I>)
+fn parse_color<I>(res: &mut String, i: &mut Peekable<I>) -> ProcResult<()>
 where
     I: Iterator<Item = char>,
 {
@@ -305,45 +414,61 @@ where
             }
             '}' | ' ' | '_' => break,
             _ => {
-                panic!("Invalid hex color, didn't expect character '{}'", c)
+                return Err(ProcError::msg(format!(
+                    "Invalid hex color, didn't expect character '{}'",
+                    c
+                )))
             }
         }
     }
 
+    let c = if let Ok(c) = u32::from_str_radix(&s, 16) {
+        c
+    } else {
+        return Err(ProcError::msg("Invalid hex color"));
+    };
+
     // get the hex color
     let (r, g, b) = match s.len() {
         1 => {
-            let mut c = u32::from_str_radix(&s, 16).unwrap();
-            c |= c >> 4;
+            let c = c | (c << 4);
             (c, c, c)
         }
-        2 => {
-            let c = u32::from_str_radix(&s, 16).unwrap();
-            (c, c, c)
+        2 => (c, c, c),
+        3 => (
+            (c & 0xF00) >> 4 | (c & 0xF00) >> 8,
+            (c & 0x0F0) | (c & 0x0F0) >> 4,
+            (c & 0x00F) << 4 | (c & 0x00F),
+        ),
+        6 => (c & 0xFF0000 >> 16, c & 0x00FF00 >> 8, c & 0x0000FF),
+        _ => {
+            return Err(ProcError::msg(format!(
+                "Invalid hex color length, must be 1, 2, 3 or 6"
+            )))
         }
-        3 => {
-            let c = u32::from_str_radix(&s, 16).unwrap();
-            (
-                (c & 0xF00) >> 4 | (c & 0xF00) >> 8,
-                (c & 0x0F0) | (c & 0x0F0) >> 4,
-                (c & 0x00F) << 4 | (c & 0x00F),
-            )
-        }
-        6 => {
-            let c = u32::from_str_radix(&s, 16).unwrap();
-            (c & 0xFF0000 >> 16, c & 0x00FF00 >> 8, c & 0x0000FF)
-        }
-        _ => panic!("Invalid hex color length, must be 1, 2, 3 or 6"),
     };
 
     match i.peek() {
         Some('_') => {
             i.next();
             res.push_str(codes::bg!(r, g, b).as_str());
+            Ok(())
         }
-        Some(' ' | '}') => res.push_str(codes::fg!(r, g, b).as_str()),
-        Some(c) => panic!("Invalid character, didn't expect '{}'", c),
-        None => panic!("color format not ended with '}}'"),
+        Some(' ' | '}') => {
+            res.push_str(codes::fg!(r, g, b).as_str());
+            Ok(())
+        }
+        Some(c) => {
+            return Err(ProcError::msg(format!(
+                "Invalid character, didn't expect '{}'",
+                c
+            )))
+        }
+        None => {
+            return Err(ProcError::msg(format!(
+                "color format not ended with '}}'"
+            )))
+        }
     }
 }
 
