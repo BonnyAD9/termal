@@ -105,8 +105,6 @@ pub fn gradient(
 
 #[cfg(test)]
 mod tests {
-    use proc::colorize;
-
     use super::*;
 
     #[test]

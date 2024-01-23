@@ -52,7 +52,7 @@ fn get_first_string_iteral(
         TokenTree::Literal(l) => {
             let span = l.span();
             (StringLit::try_from(l), span)
-        },
+        }
         TokenTree::Group(g) => {
             return get_first_string_iteral(&mut g.stream().into_iter())
         }
