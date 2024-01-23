@@ -1,5 +1,5 @@
 //! Library for working with ansi codes to create beutiful terminal outputs
-pub use termal_core::codes as codes;
+pub use termal_core::codes;
 pub use termal_proc as proc;
 
 use termal_core as core;

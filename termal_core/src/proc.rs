@@ -1,4 +1,7 @@
-use crate::{codes::{self as codes}, move_to};
+use crate::{
+    codes::{self as codes},
+    move_to,
+};
 use std::iter::Peekable;
 
 use litrs::StringLit;

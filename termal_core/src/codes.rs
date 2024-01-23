@@ -102,7 +102,6 @@ csi_macro!(
     column, n; 'G' ? "Moves cursor to the given column",
 );
 
-
 /// Moves cursor one line up, scrolling if needed
 pub const UP_SCRL: &str = "\x1bM";
 /// Saves the cursor position (this is single save slot, not stack)
@@ -316,8 +315,6 @@ mod tests {
     fn type_id_of<T: 'static>(_: T) -> TypeId {
         TypeId::of::<T>()
     }
-
-    use super::*;
 
     #[test]
     fn test_macros() {
