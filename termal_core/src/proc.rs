@@ -50,6 +50,11 @@ impl ProcError {
     pub fn to_stream(self) -> TokenStream {
         self.into()
     }
+
+    pub fn set_span(mut self, span: Span) -> Self {
+        self.span = span;
+        self
+    }
 }
 
 fn spanned(mut tree: TokenTree, span: Span) -> TokenTree {
@@ -86,7 +91,7 @@ pub fn colorize(item: TokenStream) -> ProcResult<TokenStream> {
 
     let (pat, span) = get_first_string_iteral(&mut i)?;
 
-    let s = parse_template(pat.value())?;
+    let s = parse_template(pat.value()).map_err(|e| e.set_span(span))?;
     let mut s = Literal::string(&s);
     s.set_span(span);
 
