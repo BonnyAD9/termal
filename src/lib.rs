@@ -42,6 +42,44 @@ macro_rules! printc {
     };
 }
 
+/// Works as [`eprintln!`], in addition can generate ansi escape codes.
+/// To generate the ansi codes use `"{'...}"`.
+///
+/// # Examples
+/// ```
+/// use termal::*;
+/// // Print 'hello' in yellow:
+/// eprintcln!("{'yellow}hello{'reset}");
+/// ```
+#[macro_export]
+macro_rules! eprintcln {
+    ($l:literal) => {
+        eprintln!("{}", $crate::proc::colorize!($l));
+    };
+    ($l:literal, $($e:expr),+) => {
+        eprintln!("{}", $crate::proc::colorize!($l, $($e),+));
+    };
+}
+
+/// Works as [`eprint!`], in addition can generate ansi escape codes.
+/// To generate the ansi codes use `"{'...}"`.
+///
+/// # Examples
+/// ```
+/// use termal::*;
+/// // Print 'hello' in yellow:
+/// eprintc!("{'yellow}hello{'reset}");
+/// ```
+#[macro_export]
+macro_rules! eprintc {
+    ($l:literal) => {
+        eprint!("{}", $crate::proc::colorize!($l));
+    };
+    ($l:literal, $($e:expr),+) => {
+        eprint!("{}", $crate::proc::colorize!($l, $($e),+));
+    };
+}
+
 /// Works as [`format!`], in addition can generate ansi escape codes.
 /// To generate the ansi codes use `"{'...}"`.
 ///
