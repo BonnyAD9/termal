@@ -1,7 +1,8 @@
-///! Library for working with ansi codes to create beutiful terminal outputs
-pub use termal_codes as codes;
+//! Library for working with ansi codes to create beutiful terminal outputs
+pub use termal_core::codes as codes;
+pub use termal_proc as proc;
 
-pub use termal_macros;
+use termal_core as core;
 
 /// Works as [`println!`], in addition can generate ansi escape codes.
 /// To generate the ansi codes use `"{'...}"`.
@@ -15,10 +16,10 @@ pub use termal_macros;
 #[macro_export]
 macro_rules! printcln {
     ($l:literal) => {
-        println!("{}", $crate::termal_macros::colorize!($l));
+        println!("{}", $crate::proc::colorize!($l));
     };
     ($l:literal, $($e:expr),+) => {
-        println!("{}", $crate::termal_macros::colorize!($l, $($e),+));
+        println!("{}", $crate::proc::colorize!($l, $($e),+));
     };
 }
 
@@ -34,10 +35,10 @@ macro_rules! printcln {
 #[macro_export]
 macro_rules! printc {
     ($l:literal) => {
-        print!("{}", $crate::termal_macros::colorize!($l));
+        print!("{}", $crate::proc::colorize!($l));
     };
     ($l:literal, $($e:expr),+) => {
-        print!("{}", $crate::termal_macros::colorize!($l, $($e),+));
+        print!("{}", $crate::proc::colorize!($l, $($e),+));
     };
 }
 
@@ -53,10 +54,10 @@ macro_rules! printc {
 #[macro_export]
 macro_rules! formatc {
     ($l:literal) => {
-        $crate::termal_macros::colorize!($l);
+        $crate::proc::colorize!($l);
     };
     ($l:literal, $($e:expr),+) => {
-        $crate::termal_macros::colorize!($l, $($e),+);
+        $crate::proc::colorize!($l, $($e),+);
     };
 }
 
@@ -81,7 +82,7 @@ pub fn write_gradient(
     };
 
     for (i, c) in s.as_ref().chars().take(s_len).enumerate() {
-        res.push_str(&codes::fg!(
+        res.push_str(&core::fg!(
             start.0 as f32 + step.0 * i as f32,
             start.1 as f32 + step.1 * i as f32,
             start.2 as f32 + step.2 * i as f32

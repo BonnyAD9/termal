@@ -1,18 +1,16 @@
 [package]
-name = "termal_macros"
-version = "0.1.0"
+name = "termal_core"
+version = "1.0.0"
 edition = "2021"
 license-file = "../LICENSE"
-description = "Macros for the termal library"
+description = "This library contains implementation for the termal library"
 homepage = "https://github.com/BonnyAD9/termal"
 repository = "https://github.com/BonnyAD9/termal"
 readme = "../README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[lib]
-proc-macro = true
-
 [dependencies]
-termal_codes = { path = "../termal_codes", version = "0.1.0"}
-litrs = "0.4"
+litrs = "0.4.1"
+place_macro = "1.0.0"
+proc-macro2 = "1.0.78"

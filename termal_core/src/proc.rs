@@ -1,14 +1,13 @@
-use termal_codes as codes;
+use crate::{codes::{self as codes}, move_to};
 use std::iter::Peekable;
 
 use litrs::StringLit;
-use proc_macro::{
+use proc_macro2::{
     Delimiter, Group, Ident, Literal, Punct, Spacing, Span, TokenStream,
     TokenTree,
 };
 
 /// Creates formatted and colorized string
-#[proc_macro]
 pub fn colorize(item: TokenStream) -> TokenStream {
     let mut i = item.into_iter();
 
@@ -149,7 +148,7 @@ where
                 panic!("'{}', takes two arguments", s);
             }
             let y = maybe_read_num(i).unwrap_or_default();
-            owner = codes::move_to!(x, y);
+            owner = move_to!(x, y);
             &owner
         }
         "move_up" | "mu" => m_arm!(move_up, 1, owner),

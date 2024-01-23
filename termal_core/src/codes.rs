@@ -1,5 +1,5 @@
-///! Module with ansi escape codes. Most of them are taken from:
-///! https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
+//! Module with ansi escape codes. Most of them are taken from:
+//! https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 
 use place_macro::place;
 
@@ -79,6 +79,7 @@ macro_rules! csi_macro {
                     __s__ crate::csi!($i, $($(__s__ $nam)? $($lit)?),+)
                 }
             }
+            pub (crate) use $name;
         )+}
     };
 }
@@ -100,6 +101,7 @@ csi_macro!(
     set_up, n; 'E' ? "Moves cursor to the start of line N lines up",
     column, n; 'G' ? "Moves cursor to the given column",
 );
+
 
 /// Moves cursor one line up, scrolling if needed
 pub const UP_SCRL: &str = "\x1bM";
