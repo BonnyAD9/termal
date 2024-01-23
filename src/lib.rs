@@ -108,7 +108,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn it_works() {
+    fn test_gradient() {
         printcln!(
             "{}{'_}",
             gradient("BonnyAD9", (250, 50, 170), (180, 50, 240))
