@@ -14,13 +14,15 @@ use proc_macro2::{
 pub fn colorize(item: TokenStream) -> TokenStream {
     let mut i = item.into_iter();
 
-    let pat = get_first_string_iteral(&mut i);
+    let (pat, span) = get_first_string_iteral(&mut i);
 
     let s = parse_template(pat.value());
+    let mut s = Literal::string(&s);
+    s.set_span(span);
 
     // the arguments to the macro
     let mut rargs = TokenStream::new();
-    rargs.extend([TokenTree::Literal(Literal::string(&s))]);
+    rargs.extend([TokenTree::Literal(s)]);
     rargs.extend(i);
 
     // invoking the macro
@@ -39,15 +41,18 @@ pub fn colorize(item: TokenStream) -> TokenStream {
 
 fn get_first_string_iteral(
     i: &mut impl Iterator<Item = TokenTree>,
-) -> StringLit<String> {
+) -> (StringLit<String>, Span) {
     let first = i.next();
     if first.is_none() {
         panic!("This macro must have at least one argument");
     }
     let first = first.unwrap();
 
-    let arg = match first {
-        TokenTree::Literal(l) => StringLit::try_from(l),
+    let (arg, span) = match first {
+        TokenTree::Literal(l) => {
+            let span = l.span();
+            (StringLit::try_from(l), span)
+        },
         TokenTree::Group(g) => {
             return get_first_string_iteral(&mut g.stream().into_iter())
         }
@@ -55,7 +60,7 @@ fn get_first_string_iteral(
     };
 
     match arg {
-        Ok(l) => l,
+        Ok(l) => (l, span),
         Err(_) => panic!("The first argument must be string literal"),
     }
 }

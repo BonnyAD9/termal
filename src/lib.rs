@@ -105,13 +105,24 @@ pub fn gradient(
 
 #[cfg(test)]
 mod tests {
+    use proc::colorize;
+
     use super::*;
 
     #[test]
     fn test_gradient() {
+        print!("Expect 'BonnyAD9' as pink to magenta gradient: ");
         printcln!(
             "{}{'_}",
             gradient("BonnyAD9", (250, 50, 170), (180, 50, 240))
         );
+    }
+
+    #[test]
+    fn test_printcln_println() {
+        let s = "Hello";
+        let num = 4;
+        print!("Expect 'Hello 4' in yellow: ");
+        printcln!("{'y}{s} {num}{'_}");
     }
 }
