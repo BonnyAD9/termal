@@ -160,6 +160,13 @@
 //! - `clear`, `cls`: erases the screen and the buffer and moves the cursor to the
 //!   topleft position (equivalent to `e mt,`)
 //!
+//! ## The uncoloring macros
+//! There are also macros that will skip the terminal commands. These can be
+//! useful when you need to conditionaly print with colors or without colors.
+//!
+//! The macros have the same names but they have `n` before the `c` to signify
+//! *no color*: [`formatnc`], [`printnc`], [`printncln`], [`eprintnc`] and
+//! [`eprintncln`].
 //!
 //! ## Examples
 //! ### With macro
@@ -318,10 +325,100 @@ macro_rules! eprintc {
 #[macro_export]
 macro_rules! formatc {
     ($l:literal) => {
-        $crate::proc::colorize!($l);
+        $crate::proc::colorize!($l)
     };
     ($l:literal, $($e:expr),+) => {
-        $crate::proc::colorize!($l, $($e),+);
+        $crate::proc::colorize!($l, $($e),+)
+    };
+}
+
+/// Works as [`println!`], skips terminal commands in `"{'...}"`.
+///
+/// # Examples
+/// ```
+/// use termal::*;
+/// // Print 'hello' (not in yellow, the terminal commands are skipped):
+/// printncln!("{'yellow}hello{'reset}");
+/// ```
+#[macro_export]
+macro_rules! printncln {
+    ($l:literal) => {
+        println!("{}", $crate::proc::uncolor!($l));
+    };
+    ($l:literal, $($e:expr),+) => {
+        println!("{}", $crate::proc::uncolor!($l, $($e),+));
+    };
+}
+
+/// Works as [`print!`], skips terminal commands in `"{'...}"`.
+///
+/// # Examples
+/// ```
+/// use termal::*;
+/// // Print 'hello' (not in yellow, the terminal commands are skipped):
+/// printnc!("{'yellow}hello{'reset}");
+/// ```
+#[macro_export]
+macro_rules! printnc {
+    ($l:literal) => {
+        print!("{}", $crate::proc::uncolor!($l));
+    };
+    ($l:literal, $($e:expr),+) => {
+        print!("{}", $crate::proc::uncolor!($l, $($e),+));
+    };
+}
+
+/// Works as [`eprintln!`], skips terminal commands in `"{'...}"`.
+///
+/// # Examples
+/// ```
+/// use termal::*;
+/// // Print 'hello' (not in yellow, the terminal commands are skipped):
+/// eprintncln!("{'yellow}hello{'reset}");
+/// ```
+#[macro_export]
+macro_rules! eprintncln {
+    ($l:literal) => {
+        eprintln!("{}", $crate::proc::uncolor!($l));
+    };
+    ($l:literal, $($e:expr),+) => {
+        eprintln!("{}", $crate::proc::uncolor!($l, $($e),+));
+    };
+}
+
+/// Works as [`eprint!`], skips terminal commands in `"{'...}"`.
+///
+/// # Examples
+/// ```
+/// use termal::*;
+/// // Print 'hello' (not in yellow, the terminal commands are skipped):
+/// printnc!("{'yellow}hello{'reset}");
+/// ```
+#[macro_export]
+macro_rules! eprintnc {
+    ($l:literal) => {
+        eprint!("{}", $crate::proc::uncolor!($l));
+    };
+    ($l:literal, $($e:expr),+) => {
+        eprint!("{}", $crate::proc::uncolor!($l, $($e),+));
+    };
+}
+
+/// Works as [`format!`], skips terminal commands in `"{'...}"`.
+///
+/// # Examples
+/// ```
+/// use termal::*;
+/// // Generate 'hello' (not in yellow, the terminal commands are skipped):
+/// printcln!("{'yellow}hello{'reset}");
+/// ```
+#[macro_export]
+macro_rules! formatnc {
+    ($l:literal) => {
+        $crate::proc::uncolor!($l)
+    };
+    ($l:literal, $($e:expr),+) => {
+        $crate::proc::uncolor!($l, $($e),+)
     };
 }
 
@@ -344,5 +441,13 @@ mod tests {
         let num = 4;
         print!("Expect 'Hello 4' in yellow: ");
         printcln!("{'y}{s} {num}{'_}");
+    }
+
+    #[test]
+    fn test_formatnc() {
+        let s = "Hello";
+        let num = 4;
+        let r = formatnc!("{'y}{s} {num}{'_}");
+        assert_eq!(r, "Hello 4");
     }
 }

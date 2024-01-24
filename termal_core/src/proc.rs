@@ -127,6 +127,36 @@ pub fn colorize(item: TokenStream) -> ProcResult<TokenStream> {
     Ok(res)
 }
 
+/// Removes terminal commands from the string. Expands to call to a [`format!`]
+/// macro. Doesn't panic, errors are signified with the result.
+pub fn uncolor(item: TokenStream) -> ProcResult<TokenStream> {
+    let mut i = item.into_iter();
+
+    let (pat, span) = get_first_string_iteral(&mut i)?;
+
+    let s = skip_colors(pat.value()).map_err(|e| e.set_span(span))?;
+    let mut s = Literal::string(&s);
+    s.set_span(span);
+
+    // the arguments to the macro
+    let mut rargs = TokenStream::new();
+    rargs.extend([TokenTree::Literal(s)]);
+    rargs.extend(i);
+
+    // invoking the macro
+    let mut res = TokenStream::new();
+    res.extend(
+        [
+            TokenTree::Ident(Ident::new("format", Span::call_site())),
+            TokenTree::Punct(Punct::new('!', Spacing::Alone)),
+            TokenTree::Group(Group::new(Delimiter::Parenthesis, rargs)),
+        ]
+        .into_iter(),
+    );
+
+    Ok(res)
+}
+
 fn get_first_string_iteral(
     i: &mut impl Iterator<Item = TokenTree>,
 ) -> ProcResult<(StringLit<String>, Span)> {
@@ -161,6 +191,44 @@ fn get_first_string_iteral(
             "The first argument must be string literal",
         )),
     }
+}
+
+fn skip_colors(s: &str) -> ProcResult<String> {
+    let mut i = s.chars().peekable();
+    let mut res = String::new();
+
+    while let Some(c) = i.next() {
+        match c {
+            '{' => match i.next() {
+                Some('\'') => skip_block(&mut i)?,
+                Some(c) => {
+                    res.push('{');
+                    res.push(c);
+                }
+                None => res.push('{'),
+            },
+            _ => res.push(c),
+        }
+    }
+
+    Ok(res)
+}
+
+fn skip_block<I>(i: &mut Peekable<I>) -> ProcResult<()>
+where
+    I: Iterator<Item = char>,
+{
+    while let Some(c) = i.peek() {
+        match c {
+            '}' => {
+                i.next();
+                return Ok(());
+            }
+            _ => _ = i.next(),
+        }
+    }
+
+    Err(ProcError::msg("Missing '}}' at the end of color pattern"))
 }
 
 fn parse_template(s: &str) -> ProcResult<String> {
