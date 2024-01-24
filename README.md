@@ -74,7 +74,18 @@ printcln!("{}{'_}", gradient("BonnyAD9", (250, 50, 170), (180, 50, 240)));
 To see all the possible commands and uses see [docs][docs].
 
 ## How to get it
-It is available on [crates.io][crate].
+It is available on [crates.io][crate]:
+
+### With cargo
+```shell
+cargo add termal
+```
+
+### In Cargo.toml
+```toml
+[dependencies]
+termal = "1.0.0"
+```
 
 ## Links
 - **Author:** [BonnyAD9][author]
