@@ -1,8 +1,8 @@
 # Termal
 Rust library for terminal features with ansi escape codes.
 
-Currently the library contains the ansii codes, and a special macro works only
-for colors.
+Currently the library contains the ansii codes, and a special macro. Works for
+text styles, colors and moving the cursor.
 
 ## Example
 ### With macro
@@ -46,7 +46,15 @@ let a = "\x1b[5;7H";
 
 let b = move_to!(2 + 3, 7);
 // expands to:
-let a = format!("\x1b[{};{}H", 2 + 3, 7);
+let b = format!("\x1b[{};{}H", 2 + 3, 7);
+```
+
+If you know the values for the arguments you can also use the `*c` macros:
+```rust
+use termal::formatc;
+
+// the spaces, or the lack of them is important
+let a = formatc!("{'move_to5,7}");
 ```
 
 ### Gradients
@@ -58,13 +66,12 @@ use termal::*;
 // to the rgb color `(180, 50, 240)`
 printcln!(
     "{}{'_}",
-    gradient("BonnyAD9", gradient("BonnyAD9", (250, 50, 170), (180, 50, 240)))
+    gradient("BonnyAD9", (250, 50, 170), (180, 50, 240))
 )
 ```
 
 ## Macro syntax
-In there are now 3 macros: `formatc`, `printc` and `printcln`. They are
-equivalent to `format`, `print` and `println` respectively.
+There are now 5 macros: `formatc`, `printc`, `printcln`, `eprintc` and `eprintcln`. They are equivalent to `format`, `print`, `println`, `eprint` and `eprintln` espectively.
 
 ### In all of them the same sintax applies:
 - braces starting with `'` are color formats (e.g. `{'yellow}`)

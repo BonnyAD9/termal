@@ -1,3 +1,5 @@
+//! Procedural macros implemented with `proc_macro2`.
+
 use crate::{
     codes::{self as codes},
     move_to,
@@ -11,6 +13,9 @@ use proc_macro2::{
 };
 use thiserror::Error;
 
+/// Error of termal procedural macro. Can be converted to a [`TokenStream`]
+/// that produces the error message or the message can be printed with the
+/// [`Display`] implementation.
 #[derive(Error, Debug)]
 pub struct ProcError {
     msg: Cow<'static, str>,
@@ -30,7 +35,7 @@ impl Into<TokenStream> for ProcError {
 }
 
 impl ProcError {
-    pub fn spanned<S>(span: Span, msg: S) -> Self
+    fn spanned<S>(span: Span, msg: S) -> Self
     where
         S: Into<Cow<'static, str>>,
     {
@@ -40,20 +45,26 @@ impl ProcError {
         }
     }
 
-    pub fn msg<S>(msg: S) -> Self
+    fn msg<S>(msg: S) -> Self
     where
         S: Into<Cow<'static, str>>,
     {
         Self::spanned(Span::call_site(), msg)
     }
 
+    fn set_span(mut self, span: Span) -> Self {
+        self.span = span;
+        self
+    }
+
+    /// Converts self to a [`TokenStream`]
     pub fn to_stream(self) -> TokenStream {
         self.into()
     }
 
-    pub fn set_span(mut self, span: Span) -> Self {
-        self.span = span;
-        self
+    /// Gets the [`Span`] of the error message
+    pub fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -83,9 +94,11 @@ where
     .collect()
 }
 
+/// Result type for termal procedural macros
 pub type ProcResult<T> = Result<T, ProcError>;
 
-/// Creates formatted and colorized string
+/// Creates formatted and colorized string. Expands to call to a [`format!`]
+/// macro. Doesn't panic, errors are signified with the result.
 pub fn colorize(item: TokenStream) -> ProcResult<TokenStream> {
     let mut i = item.into_iter();
 

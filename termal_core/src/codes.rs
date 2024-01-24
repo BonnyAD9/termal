@@ -1,10 +1,29 @@
-//! Module with ansi escape codes. Most of them are taken from:
-//! https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
+//! Module with ansi escape codes.
+//!
+//! Most of them are taken from:
+//! <https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797>
+//!
+//! There are several types of codes here:
+//! - **Sequences:** string/char used to introduce escape sequence, most of the
+//!   other codes use them
+//! - **General ascii codes:** single char sequences some of them have escape
+//!   codes in rust string/char literals (such as '\n')
+//! - **Macro codes:** these escape codes have one or more parameters. Here
+//!   they are in form of a macro that takes the parameters. If the macro is
+//!   invoked with literals, it expands to `&'static str`. If the arguments
+//!   are not literals it expands to a call to the `format!` macro. Because
+//!   these codes may expand either to `&'static str` or `String` you can use
+//!   the [`GetString::get_string`] method to get `String`, or you can use
+//!   `AsRef<str>::as_ref` method to get `&str`, or you can use
+//!   `Into<Cow<'static, str>>::into` to get the possibly owned string.
+//! - **String codes:** these codes are just strings that can be just printed
+//!   to terminal to do what they say they do. This is the majority of the
+//!   codes.
 
 use place_macro::place;
 
 /// Creates the given sequence, this is used internally, you should use
-/// the macro [`csi!`]
+/// the macro [`csi`]
 #[macro_export]
 macro_rules! seq {
     ($sq:literal, $i:literal, $f:literal, $($a:literal),*) => {
@@ -94,9 +113,9 @@ macro_rules! move_to {
 
 csi_macro!(
     move_up, n; 'A' ? "Moves cursor up by N positions",
-    move_down, n; 'B' ? "Moves cursor up by N positions",
-    move_right, n; 'C' ? "Moves cursor up by N positions",
-    move_left, n; 'D' ? "Moves cursor up by N positions",
+    move_down, n; 'B' ? "Moves cursor down by N positions",
+    move_right, n; 'C' ? "Moves cursor right by N positions",
+    move_left, n; 'D' ? "Moves cursor left by N positions",
     set_down, n; 'E' ? "Moves cursor to the start of line N lines down",
     set_up, n; 'E' ? "Moves cursor to the start of line N lines up",
     column, n; 'G' ? "Moves cursor to the given column",
