@@ -2,11 +2,11 @@
 name = "termal_proc"
 version = "1.0.0"
 edition = "2021"
-license-file = "LICENSE"
+license-file = "../LICENSE"
 description = "Rust library for fancy colored cli using ansi codes"
 homepage = "https://github.com/BonnyAD9/termal"
 repository = "https://github.com/BonnyAD9/termal"
-readme = "README.md"
+readme = "../README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
