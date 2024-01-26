@@ -168,6 +168,14 @@
 //! *no color*: [`formatnc`], [`printnc`], [`printncln`], [`eprintnc`] and
 //! [`eprintncln`].
 //!
+//! ## The conditionally coloring macros
+//! Theese are same as the normal coloring macros except they take additional
+//! first argument that tells whether the output should be colored or not.
+//!
+//! They have the same names as the uncoloring macros but they have `m` instead
+//! of the `n` to signify *maybe color*:[`formatmc`], [`printmc`],
+//! [`printmcln`], [`eprintmc`] and [`eprintmcln`].
+//!
 //! ## Examples
 //! ### With macro
 //! ```rust
@@ -422,8 +430,141 @@ macro_rules! formatnc {
     };
 }
 
+/// Works as [`println!`], conditionally skips terminal commands in `"{'...}"`.
+///
+/// # Examples
+/// ```
+/// use termal::*;
+/// // Print 'hello' (not in yellow, the terminal commands are skipped):
+/// printncln!("{'yellow}hello{'reset}");
+/// ```
+#[macro_export]
+macro_rules! printmcln {
+    ($cond:expr, $l:literal) => {
+        if $cond {
+            println!("{}", $crate::proc::colorize!($l));
+        } else {
+            println!("{}", $crate::proc::uncolor!($l));
+        }
+    };
+    ($cond:expr, $l:literal, $($e:expr),+) => {
+        if $cond {
+            println!("{}", $crate::proc::colorize!($l, $($e),+));
+        } else {
+            println!("{}", $crate::proc::uncolor!($l, $($e),+));
+        }
+    };
+}
+
+/// Works as [`print!`], conditionally skips terminal commands in `"{'...}"`.
+///
+/// # Examples
+/// ```
+/// use termal::*;
+/// // Print 'hello' (not in yellow, the terminal commands are skipped):
+/// printnc!("{'yellow}hello{'reset}");
+/// ```
+#[macro_export]
+macro_rules! printmc {
+    ($cond:expr, $l:literal) => {
+        if $cond {
+            print!("{}", $crate::proc::colorize!($l));
+        } else {
+            print!("{}", $crate::proc::uncolor!($l));
+        }
+    };
+    ($cond:expr, $l:literal, $($e:expr),+) => {
+        if $cond {
+            print!("{}", $crate::proc::colorize!($l, $($e),+));
+        } else {
+            print!("{}", $crate::proc::uncolor!($l, $($e),+));
+        }
+    };
+}
+
+/// Works as [`eprintln!`], conditionally skips terminal commands in
+/// `"{'...}"`.
+///
+/// # Examples
+/// ```
+/// use termal::*;
+/// // Print 'hello' (not in yellow, the terminal commands are skipped):
+/// eprintncln!("{'yellow}hello{'reset}");
+/// ```
+#[macro_export]
+macro_rules! eprintmcln {
+    ($cond:expr, $l:literal) => {
+        if $cond {
+            eprintln!("{}", $crate::proc::colorize!($l));
+        } else {
+            eprintln!("{}", $crate::proc::uncolor!($l));
+        }
+    };
+    ($cond:expr, $l:literal, $($e:expr),+) => {
+        if $cond {
+            eprintln!("{}", $crate::proc::colorize!($l, $($e),+));
+        } else {
+            eprintln!("{}", $crate::proc::uncolor!($l, $($e),+));
+        }
+    };
+}
+
+/// Works as [`eprint!`], conditionally skips terminal commands in `"{'...}"`.
+///
+/// # Examples
+/// ```
+/// use termal::*;
+/// // Print 'hello' (not in yellow, the terminal commands are skipped):
+/// printnc!("{'yellow}hello{'reset}");
+/// ```
+#[macro_export]
+macro_rules! eprintmc {
+    ($cond:expr, $l:literal) => {
+        if $cond {
+            eprint!("{}", $crate::proc::colorize!($l));
+        } else {
+            eprint!("{}", $crate::proc::uncolor!($l));
+        }
+    };
+    ($cond:expr, $l:literal, $($e:expr),+) => {
+        if $cond {
+            eprint!("{}", $crate::proc::colorize!($l, $($e),+));
+        } else {
+            eprint!("{}", $crate::proc::uncolor!($l, $($e),+));
+        }
+    };
+}
+
+/// Works as [`format!`], conditionally skips terminal commands in `"{'...}"`.
+///
+/// # Examples
+/// ```
+/// use termal::*;
+/// // Generate 'hello' (not in yellow, the terminal commands are skipped):
+/// printcln!("{'yellow}hello{'reset}");
+/// ```
+#[macro_export]
+macro_rules! formatmc {
+    ($cond:expr, $l:literal) => {
+        if $cond {
+            $crate::proc::colorize!($l)
+        } else {
+            $crate::proc::uncolor!($l)
+        }
+    };
+    ($cond:expr, $l:literal, $($e:expr),+) => {
+        if $cond {
+            $crate::proc::colorize!($l, $($e),+)
+        } else {
+            $crate::proc::uncolor!($l, $($e),+)
+        }
+    };
+}
+
 #[cfg(test)]
 mod tests {
+    use std::io::{stdout, Write};
+
     use super::*;
 
     #[test]
@@ -433,6 +574,7 @@ mod tests {
             "{}{'_}",
             gradient("BonnyAD9", (250, 50, 170), (180, 50, 240))
         );
+        _ = stdout().flush();
     }
 
     #[test]
@@ -441,6 +583,7 @@ mod tests {
         let num = 4;
         print!("Expect 'Hello 4' in yellow: ");
         printcln!("{'y}{s} {num}{'_}");
+        _ = stdout().flush();
     }
 
     #[test]
@@ -449,5 +592,13 @@ mod tests {
         let num = 4;
         let r = formatnc!("{'y}{s} {num}{'_}");
         assert_eq!(r, "Hello 4");
+    }
+
+    #[test]
+    fn test_m() {
+        let s = "Hello";
+        let num = 4;
+        assert_eq!(formatmc!(true, "{'y}{s} {num}{'_}"), formatc!("{'y}{s} {num}{'_}"));
+        assert_eq!(formatmc!(false, "{'y}{s} {num}{'_}"), formatnc!("{'y}{s} {num}{'_}"));
     }
 }
