@@ -598,7 +598,13 @@ mod tests {
     fn test_m() {
         let s = "Hello";
         let num = 4;
-        assert_eq!(formatmc!(true, "{'y}{s} {num}{'_}"), formatc!("{'y}{s} {num}{'_}"));
-        assert_eq!(formatmc!(false, "{'y}{s} {num}{'_}"), formatnc!("{'y}{s} {num}{'_}"));
+        assert_eq!(
+            formatmc!(true, "{'y}{s} {num}{'_}"),
+            formatc!("{'y}{s} {num}{'_}")
+        );
+        assert_eq!(
+            formatmc!(false, "{'y}{s} {num}{'_}"),
+            formatnc!("{'y}{s} {num}{'_}")
+        );
     }
 }

@@ -28,9 +28,9 @@ impl Display for ProcError {
     }
 }
 
-impl Into<TokenStream> for ProcError {
-    fn into(self) -> TokenStream {
-        error_at(self.span, self.msg)
+impl From<ProcError> for TokenStream {
+    fn from(value: ProcError) -> Self {
+        error_at(value.span, value.msg)
     }
 }
 
@@ -115,14 +115,11 @@ pub fn colorize(item: TokenStream) -> ProcResult<TokenStream> {
 
     // invoking the macro
     let mut res = TokenStream::new();
-    res.extend(
-        [
-            TokenTree::Ident(Ident::new("format", Span::call_site())),
-            TokenTree::Punct(Punct::new('!', Spacing::Alone)),
-            TokenTree::Group(Group::new(Delimiter::Parenthesis, rargs)),
-        ]
-        .into_iter(),
-    );
+    res.extend([
+        TokenTree::Ident(Ident::new("format", Span::call_site())),
+        TokenTree::Punct(Punct::new('!', Spacing::Alone)),
+        TokenTree::Group(Group::new(Delimiter::Parenthesis, rargs)),
+    ]);
 
     Ok(res)
 }
@@ -145,14 +142,11 @@ pub fn uncolor(item: TokenStream) -> ProcResult<TokenStream> {
 
     // invoking the macro
     let mut res = TokenStream::new();
-    res.extend(
-        [
-            TokenTree::Ident(Ident::new("format", Span::call_site())),
-            TokenTree::Punct(Punct::new('!', Spacing::Alone)),
-            TokenTree::Group(Group::new(Delimiter::Parenthesis, rargs)),
-        ]
-        .into_iter(),
-    );
+    res.extend([
+        TokenTree::Ident(Ident::new("format", Span::call_site())),
+        TokenTree::Punct(Punct::new('!', Spacing::Alone)),
+        TokenTree::Group(Group::new(Delimiter::Parenthesis, rargs)),
+    ]);
 
     Ok(res)
 }
@@ -418,7 +412,7 @@ where
 
         "fg" => {
             let c = match maybe_read_num(i) {
-                Some(c) if c >= 0 && c < 256 => c,
+                Some(c) if (0..256).contains(&c) => c,
                 _ => {
                     return Err(ProcError::msg(format!(
                     "The '{}' in color format expects value in range 0..256",
@@ -431,7 +425,7 @@ where
         }
         "bg" => {
             let c = match maybe_read_num(i) {
-                Some(c) if c >= 0 && c < 256 => c,
+                Some(c) if (0..256).contains(&c) => c,
                 _ => {
                     return Err(ProcError::msg(format!(
                     "The '{}' in color format expects value in range 0..256",
@@ -474,9 +468,9 @@ where
             )))
         }
         None => {
-            return Err(ProcError::msg(format!(
-                "Unexpected end, expected ' ' or '}}'"
-            )))
+            return Err(ProcError::msg(
+                "Unexpected end, expected ' ' or '}}'".to_owned(),
+            ))
         }
     }
 
@@ -528,9 +522,9 @@ where
         ),
         6 => (c & 0xFF0000 >> 16, c & 0x00FF00 >> 8, c & 0x0000FF),
         _ => {
-            return Err(ProcError::msg(format!(
-                "Invalid hex color length, must be 1, 2, 3 or 6"
-            )))
+            return Err(ProcError::msg(
+                "Invalid hex color length, must be 1, 2, 3 or 6".to_owned(),
+            ))
         }
     };
 
@@ -544,17 +538,13 @@ where
             res.push_str(codes::fg!(r, g, b).as_str());
             Ok(())
         }
-        Some(c) => {
-            return Err(ProcError::msg(format!(
-                "Invalid character, didn't expect '{}'",
-                c
-            )))
-        }
-        None => {
-            return Err(ProcError::msg(format!(
-                "color format not ended with '}}'"
-            )))
-        }
+        Some(c) => Err(ProcError::msg(format!(
+            "Invalid character, didn't expect '{}'",
+            c
+        ))),
+        None => Err(ProcError::msg(
+            "color format not ended with '}}'".to_owned(),
+        )),
     }
 }
 
