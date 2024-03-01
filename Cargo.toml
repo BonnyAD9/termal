@@ -15,6 +15,7 @@ members = [
     "termal_core",
     "termal_proc"
 ]
+exclude = [ "app" ]
 
 [dependencies]
 termal_core = { path = "termal_core", version = "1.0.0" }

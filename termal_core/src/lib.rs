@@ -2,6 +2,8 @@
 
 pub mod codes;
 pub mod proc;
+pub mod raw;
+pub mod error;
 
 /// Appends linear gradient to the given string
 pub fn write_gradient(
