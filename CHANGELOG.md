@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## v1.0.2
+- Fix six digit hex RGB colors in proc macros
+
 ## v1.0.1
 - Add conditionally formatting macros: `formatmc`, `printmc`, `printmcln`,
   `eprintmc`, `eprintmcln`
