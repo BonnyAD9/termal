@@ -1,6 +1,6 @@
 use std::io::{self, Read, Write};
 
-use termal::raw::{disable_raw_mode, enable_raw_mode};
+use termal::raw::{disable_raw_mode, enable_raw_mode, events::{Event, Key, KeyCode, Modifiers, Terminal}};
 use thiserror::Error;
 
 type Result<T> = std::result::Result<T, Error>;
@@ -19,35 +19,67 @@ fn main() -> Result<()> {
     start()?;
 
     disable_raw_mode()?;
+    // io::stdout().write(b"\x1b[?1049l")?;
+    // io::stdout().flush()?;
 
     Ok(())
 }
 
 fn start() -> Result<()> {
+    //keys()
+    chars()
+}
+
+fn chars() -> Result<()> {
     let mut stdin = io::stdin();
     let mut stdout = io::stdout();
     const CNT: usize = 100;
     let mut buf: [u8;CNT] = [0;CNT];
-    //stdout.write(b"\x1b]60;?\x9c")?;
+    stdout.write(b"\x1b[c")?;
     stdout.flush()?;
 
     loop {
         let cnt = stdin.read(&mut buf)?;
-        print!("cnt:{cnt}: ");
         stdout.flush()?;
         for byte in &buf[..cnt] {
             let chr = *byte as char;
-            if chr == 'Q' {
+            if chr == '\x03' {
                 return Ok(());
             }
             if chr == '\x1b' {
                 print!("ESC");
+            } else if chr.is_ascii_control() {
+                print!("0x{byte:02X}");
             } else {
-                print!("{chr}:{byte}");
+                print!("{chr}");
             }
             print!(" ");
         }
         print!("\n\r");
+        stdout.flush()?;
+    }
+}
+
+fn keys() -> Result<()> {
+
+    let mut stdout = io::stdout();
+    //stdout.write(b"\x1b]60;?\x9c")?;
+    stdout.flush()?;
+    let mut term = Terminal::new();
+
+    loop {
+        let key = term.read()?;
+        if matches!(
+            key,
+            Event::KeyPress(Key {
+                code: KeyCode::C,
+                modifiers: Modifiers::CONTROL,
+                ..
+            })
+        ) {
+            return Ok(());
+        }
+        print!("{key:?}\n\r");
         stdout.flush()?;
     }
 }

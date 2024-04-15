@@ -2,13 +2,31 @@ use std::{collections::VecDeque, io::{self, BufRead}};
 
 use crate::error::{Error, Result};
 
+use super::{AmbigousEvent, AnyEvent, Event};
+
 pub struct Terminal {
     buffer: VecDeque<u8>,
 }
 
 impl Terminal {
-    pub fn read(&mut self) {
+    pub fn new() -> Self {
+        Terminal { buffer: VecDeque::new() }
+    }
 
+    pub fn read(&mut self) -> Result<Event> {
+        loop {
+            if let AnyEvent::Known(ev) = self.read_ambigous()?.event {
+                return Ok(ev);
+            }
+        }
+    }
+
+    pub fn read_ambigous(&mut self) -> Result<AmbigousEvent> {
+        if self.cur()? == 0x1b {
+            self.read_escape()
+        } else {
+            self.read_char()
+        }
     }
 
     fn read_byte(&mut self) -> Result<u8> {
@@ -26,5 +44,76 @@ impl Terminal {
         let len = buf.len();
         stdio.consume(len);
         Ok(())
+    }
+
+    fn cur(&mut self) -> Result<u8> {
+        if let Some(b) = self.buffer.front() {
+            Ok(*b)
+        } else {
+            self.fill_buffer()?;
+            self.buffer.front().ok_or(Error::StdInEof).map(|a| *a)
+        }
+    }
+
+    fn read_escape(&mut self) -> Result<AmbigousEvent> {
+        self.read_byte()?;
+        let cur = self.cur()?;
+        match cur {
+            b'[' => self.read_csi(),
+            _ => self.read_alt(),
+        }
+    }
+
+    fn read_csi(&mut self) -> Result<AmbigousEvent> {
+        let mut code: Vec<_> = b"\x1b[".into();
+        self.read_byte()?;
+        let mut cur = self.read_byte()?;
+
+        while (0x30..=0x3F).contains(&cur) {
+            code.push(cur);
+            cur = self.read_byte()?;
+        }
+
+        while (0x20..=0x2F).contains(&cur) {
+            code.push(cur);
+            cur = self.read_byte()?;
+        }
+
+        code.push(cur);
+        Ok(AmbigousEvent::from_code(&code))
+    }
+
+    fn read_alt(&mut self) -> Result<AmbigousEvent> {
+        let mut buf: [u8; 5] = [ 0x1b, 0, 0, 0, 0 ];
+        self.read_utf8((&mut buf[1..]).try_into().unwrap())?;
+        Ok(AmbigousEvent::from_code(&buf))
+    }
+
+    fn read_char(&mut self) -> Result<AmbigousEvent> {
+        if !self.cur()?.is_ascii() {
+            let mut buf: [u8; 4] = [0; 4];
+            Ok(AmbigousEvent::from_char_code(self.read_utf8(&mut buf)?))
+        } else {
+            let chr = self.read_byte()? as char;
+            Ok(AmbigousEvent::from_char_code(chr))
+        }
+    }
+
+    fn read_utf8<'a, 'b>(&'b mut self, buf: &'a mut [u8; 4]) -> Result<char> {
+        for i in 1..=4 {
+            if self.buffer.len() < i {
+                self.fill_buffer()?;
+                if self.buffer.len() < i {
+                    return Ok(self.read_byte()? as char);
+                }
+            }
+
+            buf[i - 1] = self.buffer[i - 1];
+            if let Ok(code) = std::str::from_utf8(&buf[..i]) {
+                self.buffer.consume(i);
+                return Ok(code.chars().next().unwrap())
+            }
+        }
+        Ok(self.read_byte()? as char)
     }
 }
