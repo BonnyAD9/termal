@@ -1,6 +1,6 @@
 [package]
 name = "termal_proc"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 license-file = "../LICENSE"
 description = "Rust library for fancy colored cli using ansi codes"
@@ -14,4 +14,4 @@ readme = "../README.md"
 proc-macro = true
 
 [dependencies]
-termal_core = { path = "../termal_core", version = "1.0.0" }
+termal_core = { path = "../termal_core", version = "1.0.1" }
