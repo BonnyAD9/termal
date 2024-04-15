@@ -520,7 +520,7 @@ where
             (c & 0x0F0) | (c & 0x0F0) >> 4,
             (c & 0x00F) << 4 | (c & 0x00F),
         ),
-        6 => (c & 0xFF0000 >> 16, c & 0x00FF00 >> 8, c & 0x0000FF),
+        6 => ((c & 0xFF0000) >> 16, (c & 0x00FF00) >> 8, c & 0x0000FF),
         _ => {
             return Err(ProcError::msg(
                 "Invalid hex color length, must be 1, 2, 3 or 6".to_owned(),
