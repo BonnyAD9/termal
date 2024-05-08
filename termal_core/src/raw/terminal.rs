@@ -35,7 +35,7 @@ impl Terminal {
         }
     }
 
-    fn read_byte(&mut self) -> Result<u8> {
+    pub fn read_byte(&mut self) -> Result<u8> {
         if let Some(b) = self.buffer.pop_front() {
             return Ok(b);
         }
@@ -117,8 +117,8 @@ impl Terminal {
 
     fn read_alt(&mut self) -> Result<AmbigousEvent> {
         let mut buf: [u8; 5] = [0x1b, 0, 0, 0, 0];
-        self.read_utf8((&mut buf[1..]).try_into().unwrap())?;
-        Ok(AmbigousEvent::from_code(&buf))
+        let chr = self.read_utf8((&mut buf[1..]).try_into().unwrap())?;
+        Ok(AmbigousEvent::from_code(&buf[..=chr.len_utf8()]))
     }
 
     fn read_char(&mut self) -> Result<AmbigousEvent> {
