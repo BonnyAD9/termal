@@ -146,7 +146,7 @@ impl AmbigousEvent {
             key.modifiers |= Modifiers::CONTROL;
         }
 
-        if chr.is_ascii_control() && chr != '\t' {
+        if chr.is_ascii_control() {
             key.key_char = None;
         }
 
