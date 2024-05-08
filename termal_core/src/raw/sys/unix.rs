@@ -1,4 +1,8 @@
-use std::{fs, io, mem, os::fd::{AsRawFd, IntoRawFd, RawFd}, sync::Mutex};
+use std::{
+    fs, io, mem,
+    os::fd::{AsRawFd, IntoRawFd, RawFd},
+    sync::Mutex,
+};
 
 use libc::{cfmakeraw, tcgetattr, tcsetattr, termios as Termios, TCSANOW};
 
@@ -48,11 +52,11 @@ pub fn is_raw_mode_enabled() -> bool {
     ORIGINAL_TERMINAL_MODE.lock().unwrap().is_some()
 }
 
-pub (crate) fn enable_raw_mode() -> Result<()> {
+pub(crate) fn enable_raw_mode() -> Result<()> {
     let mut orig_mode = ORIGINAL_TERMINAL_MODE.lock().unwrap();
 
     if orig_mode.is_some() {
-        return Ok(())
+        return Ok(());
     }
 
     let tty = TtyFd::get()?;

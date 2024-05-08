@@ -9,5 +9,5 @@ pub enum Error {
     #[error("{0} is not supported on this platform.")]
     NotSupportedOnPlatform(&'static str),
     #[error(transparent)]
-    Io(#[from] std::io::Error)
+    Io(#[from] std::io::Error),
 }

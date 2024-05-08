@@ -1,6 +1,9 @@
 use std::io::{self, Read, Write};
 
-use termal::raw::{disable_raw_mode, enable_raw_mode, events::{Event, Key, KeyCode, Modifiers, Terminal}};
+use termal::raw::{
+    disable_raw_mode, enable_raw_mode,
+    events::{Event, Key, KeyCode, Modifiers, Terminal},
+};
 use thiserror::Error;
 
 type Result<T> = std::result::Result<T, Error>;
@@ -34,7 +37,7 @@ fn chars() -> Result<()> {
     let mut stdin = io::stdin();
     let mut stdout = io::stdout();
     const CNT: usize = 100;
-    let mut buf: [u8;CNT] = [0;CNT];
+    let mut buf: [u8; CNT] = [0; CNT];
     stdout.write(b"\x1b[c")?;
     stdout.flush()?;
 
@@ -61,7 +64,6 @@ fn chars() -> Result<()> {
 }
 
 fn keys() -> Result<()> {
-
     let mut stdout = io::stdout();
     //stdout.write(b"\x1b]60;?\x9c")?;
     stdout.flush()?;

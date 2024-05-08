@@ -9,7 +9,7 @@ impl Csi {
         let mut code = code.chars();
         let mut prefix = String::new();
         let mut chr = None;
-        while let Some(c) = code.next() {
+        for c in &mut code {
             if c.is_ascii_digit() {
                 chr = Some(c);
                 break;
@@ -20,7 +20,7 @@ impl Csi {
         let mut code = chr.into_iter().chain(code);
 
         let mut args = String::new();
-        while let Some(c) = code.next() {
+        for c in &mut code {
             if !c.is_ascii_digit() && c != ';' {
                 chr = Some(c);
                 break;

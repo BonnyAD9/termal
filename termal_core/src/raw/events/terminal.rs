@@ -1,16 +1,22 @@
-use std::{collections::VecDeque, io::{self, BufRead}};
+use std::{
+    collections::VecDeque,
+    io::{self, BufRead},
+};
 
 use crate::error::{Error, Result};
 
 use super::{AmbigousEvent, AnyEvent, Event};
 
+#[derive(Default)]
 pub struct Terminal {
     buffer: VecDeque<u8>,
 }
 
 impl Terminal {
     pub fn new() -> Self {
-        Terminal { buffer: VecDeque::new() }
+        Terminal {
+            buffer: VecDeque::new(),
+        }
     }
 
     pub fn read(&mut self) -> Result<Event> {
@@ -51,7 +57,7 @@ impl Terminal {
             Ok(*b)
         } else {
             self.fill_buffer()?;
-            self.buffer.front().ok_or(Error::StdInEof).map(|a| *a)
+            self.buffer.front().ok_or(Error::StdInEof).copied()
         }
     }
 
@@ -110,7 +116,7 @@ impl Terminal {
     }
 
     fn read_alt(&mut self) -> Result<AmbigousEvent> {
-        let mut buf: [u8; 5] = [ 0x1b, 0, 0, 0, 0 ];
+        let mut buf: [u8; 5] = [0x1b, 0, 0, 0, 0];
         self.read_utf8((&mut buf[1..]).try_into().unwrap())?;
         Ok(AmbigousEvent::from_code(&buf))
     }
@@ -125,7 +131,7 @@ impl Terminal {
         }
     }
 
-    fn read_utf8<'a, 'b>(&'b mut self, buf: &'a mut [u8; 4]) -> Result<char> {
+    fn read_utf8(&mut self, buf: &mut [u8; 4]) -> Result<char> {
         for i in 1..=4 {
             if self.buffer.len() < i {
                 self.fill_buffer()?;
@@ -137,7 +143,7 @@ impl Terminal {
             buf[i - 1] = self.buffer[i - 1];
             if let Ok(code) = std::str::from_utf8(&buf[..i]) {
                 self.buffer.consume(i);
-                return Ok(code.chars().next().unwrap())
+                return Ok(code.chars().next().unwrap());
             }
         }
         Ok(self.read_byte()? as char)
