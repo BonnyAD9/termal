@@ -69,11 +69,13 @@ impl AmbigousEvent {
             let mut res = Self::from_char_code(chr);
             if let AnyEvent::Known(Event::KeyPress(ref mut k)) = res.event {
                 k.modifiers |= Modifiers::ALT;
+                k.key_char = None;
             }
 
             for k in res.other.iter_mut() {
                 let Event::KeyPress(k) = k;
                 k.modifiers |= Modifiers::ALT;
+                k.key_char = None;
             }
 
             return Some(res);
