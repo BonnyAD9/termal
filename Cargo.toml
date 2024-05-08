@@ -13,9 +13,9 @@ readme = "README.md"
 [workspace]
 members = [
     "termal_core",
-    "termal_proc"
+    "termal_proc",
+    "app"
 ]
-exclude = [ "app" ]
 
 [dependencies]
 termal_core = { path = "termal_core", version = "1.0.0" }

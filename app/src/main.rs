@@ -26,8 +26,8 @@ fn main() -> Result<()> {
 }
 
 fn start() -> Result<()> {
-    //keys()
-    chars()
+    keys()
+    //chars()
 }
 
 fn chars() -> Result<()> {
@@ -72,7 +72,7 @@ fn keys() -> Result<()> {
         if matches!(
             key,
             Event::KeyPress(Key {
-                code: KeyCode::C,
+                code: KeyCode::Char('c'),
                 modifiers: Modifiers::CONTROL,
                 ..
             })

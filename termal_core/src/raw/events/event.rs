@@ -1,6 +1,8 @@
+use crate::raw::events::csi::Csi;
+
 pub struct AmbigousEvent {
     pub event: AnyEvent,
-    pub other: Vec<Vec<Event>>,
+    pub other: Vec<Event>,
 }
 
 pub enum AnyEvent {
@@ -40,6 +42,7 @@ pub enum KeyCode {
     Space,
     Tab,
     Enter,
+    F0,
     F1,
     F2,
     F3,
@@ -52,10 +55,14 @@ pub enum KeyCode {
     F10,
     F11,
     F12,
-    Multiply,
-    Add,
-    Comma,
-    Minus,
+    F13,
+    F14,
+    F15,
+    F16,
+    F17,
+    F18,
+    F19,
+    F20,
     Delete,
     Divide,
     Insert,
@@ -63,70 +70,9 @@ pub enum KeyCode {
     Home,
     PgUp,
     PgDown,
-    Num0,
-    Num1,
-    Num2,
-    Num3,
-    Num4,
-    Num5,
-    Num6,
-    Num7,
-    Num8,
-    Num9,
     Backspace,
     Esc,
-    A,
-    B,
-    C,
-    D,
-    E,
-    F,
-    G,
-    H,
-    I,
-    J,
-    K,
-    L,
-    M,
-    N,
-    O,
-    P,
-    Q,
-    R,
-    S,
-    T,
-    U,
-    V,
-    W,
-    X,
-    Y,
-    Z,
-    Exclamation,
-    DoubleQuote,
-    Pound,
-    Dollar,
-    Percent,
-    Quote,
-    OpenParent,
-    CloseParent,
-    Dot,
-    Colon,
-    Semicolon,
-    Less,
-    More,
-    Question,
-    At,
-    OpenBracket,
-    Backslash,
-    CloseBracket,
-    Hat,
-    Underscore,
-    Backtick,
-    OpenBrace,
-    Pipe,
-    CloseBrace,
-    Tilde,
-    Other(char),
+    Char(char),
 }
 
 impl AmbigousEvent {
@@ -135,9 +81,203 @@ impl AmbigousEvent {
     }
 
     pub fn from_code(code: &[u8]) -> Self {
-        AmbigousEvent {
-            event: AnyEvent::Unknown(code.into()),
-            other: vec![],
+        if let Ok(s) = std::str::from_utf8(code) {
+            Self::from_code_str(s)
+        } else {
+            AmbigousEvent {
+                event: AnyEvent::Unknown(code.into()),
+                other: vec![],
+            }
+        }
+
+    }
+
+    fn from_code_str(code: &str) -> Self {
+        if code.is_empty() {
+            return Self {
+                event: AnyEvent::Unknown(code.as_bytes().to_owned()),
+                other: vec![],
+            };
+        }
+
+        if code.len() == 1 {
+            let chr = code.chars().next().unwrap();
+            return Self::char_key(chr);
+        }
+
+        if code.len() == 2 && code.starts_with('\x1b') {
+            let chr = code.chars().last().unwrap();
+            let mut res = Self::from_char_code(chr);
+            if let AnyEvent::Known(Event::KeyPress(ref mut k)) = res.event {
+                k.modifiers |= Modifiers::ALT;
+            }
+
+            for k in res.other.iter_mut() {
+                let Event::KeyPress(k) = k;
+                k.modifiers |= Modifiers::ALT;
+            }
+
+            return res;
+        }
+
+        let Some(cscode) = code.strip_prefix("\x1b[") else {
+            if let Some(cscode) = code.strip_prefix("\x1bO") {
+                let csi = Csi::parse(cscode);
+                if !matches!(csi.postfix.as_str(), "P" | "Q" | "R" | "S") {
+                    return Self {
+                        event: AnyEvent::Unknown(code.as_bytes().to_owned()),
+                        other: vec![],
+                    };
+                }
+
+
+                let pchr = csi.postfix.chars().next().unwrap();
+                return match csi.args.as_slice() {
+                    [] | [ 1 ] => {
+                        if let Some(k) = KeyCode::from_xterm_id(pchr) {
+                            Self {
+                                event: AnyEvent::Known(Event::KeyPress(Key {
+                                    key_char: None,
+                                    code: k,
+                                    modifiers: Modifiers::NONE,
+                                })),
+                                other: vec![],
+                            }
+                        } else {
+                            Self {
+                                event: AnyEvent::Unknown(code.as_bytes().to_owned()),
+                                other: vec![],
+                            }
+                        }
+                    }
+                    [ 1, m ] => {
+                        if let Some(k) = KeyCode::from_xterm_id(pchr) {
+                            Self {
+                                event: AnyEvent::Known(Event::KeyPress(Key {
+                                    key_char: None,
+                                    code: k,
+                                    modifiers: Modifiers::from_id(*m),
+                                })),
+                                other: vec![],
+                            }
+                        } else {
+                            Self {
+                                event: AnyEvent::Unknown(code.as_bytes().to_owned()),
+                                other: vec![],
+                            }
+                        }
+                    }
+                    _ => Self {
+                        event: AnyEvent::Unknown(code.as_bytes().to_owned()),
+                        other: vec![],
+                    },
+                }
+            }
+            return Self {
+                event: AnyEvent::Unknown(code.as_bytes().to_owned()),
+                other: vec![],
+            };
+        };
+
+        let csi = Csi::parse(cscode);
+        if !csi.prefix.is_empty() {
+            return Self {
+                event: AnyEvent::Unknown(code.as_bytes().to_owned()),
+                other: vec![],
+            };
+        }
+
+        if csi.postfix == "~" {
+            return match csi.args.as_slice() {
+                [ k ] => {
+                    if let Some(k) = KeyCode::from_vt_id(*k) {
+                        Self {
+                            event: AnyEvent::Known(Event::KeyPress(Key {
+                                key_char: None,
+                                code: k,
+                                modifiers: Modifiers::NONE,
+                            })),
+                            other: vec![],
+                        }
+                    } else {
+                        Self {
+                            event: AnyEvent::Unknown(code.as_bytes().to_owned()),
+                            other: vec![],
+                        }
+                    }
+                }
+                [ k, m ] => {
+                    if let Some(k) = KeyCode::from_vt_id(*k) {
+                        Self {
+                            event: AnyEvent::Known(Event::KeyPress(Key {
+                                key_char: None,
+                                code: k,
+                                modifiers: Modifiers::from_id(*m),
+                            })),
+                            other: vec![],
+                        }
+                    } else {
+                        Self {
+                            event: AnyEvent::Unknown(code.as_bytes().to_owned()),
+                            other: vec![],
+                        }
+                    }
+                }
+                _ => Self {
+                    event: AnyEvent::Unknown(code.as_bytes().to_owned()),
+                    other: vec![],
+                },
+            }
+        }
+
+        if csi.postfix.len() != 1 {
+            return Self {
+                event: AnyEvent::Unknown(code.as_bytes().to_owned()),
+                other: vec![],
+            };
+        }
+
+        let pchr = csi.postfix.chars().next().unwrap();
+
+        match csi.args.as_slice() {
+            [] | [ 1 ] => {
+                if let Some(k) = KeyCode::from_xterm_id(pchr) {
+                    Self {
+                        event: AnyEvent::Known(Event::KeyPress(Key {
+                            key_char: None,
+                            code: k,
+                            modifiers: Modifiers::NONE,
+                        })),
+                        other: vec![],
+                    }
+                } else {
+                    Self {
+                        event: AnyEvent::Unknown(code.as_bytes().to_owned()),
+                        other: vec![],
+                    }
+                }
+            }
+            [ 1, m ] => {
+                if let Some(k) = KeyCode::from_xterm_id(pchr) {
+                    Self {
+                        event: AnyEvent::Known(Event::KeyPress(Key {
+                            key_char: None,
+                            code: k,
+                            modifiers: Modifiers::from_id(*m),
+                        })),
+                        other: vec![],
+                    }
+                } else {
+                    Self {
+                        event: AnyEvent::Unknown(code.as_bytes().to_owned()),
+                        other: vec![],
+                    }
+                }
+            }
+            _ => Self {
+                event: AnyEvent::Unknown(code.as_bytes().to_owned()),
+                other: vec![],
+            },
         }
     }
 
@@ -168,22 +308,26 @@ impl AmbigousEvent {
         let mut amb = vec![];
 
         match chr {
-            '\0' => amb.push(vec![]),
-            '\x08' => amb.push(vec![Event::KeyPress(Key {
+            '\x08' => amb.push(Event::KeyPress(Key {
                 key_char: None,
                 code: KeyCode::Backspace,
                 modifiers: Modifiers::CONTROL,
-            })]),
-            '\x09' => amb.push(vec![Event::KeyPress(Key {
+            })),
+            '\x09' => amb.push(Event::KeyPress(Key {
                 key_char: None,
-                code: KeyCode::I,
+                code: KeyCode::Char('i'),
                 modifiers: Modifiers::CONTROL,
-            })]),
-            '\x0d' => amb.push(vec![Event::KeyPress(Key {
+            })),
+            '\x0d' => amb.push(Event::KeyPress(Key {
                 key_char: None,
-                code: KeyCode::M,
+                code: KeyCode::Char('i'),
                 modifiers: Modifiers::CONTROL,
-            })]),
+            })),
+            '\x17' => amb.push(Event::KeyPress(Key {
+                key_char: None,
+                code: KeyCode::Backspace,
+                modifiers: Modifiers::CONTROL,
+            })),
             _ => {}
         }
 
@@ -196,79 +340,98 @@ impl AmbigousEvent {
 
 impl KeyCode {
     pub fn from_char(chr: char) -> Self {
-        match chr {
-            ' ' | '\0' => KeyCode::Space,
-            '\t' => KeyCode::Tab,
-            '\r' => KeyCode::Enter,
-            '*' => KeyCode::Multiply,
-            '+' => KeyCode::Add,
-            ',' => KeyCode::Comma,
-            '-' => KeyCode::Minus,
-            '/' => KeyCode::Divide,
-            '0' => KeyCode::Num0,
-            '1' => KeyCode::Num1,
-            '2' => KeyCode::Num2,
-            '3' => KeyCode::Num3,
-            '4' => KeyCode::Num4,
-            '5' => KeyCode::Num5,
-            '6' => KeyCode::Num6,
-            '7' => KeyCode::Num7,
-            '8' => KeyCode::Num8,
-            '9' => KeyCode::Num9,
-            '\x7f' => KeyCode::Backspace,
-            '\x1b' => KeyCode::Esc,
-            'A' | 'a' | '\x01' => KeyCode::A,
-            'B' | 'b' | '\x02' => KeyCode::B,
-            'C' | 'c' | '\x03' => KeyCode::C,
-            'D' | 'd' | '\x04' => KeyCode::D,
-            'E' | 'e' | '\x05' => KeyCode::E,
-            'F' | 'f' | '\x06' => KeyCode::F,
-            'G' | 'g' | '\x07' => KeyCode::G,
-            'H' | 'h' | '\x08' => KeyCode::H,
-            'I' | 'i' => KeyCode::I,
-            'J' | 'j' | '\x0a' => KeyCode::J,
-            'K' | 'k' | '\x0b' => KeyCode::K,
-            'L' | 'l' | '\x0c' => KeyCode::L,
-            'M' | 'm' => KeyCode::M,
-            'N' | 'n' | '\x0e' => KeyCode::N,
-            'O' | 'o' | '\x0f' => KeyCode::O,
-            'P' | 'p' | '\x10' => KeyCode::P,
-            'Q' | 'q' | '\x11' => KeyCode::Q,
-            'R' | 'r' | '\x12' => KeyCode::R,
-            'S' | 's' | '\x13' => KeyCode::S,
-            'T' | 't' | '\x14' => KeyCode::T,
-            'U' | 'u' | '\x15' => KeyCode::U,
-            'V' | 'v' | '\x16' => KeyCode::V,
-            'W' | 'w' | '\x17' => KeyCode::W,
-            'X' | 'x' | '\x18' => KeyCode::X,
-            'Y' | 'y' | '\x19' => KeyCode::Y,
-            'Z' | 'z' | '\x1A' => KeyCode::Z,
-            '!' => KeyCode::Exclamation,
-            '"' => KeyCode::DoubleQuote,
-            '#' => KeyCode::Pound,
-            '$' => KeyCode::Dollar,
-            '%' => KeyCode::Percent,
-            '\'' => KeyCode::Quote,
-            '(' => KeyCode::OpenParent,
-            ')' => KeyCode::CloseParent,
-            '.' => KeyCode::Dot,
-            ':' => KeyCode::Colon,
-            ';' => KeyCode::Semicolon,
-            '<' => KeyCode::Less,
-            '>' => KeyCode::More,
-            '?' => KeyCode::Question,
-            '@' => KeyCode::At,
-            '[' => KeyCode::OpenBracket,
-            '\\' => KeyCode::Backslash,
-            ']' => KeyCode::CloseBracket,
-            '^' => KeyCode::Hat,
-            '_' => KeyCode::Underscore,
-            '`' => KeyCode::Backtick,
-            '{' => KeyCode::OpenBrace,
-            '|' => KeyCode::Pipe,
-            '}' => KeyCode::CloseBrace,
-            '~' => KeyCode::Tilde,
-            c => KeyCode::Other(c),
+        match chr.to_ascii_lowercase() {
+            ' ' | '\0' => Self::Space,
+            '\t' => Self::Tab,
+            '\r' => Self::Enter,
+            '/' => Self::Divide,
+            '\x7f' => Self::Backspace,
+            '\x1b' => Self::Esc,
+            'a' | '\x01' => Self::Char('a'),
+            'b' | '\x02' => Self::Char('b'),
+            'c' | '\x03' => Self::Char('c'),
+            'd' | '\x04' => Self::Char('d'),
+            'e' | '\x05' => Self::Char('e'),
+            'f' | '\x06' => Self::Char('f'),
+            'g' | '\x07' => Self::Char('g'),
+            'h' | '\x08' => Self::Char('h'),
+            'i' => Self::Char('i'),
+            'j' | '\x0a' => Self::Char('j'),
+            'k' | '\x0b' => Self::Char('k'),
+            'l' | '\x0c' => Self::Char('l'),
+            'm' => Self::Char('m'),
+            'n' | '\x0e' => Self::Char('n'),
+            'o' | '\x0f' => Self::Char('o'),
+            'p' | '\x10' => Self::Char('p'),
+            'q' | '\x11' => Self::Char('q'),
+            'r' | '\x12' => Self::Char('r'),
+            's' | '\x13' => Self::Char('s'),
+            't' | '\x14' => Self::Char('t'),
+            'u' | '\x15' => Self::Char('u'),
+            'v' | '\x16' => Self::Char('v'),
+            'w' | '\x17' => Self::Char('w'),
+            'x' | '\x18' => Self::Char('x'),
+            'y' | '\x19' => Self::Char('y'),
+            'z' | '\x1A' => Self::Char('z'),
+            c => Self::Char(c),
         }
+    }
+
+    pub fn from_vt_id(id: u32) -> Option<Self> {
+        match id {
+            1 => Some(Self::Home),
+            2 => Some(Self::Insert),
+            3 => Some(Self::Delete),
+            4 => Some(Self::End),
+            5 => Some(Self::PgUp),
+            6 => Some(Self::PgDown),
+            7 => Some(Self::Home),
+            8 => Some(Self::End),
+            10 => Some(Self::F0),
+            11 => Some(Self::F1),
+            12 => Some(Self::F2),
+            13 => Some(Self::F3),
+            14 => Some(Self::F4),
+            15 => Some(Self::F5),
+            17 => Some(Self::F6),
+            18 => Some(Self::F7),
+            19 => Some(Self::F8),
+            20 => Some(Self::F9),
+            21 => Some(Self::F10),
+            23 => Some(Self::F11),
+            24 => Some(Self::F12),
+            25 => Some(Self::F13),
+            26 => Some(Self::F14),
+            28 => Some(Self::F15),
+            29 => Some(Self::F16),
+            31 => Some(Self::F17),
+            32 => Some(Self::F18),
+            33 => Some(Self::F19),
+            34 => Some(Self::F20),
+            _ => None,
+        }
+    }
+
+    pub fn from_xterm_id(id: char) -> Option<Self> {
+        match id {
+            'A' => Some(Self::Up),
+            'B' => Some(Self::Down),
+            'C' => Some(Self::Right),
+            'D' => Some(Self::Left),
+            'F' => Some(Self::End),
+            'G' => Some(Self::from_char('5')),
+            'H' => Some(Self::Home),
+            'P' => Some(Self::F1),
+            'Q' => Some(Self::F2),
+            'R' => Some(Self::F3),
+            'S' => Some(Self::F4),
+            _ => None,
+        }
+    }
+}
+
+impl Modifiers {
+    pub fn from_id(id: u32) -> Self {
+        Modifiers::from_bits_retain(id - 1)
     }
 }

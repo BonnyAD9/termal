@@ -22,7 +22,7 @@ impl Terminal {
     }
 
     pub fn read_ambigous(&mut self) -> Result<AmbigousEvent> {
-        if self.cur()? == 0x1b {
+        if self.cur()? == 0x1b && self.buffer.len() != 1 {
             self.read_escape()
         } else {
             self.read_char()
@@ -60,6 +60,7 @@ impl Terminal {
         let cur = self.cur()?;
         match cur {
             b'[' => self.read_csi(),
+            b'O' if self.buffer.len() > 1 => self.read_ss3(),
             _ => self.read_alt(),
         }
     }
@@ -67,6 +68,31 @@ impl Terminal {
     fn read_csi(&mut self) -> Result<AmbigousEvent> {
         let mut code: Vec<_> = b"\x1b[".into();
         self.read_byte()?;
+        if self.buffer.is_empty() {
+            return Ok(AmbigousEvent::from_code(&code));
+        }
+        let mut cur = self.read_byte()?;
+
+        while (0x30..=0x3F).contains(&cur) {
+            code.push(cur);
+            cur = self.read_byte()?;
+        }
+
+        while (0x20..=0x2F).contains(&cur) {
+            code.push(cur);
+            cur = self.read_byte()?;
+        }
+
+        code.push(cur);
+        Ok(AmbigousEvent::from_code(&code))
+    }
+
+    fn read_ss3(&mut self) -> Result<AmbigousEvent> {
+        let mut code: Vec<_> = b"\x1bO".into();
+        self.read_byte()?;
+        if self.buffer.is_empty() {
+            return Ok(AmbigousEvent::from_code(&code));
+        }
         let mut cur = self.read_byte()?;
 
         while (0x30..=0x3F).contains(&cur) {
