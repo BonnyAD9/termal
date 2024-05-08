@@ -29,11 +29,11 @@ fn main() -> Result<()> {
 }
 
 fn start() -> Result<()> {
-    keys()
-    //chars()
+    _keys()
+    //_chars()
 }
 
-fn chars() -> Result<()> {
+fn _chars() -> Result<()> {
     let mut stdin = io::stdin();
     let mut stdout = io::stdout();
     const CNT: usize = 100;
@@ -63,7 +63,7 @@ fn chars() -> Result<()> {
     }
 }
 
-fn keys() -> Result<()> {
+fn _keys() -> Result<()> {
     let mut stdout = io::stdout();
     //stdout.write(b"\x1b]60;?\x9c")?;
     stdout.flush()?;

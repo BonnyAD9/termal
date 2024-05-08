@@ -607,9 +607,4 @@ mod tests {
             formatnc!("{'y}{s} {num}{'_}")
         );
     }
-
-    #[test]
-    fn try_test() {
-        raw::events::AmbigousEvent::from_code(b"\x1b[1;5A");
-    }
 }
