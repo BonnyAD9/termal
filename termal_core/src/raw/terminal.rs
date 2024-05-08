@@ -5,7 +5,7 @@ use std::{
 
 use crate::error::{Error, Result};
 
-use super::{AmbigousEvent, AnyEvent, Event};
+use super::events::{AmbigousEvent, AnyEvent, Event};
 
 #[derive(Default)]
 pub struct Terminal {
