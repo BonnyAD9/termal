@@ -142,7 +142,7 @@ impl AmbigousEvent {
             key.modifiers |= Modifiers::SHIFT;
         }
 
-        if ('\0'..'\x19').contains(&chr) && chr != '\x09' && chr != '\x0d' {
+        if ('\0'..='\x1A').contains(&chr) && chr != '\x09' && chr != '\x0d' {
             key.modifiers |= Modifiers::CONTROL;
         }
 
