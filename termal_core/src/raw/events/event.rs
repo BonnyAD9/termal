@@ -58,15 +58,15 @@ impl AmbigousEvent {
             return None;
         }
 
-        let cnt = code.chars().count();
+        let cnt = (code.len() <= 8).then(||  code.chars().count());
 
         // shouldn't really happen
-        if cnt == 1 {
+        if cnt == Some(1) {
             return code.chars().next().map(Self::char_key);
         }
 
         // ALT code
-        if cnt == 2 && code.starts_with('\x1b') {
+        if cnt == Some(2) && code.starts_with('\x1b') {
             let chr = code.chars().last().unwrap();
             let mut res = Self::from_char_code(chr);
             if let AnyEvent::Known(Event::KeyPress(ref mut k)) = res.event {
