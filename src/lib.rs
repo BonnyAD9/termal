@@ -610,6 +610,6 @@ mod tests {
 
     #[test]
     fn try_test() {
-        raw::events::AmbigousEvent::from_code(b"\x1ba");
+        raw::events::AmbigousEvent::from_code(b"\x1b[?1;2c");
     }
 }

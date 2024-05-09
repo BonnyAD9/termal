@@ -66,6 +66,7 @@ fn _chars() -> Result<()> {
 fn _keys() -> Result<()> {
     let mut stdout = io::stdout();
     //stdout.write(b"\x1b]60;?\x9c")?;
+    stdout.write(b"\x1b[c")?;
     stdout.flush()?;
     let mut term = Terminal::new();
 

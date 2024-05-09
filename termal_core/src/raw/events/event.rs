@@ -1,6 +1,6 @@
 use crate::raw::events::csi::Csi;
 
-use super::{Key, KeyCode, Modifiers};
+use super::{Key, KeyCode, Modifiers, TermAttr};
 
 pub struct AmbigousEvent {
     pub event: AnyEvent,
@@ -12,9 +12,10 @@ pub enum AnyEvent {
     Unknown(Vec<u8>),
 }
 
-#[derive(Debug, Clone, Copy, Hash)]
+#[derive(Debug, Clone, Copy)]
 pub enum Event {
     KeyPress(Key),
+    TermAttr(TermAttr),
 }
 
 impl AmbigousEvent {
@@ -75,7 +76,9 @@ impl AmbigousEvent {
             }
 
             for k in res.other.iter_mut() {
-                let Event::KeyPress(k) = k;
+                let Event::KeyPress(k) = k else {
+                    return None;
+                };
                 k.modifiers |= Modifiers::ALT;
                 k.key_char = None;
             }
@@ -95,6 +98,11 @@ impl AmbigousEvent {
         };
 
         let csi = Csi::parse(cscode);
+
+        if csi.prefix == "?" && csi.postfix == "c" {
+            return Some(Self::event(Event::TermAttr(TermAttr::parse(csi))))
+        }
+
         if !csi.prefix.is_empty() {
             return None;
         }
