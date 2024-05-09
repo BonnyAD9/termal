@@ -1,6 +1,6 @@
-use std::io::{stdout, Write};
+use std::io::{stdout, IsTerminal, Write};
 
-use crate::{codes, error::Result, raw::events::Key};
+use crate::{codes, error::{Error, Result}, raw::events::Key};
 
 use super::{
     events::{Event, KeyCode},
@@ -101,7 +101,16 @@ where
     }
 
     fn read_next(&mut self) -> Result<bool> {
-        let evt = self.term.read()?;
+        let evt = match self.term.read() {
+            Ok(e) => e,
+            Err(Error::StdInEof) => {
+                self.end();
+                self.commit()?;
+                return Ok(true);
+            }
+            Err(e) => Err(e)?,
+        };
+
         if self.exit.matches(&evt) {
             self.end();
             self.commit()?;
@@ -206,14 +215,18 @@ where
 
 fn print_char(chr: char) -> Result<()> {
     let mut out = stdout().lock();
-    write!(out, "{chr}")?;
-    out.flush()?;
+    if out.is_terminal() {
+        write!(out, "{chr}")?;
+        out.flush()?;
+    }
     Ok(())
 }
 
 fn print_str(s: &str) -> Result<()> {
     let mut out = stdout().lock();
-    out.write_all(s.as_bytes())?;
-    out.flush()?;
+    if out.is_terminal() {
+        out.write_all(s.as_bytes())?;
+        out.flush()?;
+    }
     Ok(())
 }
