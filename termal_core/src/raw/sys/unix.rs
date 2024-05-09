@@ -4,9 +4,9 @@ use std::{
     sync::Mutex,
 };
 
-use libc::{cfmakeraw, tcgetattr, tcsetattr, termios as Termios, TCSANOW};
+use libc::{cfmakeraw, ioctl, tcgetattr, tcsetattr, termios as Termios, winsize, TCSANOW, TIOCGWINSZ};
 
-use crate::error::Result;
+use crate::{error::Result, raw::TermSize};
 
 static ORIGINAL_TERMINAL_MODE: Mutex<Option<Termios>> = Mutex::new(None);
 
@@ -48,6 +48,17 @@ impl Drop for TtyFd {
     }
 }
 
+impl From<winsize> for TermSize {
+    fn from(value: winsize) -> Self {
+        Self {
+            char_width: value.ws_col as usize,
+            char_height: value.ws_row as usize,
+            pixel_width: value.ws_xpixel as usize,
+            pixel_height: value.ws_ypixel as usize,
+        }
+    }
+}
+
 pub fn is_raw_mode_enabled() -> bool {
     ORIGINAL_TERMINAL_MODE.lock().unwrap().is_some()
 }
@@ -82,6 +93,18 @@ pub(crate) fn disable_raw_mode() -> Result<()> {
     }
 
     Ok(())
+}
+
+pub(crate) fn window_size() -> Result<TermSize> {
+    let tty = TtyFd::get()?;
+    let mut size = winsize {
+        ws_col: 0,
+        ws_row: 0,
+        ws_xpixel: 0,
+        ws_ypixel: 0,
+    };
+
+    Ok(to_io_result(unsafe { ioctl(tty.fd, TIOCGWINSZ.into(), &mut size) }).map(|_| size.into())?)
 }
 
 fn get_terminal_attr(fd: RawFd) -> Result<Termios> {

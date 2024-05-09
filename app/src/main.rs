@@ -1,8 +1,7 @@
 use std::io::{self, Read, Write};
 
 use termal::raw::{
-    disable_raw_mode, enable_raw_mode,
-    events::{Event, Key, KeyCode, Modifiers}, Terminal,
+    disable_raw_mode, enable_raw_mode, events::{Event, Key, KeyCode, Modifiers}, term_size, Terminal
 };
 use thiserror::Error;
 
@@ -29,6 +28,7 @@ fn main() -> Result<()> {
 }
 
 fn start() -> Result<()> {
+    println!("{:?}\r", term_size()?);
     _keys()
     //_chars()
 }
