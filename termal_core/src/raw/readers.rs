@@ -1,6 +1,10 @@
 use std::io::{stdout, IsTerminal, Write};
 
-use crate::{codes, error::{Error, Result}, raw::events::Key};
+use crate::{
+    codes,
+    error::{Error, Result},
+    raw::events::Key,
+};
 
 use super::{
     events::{Event, KeyCode},
@@ -200,7 +204,13 @@ where
 
     fn reprint_pos(&mut self) {
         self.pbuf += codes::ERASE_TO_END;
-        self.pbuf.extend(self.buf[self.pos..].iter().flat_map(|c| Some(c).into_iter().chain(if *c == '\n' { Some(&'\r') } else { None })));
+        self.pbuf.extend(self.buf[self.pos..].iter().flat_map(|c| {
+            Some(c).into_iter().chain(if *c == '\n' {
+                Some(&'\r')
+            } else {
+                None
+            })
+        }));
         self.move_to_pos();
     }
 
