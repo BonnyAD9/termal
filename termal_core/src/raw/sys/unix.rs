@@ -4,7 +4,10 @@ use std::{
     sync::Mutex,
 };
 
-use libc::{cfmakeraw, ioctl, tcgetattr, tcsetattr, termios as Termios, winsize, TCSANOW, TIOCGWINSZ};
+use libc::{
+    cfmakeraw, ioctl, tcgetattr, tcsetattr, termios as Termios, winsize,
+    TCSANOW, TIOCGWINSZ,
+};
 
 use crate::{error::Result, raw::TermSize};
 
@@ -104,7 +107,10 @@ pub(crate) fn window_size() -> Result<TermSize> {
         ws_ypixel: 0,
     };
 
-    Ok(to_io_result(unsafe { ioctl(tty.fd, TIOCGWINSZ.into(), &mut size) }).map(|_| size.into())?)
+    Ok(
+        to_io_result(unsafe { ioctl(tty.fd, TIOCGWINSZ, &mut size) })
+            .map(|_| size.into())?,
+    )
 }
 
 fn get_terminal_attr(fd: RawFd) -> Result<Termios> {

@@ -59,7 +59,7 @@ impl AmbigousEvent {
             return None;
         }
 
-        let cnt = (code.len() <= 8).then(||  code.chars().count());
+        let cnt = (code.len() <= 8).then(|| code.chars().count());
 
         // shouldn't really happen
         if cnt == Some(1) {
@@ -100,7 +100,7 @@ impl AmbigousEvent {
         let csi = Csi::parse(cscode);
 
         if csi.prefix == "?" && csi.postfix == "c" {
-            return Some(Self::event(Event::TermAttr(TermAttr::parse(csi))))
+            return Some(Self::event(Event::TermAttr(TermAttr::parse(csi))));
         }
 
         if !csi.prefix.is_empty() {

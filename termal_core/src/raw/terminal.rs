@@ -1,11 +1,15 @@
 use std::{
     collections::VecDeque,
-    io::{self, BufRead}, mem,
+    io::{self, BufRead},
+    mem,
 };
 
 use crate::error::{Error, Result};
 
-use super::{events::{AmbigousEvent, AnyEvent, Event, KeyCode}, TermRead};
+use super::{
+    events::{AmbigousEvent, AnyEvent, Event, KeyCode},
+    TermRead,
+};
 
 #[derive(Default)]
 pub struct Terminal {

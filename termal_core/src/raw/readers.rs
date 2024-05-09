@@ -2,19 +2,28 @@ use std::io::{stdout, Write};
 
 use crate::{error::Result, raw::events::Key};
 
-use super::{events::{Event, KeyCode}, Terminal};
+use super::{
+    events::{Event, KeyCode},
+    Terminal,
+};
 
 pub trait Predicate<T> {
     fn matches(&self, value: &T) -> bool;
 }
 
-impl<F, T> Predicate<T> for F where F: Fn(&T) -> bool {
+impl<F, T> Predicate<T> for F
+where
+    F: Fn(&T) -> bool,
+{
     fn matches(&self, value: &T) -> bool {
         self(value)
     }
 }
 
-pub struct TermRead<'a, P> where P: Predicate<Event> {
+pub struct TermRead<'a, P>
+where
+    P: Predicate<Event>,
+{
     buf: Vec<char>,
     pos: usize,
     term: &'a mut Terminal,
@@ -27,9 +36,12 @@ impl Predicate<Event> for KeyCode {
     }
 }
 
-impl<'a, P> Into<Vec<char>> for TermRead<'a, P> where P: Predicate<Event> {
-    fn into(self) -> Vec<char> {
-        self.buf
+impl<'a, P> From<TermRead<'a, P>> for Vec<char>
+where
+    P: Predicate<Event>,
+{
+    fn from(value: TermRead<'a, P>) -> Self {
+        value.buf
     }
 }
 
@@ -39,18 +51,25 @@ impl<'a> TermRead<'a, KeyCode> {
     }
 }
 
-impl<'a, P> TermRead<'a, P> where P: Predicate<Event> {
+impl<'a, P> TermRead<'a, P>
+where
+    P: Predicate<Event>,
+{
     pub fn new(term: &'a mut Terminal, exit: P) -> Self {
         Self::reuse(term, exit, vec![])
     }
 
-    pub(crate) fn reuse(term: &'a mut Terminal, exit: P, mut buf: Vec<char>) -> Self {
+    pub(crate) fn reuse(
+        term: &'a mut Terminal,
+        exit: P,
+        mut buf: Vec<char>,
+    ) -> Self {
         buf.clear();
         Self {
             buf,
             pos: 0,
             term,
-            exit
+            exit,
         }
     }
 
@@ -77,7 +96,7 @@ impl<'a, P> TermRead<'a, P> where P: Predicate<Event> {
         let exit = self.exit.matches(&evt);
 
         let Event::KeyPress(key) = evt else {
-            return Ok(exit)
+            return Ok(exit);
         };
 
         if let Some(chr) = key.key_char {
@@ -104,7 +123,7 @@ fn print_char(chr: char) -> Result<()> {
 
 fn print_str(s: &str) -> Result<()> {
     let mut out = stdout().lock();
-    out.write(s.as_bytes())?;
+    out.write_all(s.as_bytes())?;
     out.flush()?;
     Ok(())
 }

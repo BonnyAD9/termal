@@ -11,7 +11,6 @@ pub struct TermSize {
     pub pixel_height: usize,
 }
 
-
 pub fn enable_raw_mode() -> Result<()> {
     #[cfg(unix)]
     {

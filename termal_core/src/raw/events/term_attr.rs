@@ -47,10 +47,7 @@ bitflags! {
 
 impl TermAttr {
     pub fn new(typ: TermType, features: TermFeatures) -> Self {
-        Self {
-            typ,
-            features
-        }
+        Self { typ, features }
     }
 
     pub(crate) fn parse(csi: Csi) -> Self {
@@ -58,11 +55,13 @@ impl TermAttr {
         assert_eq!(csi.postfix, "c");
 
         match csi.args[..] {
-            [ 1, 2 ] => Self::new(TermType::Vt100, TermFeatures::NONE),
-            [ 1, 0 ] => Self::new(TermType::Vt101, TermFeatures::NONE),
-            [ 4, 6 ] => Self::new(TermType::Vt132, TermFeatures::NONE),
-            [ t ] => Self::new(TermType::from_id(t), TermFeatures::NONE),
-            [ t, ref f @ .. ] => Self::new(TermType::from_id(t), TermFeatures::from_ids(f)),
+            [1, 2] => Self::new(TermType::Vt100, TermFeatures::NONE),
+            [1, 0] => Self::new(TermType::Vt101, TermFeatures::NONE),
+            [4, 6] => Self::new(TermType::Vt132, TermFeatures::NONE),
+            [t] => Self::new(TermType::from_id(t), TermFeatures::NONE),
+            [t, ref f @ ..] => {
+                Self::new(TermType::from_id(t), TermFeatures::from_ids(f))
+            }
             [] => Self::new(TermType::Other(None), TermFeatures::NONE),
         }
     }

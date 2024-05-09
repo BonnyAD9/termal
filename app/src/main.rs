@@ -1,7 +1,9 @@
 use std::io::{self, Read, Write};
 
 use termal::raw::{
-    disable_raw_mode, enable_raw_mode, events::{Event, Key, KeyCode, Modifiers}, term_size, Terminal
+    disable_raw_mode, enable_raw_mode,
+    events::{Event, Key, KeyCode, Modifiers},
+    term_size, Terminal,
 };
 use thiserror::Error;
 
