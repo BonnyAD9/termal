@@ -101,6 +101,26 @@ macro_rules! csi_macro {
             pub (crate) use $name;
         )+}
     };
+    (!= $ex:literal => $(
+        $name:ident,
+        $nam:ident;
+        $i:literal $(?$doc:literal)?),+ $(,)?
+    ) => {
+        place! {$(
+            $(#[doc = __repnl__($doc, " ")])?
+            #[macro_export]
+            macro_rules! $name {
+                (__start__(__s__ $nam:expr,)) => {
+                    if __s__ $nam == $ex {
+                        "".into()
+                    } else {
+                        __s__ crate::csi!($i, __s__ $nam)
+                    }
+                }
+            }
+            pub (crate) use $name;
+        )+}
+    };
 }
 
 /// Moves cursor to the given position.
@@ -111,11 +131,14 @@ macro_rules! move_to {
     };
 }
 
-csi_macro!(
+csi_macro!( != 0 =>
     move_up, n; 'A' ? "Moves cursor up by N positions",
     move_down, n; 'B' ? "Moves cursor down by N positions",
     move_right, n; 'C' ? "Moves cursor right by N positions",
     move_left, n; 'D' ? "Moves cursor left by N positions",
+);
+
+csi_macro!(
     set_down, n; 'E' ? "Moves cursor to the start of line N lines down",
     set_up, n; 'E' ? "Moves cursor to the start of line N lines up",
     column, n; 'G' ? "Moves cursor to the given column",

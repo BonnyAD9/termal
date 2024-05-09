@@ -1,6 +1,6 @@
 use std::io::{stdout, Write};
 
-use crate::{error::Result, raw::events::Key};
+use crate::{codes, error::Result, raw::events::Key};
 
 use super::{
     events::{Event, KeyCode},
@@ -25,6 +25,7 @@ where
     P: Predicate<Event>,
 {
     buf: Vec<char>,
+    pbuf: String,
     pos: usize,
     term: &'a mut Terminal,
     exit: P,
@@ -67,6 +68,7 @@ where
         buf.clear();
         Self {
             buf,
+            pbuf: String::new(),
             pos: 0,
             term,
             exit,
@@ -74,6 +76,7 @@ where
     }
 
     pub fn read_to_str(&mut self, s: &mut String) -> Result<()> {
+        self.init()?;
         self.get_all()?;
         s.extend(self.buf.iter().copied());
         self.buf.clear();
@@ -81,9 +84,15 @@ where
     }
 
     pub fn read_str(&mut self) -> Result<String> {
+        self.init()?;
         let mut s = String::new();
         self.read_to_str(&mut s)?;
         Ok(s)
+    }
+
+    pub fn init(&mut self) -> Result<()> {
+        print_str(codes::CUR_SAVE)?;
+        Ok(())
     }
 
     fn get_all(&mut self) -> Result<()> {
@@ -93,24 +102,105 @@ where
 
     fn read_next(&mut self) -> Result<bool> {
         let evt = self.term.read()?;
-        let exit = self.exit.matches(&evt);
+        if self.exit.matches(&evt) {
+            self.end();
+            self.commit()?;
+            return Ok(true);
+        }
 
         let Event::KeyPress(key) = evt else {
-            return Ok(exit);
+            return Ok(false);
         };
 
         if let Some(chr) = key.key_char {
-            if key.code == KeyCode::Enter {
-                print_str("\r\n")?;
+            self.buf.insert(self.pos, chr);
+
+            if self.pos + 1 < self.buf.len() {
+                self.reprint_pos();
+                self.move_right()
             } else {
-                print_char(chr)?;
+                if key.code == KeyCode::Enter {
+                    print_str("\r\n")?;
+                } else {
+                    print_char(chr)?;
+                }
+                self.pos += 1;
             }
 
-            self.buf.insert(self.pos, chr);
-            self.pos += 1;
+            self.commit()?;
+            return Ok(false);
         }
 
-        Ok(exit)
+        match key.code {
+            KeyCode::Left => self.move_left(),
+            KeyCode::Right => self.move_right(),
+            KeyCode::Backspace => self.backspace(),
+            KeyCode::Delete => self.delete(),
+            KeyCode::Home => self.home(),
+            KeyCode::End => self.end(),
+            _ => {}
+        }
+
+        self.commit()?;
+
+        Ok(false)
+    }
+
+    fn home(&mut self) {
+        self.pos = 0;
+        self.pbuf += codes::CUR_LOAD;
+    }
+
+    fn end(&mut self) {
+        self.pos = self.buf.len();
+        self.move_to_pos();
+    }
+
+    fn move_left(&mut self) {
+        if self.pos != 0 {
+            self.pos -= 1;
+            self.pbuf += codes::move_left!(1);
+        }
+    }
+
+    fn move_right(&mut self) {
+        if self.pos < self.buf.len() {
+            self.pos += 1;
+            self.pbuf += codes::move_right!(1);
+        }
+    }
+
+    fn delete(&mut self) {
+        if self.pos < self.buf.len() {
+            self.buf.remove(self.pos);
+            self.reprint_pos();
+        }
+    }
+
+    fn backspace(&mut self) {
+        if self.pos != 0 {
+            self.move_left();
+            self.delete();
+        }
+    }
+
+    fn move_to_pos(&mut self) {
+        self.pbuf += codes::CUR_LOAD;
+        self.pbuf += &codes::move_right!(self.pos);
+    }
+
+    fn reprint_pos(&mut self) {
+        self.pbuf += codes::ERASE_TO_END;
+        self.pbuf.extend(self.buf[self.pos..].iter().flat_map(|c| Some(c).into_iter().chain(if *c == '\n' { Some(&'\r') } else { None })));
+        self.move_to_pos();
+    }
+
+    fn commit(&mut self) -> Result<()> {
+        if !self.pbuf.is_empty() {
+            print_str(&self.pbuf)?;
+            self.pbuf.clear();
+        }
+        Ok(())
     }
 }
 

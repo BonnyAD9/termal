@@ -38,7 +38,7 @@ fn start() -> Result<()> {
 
 fn _reader() -> Result<()> {
     let mut term = Terminal::new();
-    println!("readed: {}\r", term.read_line()?);
+    println!("\n\rreaded: {}\r", term.read_line()?);
     Ok(())
 }
 
