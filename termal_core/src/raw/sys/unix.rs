@@ -111,10 +111,8 @@ pub(crate) fn window_size() -> Result<TermSize> {
 }
 
 pub(crate) fn wait_for_stdin(timeout: Duration) -> Result<bool> {
-    let tty = TtyFd::get()?;
-
     let mut pdfs = pollfd {
-        fd: tty.as_raw_fd(),
+        fd: libc::STDIN_FILENO,
         events: POLLIN,
         revents: 0
     };
