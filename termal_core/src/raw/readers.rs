@@ -7,7 +7,7 @@ use crate::{
 };
 
 use super::{
-    events::{Event, KeyCode}, term_size, wait_for_stdin, Terminal
+    events::{Event, KeyCode, Modifiers}, term_size, wait_for_stdin, Terminal
 };
 
 pub trait Predicate<T> {
@@ -170,8 +170,20 @@ where
         }
 
         match key.code {
-            KeyCode::Left => self.move_left(),
-            KeyCode::Right => self.move_right(),
+            KeyCode::Left => {
+                if key.modifiers.contains(Modifiers::CONTROL) {
+                    self.move_word_left();
+                } else {
+                    self.move_left()
+                }
+            },
+            KeyCode::Right => {
+                if key.modifiers.contains(Modifiers::CONTROL) {
+                    self.move_word_right();
+                } else {
+                    self.move_right()
+                }
+            },
             KeyCode::Backspace => self.backspace(),
             KeyCode::Delete => self.delete(),
             KeyCode::Home => self.home(),
@@ -182,6 +194,33 @@ where
         self.commit()?;
 
         Ok(false)
+    }
+
+    fn move_word_right(&mut self) {
+        let mut pos = self.pos;
+        pos = pos.min(self.buf.len());
+        while pos < self.buf.len() && self.buf[pos].is_ascii_whitespace() {
+            pos += 1;
+        }
+        while pos < self.buf.len() && !self.buf[pos].is_ascii_whitespace() {
+            pos += 1;
+        }
+        self.move_to_pos(pos);
+    }
+
+    fn move_word_left(&mut self) {
+        let mut pos = self.pos;
+        pos = pos.saturating_sub(1);
+        while pos > 0 && self.buf[pos].is_ascii_whitespace() {
+            pos -= 1;
+        }
+        while pos > 0 && !self.buf[pos].is_ascii_whitespace() {
+            pos -= 1;
+        }
+        if pos < self.buf.len() && self.buf[pos].is_ascii_whitespace() {
+            pos += 1;
+        }
+        self.move_to_pos(pos);
     }
 
     fn cur_pos(&self) -> (usize, usize) {
