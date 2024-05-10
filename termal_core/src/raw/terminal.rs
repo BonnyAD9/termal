@@ -63,6 +63,10 @@ impl Terminal {
         Ok(s)
     }
 
+    pub fn has_buffered_input(&self) -> bool {
+        !self.buffer.is_empty()
+    }
+
     fn fill_buffer(&mut self) -> Result<()> {
         let mut stdio = io::stdin().lock();
         let buf = stdio.fill_buf()?;

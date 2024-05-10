@@ -7,8 +7,7 @@ use crate::{
 };
 
 use super::{
-    events::{Event, KeyCode},
-    Terminal,
+    events::{Event, KeyCode}, term_size, Terminal
 };
 
 pub trait Predicate<T> {
@@ -33,6 +32,7 @@ where
     pos: usize,
     term: &'a mut Terminal,
     exit: P,
+    size: (usize, usize),
 }
 
 impl Predicate<Event> for KeyCode {
@@ -76,11 +76,11 @@ where
             pos: 0,
             term,
             exit,
+            size: (usize::MAX, usize::MAX),
         }
     }
 
     pub fn read_to_str(&mut self, s: &mut String) -> Result<()> {
-        self.init()?;
         self.get_all()?;
         s.extend(self.buf.iter().copied());
         self.buf.clear();
@@ -88,20 +88,39 @@ where
     }
 
     pub fn read_str(&mut self) -> Result<String> {
-        self.init()?;
         let mut s = String::new();
         self.read_to_str(&mut s)?;
         Ok(s)
     }
 
-    pub fn init(&mut self) -> Result<()> {
-        print_str(codes::CUR_SAVE)?;
+    fn get_all(&mut self) -> Result<()> {
+        loop {
+            self.resize();
+            self.commit()?;
+            while self.term.has_buffered_input() {
+                if self.read_next()? {
+                    break;
+                }
+            }
+            if self.read_next()? {
+                break;
+            }
+        }
         Ok(())
     }
 
-    fn get_all(&mut self) -> Result<()> {
-        while !self.read_next()? {}
-        Ok(())
+    fn resize(&mut self) {
+        let Ok(size) = term_size().map(|s| (s.char_width, s.char_height)) else {
+            return;
+        };
+        if self.size == size {
+            return;
+        }
+        self.move_start();
+        self.size = size;
+        let pos = self.pos;
+        self.reprint_dont_move(0);
+        self.move_to_pos(pos);
     }
 
     fn read_next(&mut self) -> Result<bool> {
@@ -130,14 +149,17 @@ where
 
             if self.pos + 1 < self.buf.len() {
                 self.reprint_pos();
-                self.move_right()
+                self.move_right();
             } else {
                 if key.code == KeyCode::Enter {
-                    print_str("\r\n")?;
+                    self.pbuf += "\r\n";
                 } else {
-                    print_char(chr)?;
+                    self.pbuf.push(chr);
                 }
                 self.pos += 1;
+                if self.cur_pos().0 == 0 {
+                    self.pbuf += "\r\n";
+                }
             }
 
             self.commit()?;
@@ -159,27 +181,34 @@ where
         Ok(false)
     }
 
+    fn cur_pos(&self) -> (usize, usize) {
+        (self.pos % self.size.0, self.pos / self.size.0)
+    }
+
+    fn move_start(&mut self) {
+        let pos = self.cur_pos();
+        self.pbuf += &codes::move_left!(pos.0);
+        self.pbuf += &codes::move_up!(pos.1);
+    }
+
     fn home(&mut self) {
+        self.move_start();
         self.pos = 0;
-        self.pbuf += codes::CUR_LOAD;
     }
 
     fn end(&mut self) {
-        self.pos = self.buf.len();
-        self.move_to_pos();
+        self.move_to_pos(self.buf.len());
     }
 
     fn move_left(&mut self) {
         if self.pos != 0 {
-            self.pos -= 1;
-            self.pbuf += codes::move_left!(1);
+            self.move_to_pos(self.pos - 1);
         }
     }
 
     fn move_right(&mut self) {
         if self.pos < self.buf.len() {
-            self.pos += 1;
-            self.pbuf += codes::move_right!(1);
+            self.move_to_pos(self.pos + 1);
         }
     }
 
@@ -197,21 +226,50 @@ where
         }
     }
 
-    fn move_to_pos(&mut self) {
-        self.pbuf += codes::CUR_LOAD;
-        self.pbuf += &codes::move_right!(self.pos);
+    fn move_to_pos(&mut self, pos: usize) {
+        if pos == self.pos {
+            return;
+        }
+
+        let old = self.cur_pos();
+        self.pos = pos;
+        let new = self.cur_pos();
+
+        if new.0 > old.0 {
+            self.pbuf += &codes::move_right!(new.0 - old.0);
+        } else {
+            self.pbuf += &codes::move_left!(old.0 - new.0);
+        }
+        if new.1 > old.1 {
+            self.pbuf += &codes::move_down!(new.1 - old.1);
+        } else {
+            self.pbuf += &codes::move_up!(old.1 - new.1);
+        }
     }
 
     fn reprint_pos(&mut self) {
+        self.reprint_from(self.pos);
+    }
+
+    fn reprint_from(&mut self, pos: usize) {
+        let save = self.pos;
+        self.move_to_pos(pos);
+
+        self.reprint_dont_move(pos);
+        self.move_to_pos(save);
+    }
+
+    fn reprint_dont_move(&mut self, pos: usize) {
         self.pbuf += codes::ERASE_TO_END;
-        self.pbuf.extend(self.buf[self.pos..].iter().flat_map(|c| {
+        self.pbuf.extend(self.buf[pos..].iter().flat_map(|c| {
             Some(c).into_iter().chain(if *c == '\n' {
                 Some(&'\r')
             } else {
                 None
             })
         }));
-        self.move_to_pos();
+
+        self.pos = self.buf.len();
     }
 
     fn commit(&mut self) -> Result<()> {
@@ -221,15 +279,6 @@ where
         }
         Ok(())
     }
-}
-
-fn print_char(chr: char) -> Result<()> {
-    let mut out = stdout().lock();
-    if out.is_terminal() {
-        write!(out, "{chr}")?;
-        out.flush()?;
-    }
-    Ok(())
 }
 
 fn print_str(s: &str) -> Result<()> {
