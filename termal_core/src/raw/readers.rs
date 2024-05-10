@@ -1,4 +1,7 @@
-use std::{io::{stdout, IsTerminal, Write}, time::Duration};
+use std::{
+    io::{stdout, IsTerminal, Write},
+    time::Duration,
+};
 
 use crate::{
     codes,
@@ -7,7 +10,8 @@ use crate::{
 };
 
 use super::{
-    events::{Event, KeyCode, Modifiers}, term_size, wait_for_stdin, Terminal
+    events::{Event, KeyCode, Modifiers},
+    term_size, wait_for_stdin, Terminal,
 };
 
 pub trait Predicate<T> {
@@ -95,7 +99,10 @@ where
 
     fn get_all(&mut self) -> Result<()> {
         loop {
-            while matches!(wait_for_stdin(Duration::from_millis(100)), Ok(false)) {
+            while matches!(
+                wait_for_stdin(Duration::from_millis(100)),
+                Ok(false)
+            ) {
                 self.resize();
                 self.commit()?;
             }
@@ -113,7 +120,8 @@ where
     }
 
     fn resize(&mut self) {
-        let Ok(size) = term_size().map(|s| (s.char_width, s.char_height)) else {
+        let Ok(size) = term_size().map(|s| (s.char_width, s.char_height))
+        else {
             return;
         };
         if self.size == size {
@@ -176,14 +184,14 @@ where
                 } else {
                     self.move_left()
                 }
-            },
+            }
             KeyCode::Right => {
                 if key.modifiers.contains(Modifiers::CONTROL) {
                     self.move_word_right();
                 } else {
                     self.move_right()
                 }
-            },
+            }
             KeyCode::Backspace => self.backspace(),
             KeyCode::Delete => self.delete(),
             KeyCode::Home => self.home(),

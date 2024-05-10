@@ -1,9 +1,13 @@
 use std::{
-    fs, io, mem, os::fd::{AsRawFd, IntoRawFd, RawFd}, sync::Mutex, time::Duration
+    fs, io, mem,
+    os::fd::{AsRawFd, IntoRawFd, RawFd},
+    sync::Mutex,
+    time::Duration,
 };
 
 use libc::{
-    cfmakeraw, ioctl, poll, pollfd, tcgetattr, tcsetattr, termios as Termios, winsize, EINTR, POLLIN, TCSANOW, TIOCGWINSZ
+    cfmakeraw, ioctl, poll, pollfd, tcgetattr, tcsetattr, termios as Termios,
+    winsize, EINTR, POLLIN, TCSANOW, TIOCGWINSZ,
 };
 
 use crate::{error::Result, raw::TermSize};
@@ -114,7 +118,7 @@ pub(crate) fn wait_for_stdin(timeout: Duration) -> Result<bool> {
     let mut pdfs = pollfd {
         fd: libc::STDIN_FILENO,
         events: POLLIN,
-        revents: 0
+        revents: 0,
     };
 
     let r = unsafe { poll(&mut pdfs, 1, timeout.as_millis() as i32) };

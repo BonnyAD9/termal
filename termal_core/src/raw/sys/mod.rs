@@ -56,7 +56,7 @@ pub fn term_size() -> Result<TermSize> {
 pub fn wait_for_stdin(timeout: Duration) -> Result<bool> {
     #[cfg(unix)]
     {
-        return unix::wait_for_stdin(timeout)
+        return unix::wait_for_stdin(timeout);
     }
 
     #[allow(unreachable_code)]
