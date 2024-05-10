@@ -1,9 +1,9 @@
 use std::{
-    fs, io, mem, os::fd::{AsRawFd, IntoRawFd, RawFd}, ptr::null_mut, sync::Mutex, time::Duration
+    fs, io, mem, os::fd::{AsRawFd, IntoRawFd, RawFd}, sync::Mutex, time::Duration
 };
 
 use libc::{
-    cfmakeraw, ioctl, select, tcgetattr, tcsetattr, termios as Termios, timeval, winsize, EINTR, FD_SET, TCSANOW, TIOCGWINSZ
+    cfmakeraw, ioctl, poll, pollfd, tcgetattr, tcsetattr, termios as Termios, winsize, EINTR, POLLIN, TCSANOW, TIOCGWINSZ
 };
 
 use crate::{error::Result, raw::TermSize};
@@ -112,17 +112,14 @@ pub(crate) fn window_size() -> Result<TermSize> {
 
 pub(crate) fn wait_for_stdin(timeout: Duration) -> Result<bool> {
     let tty = TtyFd::get()?;
-    let mut timeout = timeval {
-        tv_sec: timeout.as_secs() as i64,
-        tv_usec: timeout.subsec_micros() as i64,
+
+    let mut pdfs = pollfd {
+        fd: tty.as_raw_fd(),
+        events: POLLIN,
+        revents: 0
     };
 
-    let r = unsafe {
-        let mut fset = mem::zeroed();
-        FD_SET(tty.as_raw_fd(), &mut fset);
-        select(tty.as_raw_fd() + 1, &mut fset, null_mut(), null_mut(), &mut timeout)
-    };
-
+    let r = unsafe { poll(&mut pdfs, 1, timeout.as_millis() as i32) };
     Ok((r == 1 || r < 0) && r != EINTR)
 }
 
