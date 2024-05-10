@@ -1,4 +1,4 @@
-use std::io::{stdout, IsTerminal, Write};
+use std::{io::{stdout, IsTerminal, Write}, time::Duration};
 
 use crate::{
     codes,
@@ -7,7 +7,7 @@ use crate::{
 };
 
 use super::{
-    events::{Event, KeyCode}, term_size, Terminal
+    events::{Event, KeyCode}, term_size, wait_for_stdin, Terminal
 };
 
 pub trait Predicate<T> {
@@ -95,18 +95,21 @@ where
 
     fn get_all(&mut self) -> Result<()> {
         loop {
+            while matches!(wait_for_stdin(Duration::from_millis(100)), Ok(false)) {
+                self.resize();
+                self.commit()?;
+            }
             self.resize();
             self.commit()?;
+            if self.read_next()? {
+                return Ok(());
+            }
             while self.term.has_buffered_input() {
                 if self.read_next()? {
-                    break;
+                    return Ok(());
                 }
             }
-            if self.read_next()? {
-                break;
-            }
         }
-        Ok(())
     }
 
     fn resize(&mut self) {

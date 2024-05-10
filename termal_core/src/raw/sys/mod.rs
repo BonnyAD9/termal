@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use crate::error::{Error, Result};
 
 #[cfg(unix)]
@@ -49,4 +51,14 @@ pub fn term_size() -> Result<TermSize> {
 
     #[allow(unreachable_code)]
     Err(Error::NotSupportedOnPlatform("terminal size"))
+}
+
+pub fn wait_for_stdin(timeout: Duration) -> Result<bool> {
+    #[cfg(unix)]
+    {
+        return unix::wait_for_stdin(timeout)
+    }
+
+    #[allow(unreachable_code)]
+    Err(Error::NotSupportedOnPlatform("stdin timeout"))
 }

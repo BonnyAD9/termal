@@ -1,12 +1,9 @@
 use std::{
-    fs, io, mem,
-    os::fd::{AsRawFd, IntoRawFd, RawFd},
-    sync::Mutex,
+    fs, io, mem, os::fd::{AsRawFd, IntoRawFd, RawFd}, ptr::null_mut, sync::Mutex, time::Duration
 };
 
 use libc::{
-    cfmakeraw, ioctl, tcgetattr, tcsetattr, termios as Termios, winsize,
-    TCSANOW, TIOCGWINSZ,
+    cfmakeraw, ioctl, select, tcgetattr, tcsetattr, termios as Termios, timeval, winsize, EINTR, FD_SET, TCSANOW, TIOCGWINSZ
 };
 
 use crate::{error::Result, raw::TermSize};
@@ -111,6 +108,22 @@ pub(crate) fn window_size() -> Result<TermSize> {
         to_io_result(unsafe { ioctl(tty.fd, TIOCGWINSZ, &mut size) })
             .map(|_| size.into())?,
     )
+}
+
+pub(crate) fn wait_for_stdin(timeout: Duration) -> Result<bool> {
+    let tty = TtyFd::get()?;
+    let mut timeout = timeval {
+        tv_sec: timeout.as_secs() as i64,
+        tv_usec: timeout.subsec_micros() as i64,
+    };
+
+    let r = unsafe {
+        let mut fset = mem::zeroed();
+        FD_SET(tty.as_raw_fd(), &mut fset);
+        select(tty.as_raw_fd() + 1, &mut fset, null_mut(), null_mut(), &mut timeout)
+    };
+
+    Ok((r == 1 || r < 0) && r != EINTR)
 }
 
 fn get_terminal_attr(fd: RawFd) -> Result<Termios> {
