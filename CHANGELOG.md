@@ -2,6 +2,8 @@
 
 ## v1.1.0
 - Allow additional comma in all the macros.
+- Add automatic coloring macros: `printac`, `printacln`, `eprintac`,
+  `eprintacln`
 
 ## v1.0.2
 - Fix six digit hex RGB colors in proc macros

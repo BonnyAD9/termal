@@ -176,6 +176,14 @@
 //! of the `n` to signify *maybe color*:[`formatmc`], [`printmc`],
 //! [`printmcln`], [`eprintmc`] and [`eprintmcln`].
 //!
+//! ## Automatically coloring macros.
+//! Theese are same as the normal coloring macros except the will not color the
+//! output if it detects that the output stream is not terminal.
+//!
+//! They have the same name as the normal macros, but they have `a` before `c`
+//! to signify *automatic coloring*: [`printac`], [`printacln`], [`eprintac`]
+//! and [`eprintacln`].
+//!
 //! ## Examples
 //! ### With macro
 //! ```rust
@@ -561,6 +569,86 @@ macro_rules! formatmc {
     };
 }
 
+/// Works as [`println!`], in addition can generate ansi escape codes.
+/// To generate the ansi codes use `"{'...}"`. This will not use the ansi codes
+/// if stdout is not terminal.
+///
+/// # Examples
+/// ```
+/// use termal::*;
+/// // Print 'hello' in yellow:
+/// printcln!("{'yellow}hello{'reset}");
+/// ```
+#[macro_export]
+macro_rules! printacln {
+    ($l:literal $(,)?) => {
+        $crate::printmcln!(std::io::IsTerminal::is_terminal(&std::io::stdout()), $l);
+    };
+    ($l:literal, $($e:expr),+ $(,)?) => {
+        $crate::printmcln!(std::io::IsTerminal::is_terminal(&std::io::stdout()), $l, $($e),+);
+    };
+}
+
+/// Works as [`print!`], in addition can generate ansi escape codes.
+/// To generate the ansi codes use `"{'...}"`. This will not use the ansi codes
+/// if stdout is not terminal.
+///
+/// # Examples
+/// ```
+/// use termal::*;
+/// // Print 'hello' in yellow:
+/// printc!("{'yellow}hello{'reset}");
+/// ```
+#[macro_export]
+macro_rules! printac {
+    ($l:literal $(,)?) => {
+        $crate::printmc!(std::io::IsTerminal::is_terminal(&std::io::stdout()), $l);
+    };
+    ($l:literal, $($e:expr),+ $(,)?) => {
+        $crate::printmc!(std::io::IsTerminal::is_terminal(&std::io::stdout()), $l, $($e),+);
+    };
+}
+
+/// Works as [`eprintln!`], in addition can generate ansi escape codes.
+/// To generate the ansi codes use `"{'...}"`. This will not use the ansi codes
+/// if stdout is not terminal.
+///
+/// # Examples
+/// ```
+/// use termal::*;
+/// // Print 'hello' in yellow:
+/// eprintcln!("{'yellow}hello{'reset}");
+/// ```
+#[macro_export]
+macro_rules! eprintacln {
+    ($l:literal $(,)?) => {
+        $crate::eprintmcln!(std::io::IsTerminal::is_terminal(&std::io::stderr()), $l);
+    };
+    ($l:literal, $($e:expr),+ $(,)?) => {
+        $crate::eprintmcln!(std::io::IsTerminal::is_terminal(&std::io::stderr()), $l, $($e),+);
+    };
+}
+
+/// Works as [`eprint!`], in addition can generate ansi escape codes.
+/// To generate the ansi codes use `"{'...}"`. This will not use the ansi codes
+/// if stdout is not terminal.
+///
+/// # Examples
+/// ```
+/// use termal::*;
+/// // Print 'hello' in yellow:
+/// eprintc!("{'yellow}hello{'reset}");
+/// ```
+#[macro_export]
+macro_rules! eprintac {
+    ($l:literal $(,)?) => {
+        $crate::eprintmc!(std::io::IsTerminal::is_terminal(&std::io::stderr()), $l);
+    };
+    ($l:literal, $($e:expr),+ $(,)?) => {
+        $crate::eprintmc!(std::io::IsTerminal::is_terminal(&std::io::stderr()), $l, $($e),+);
+    };
+}
+
 #[cfg(test)]
 mod tests {
     use std::io::{stdout, Write};
@@ -578,11 +666,11 @@ mod tests {
     }
 
     #[test]
-    fn test_printcln_println() {
+    fn test_printacln() {
         let s = "Hello";
         let num = 4;
         print!("Expect 'Hello 4' in yellow: ");
-        printcln!("{'y}{s} {num}{'_}");
+        printacln!("{'y}{s} {num}{'_}");
         _ = stdout().flush();
     }
 
