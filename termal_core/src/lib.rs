@@ -27,7 +27,7 @@ pub fn write_gradient(
         res.push_str(&fg!(
             start.0 as f32 + step.0 * i as f32,
             start.1 as f32 + step.1 * i as f32,
-            start.2 as f32 + step.2 * i as f32
+            start.2 as f32 + step.2 * i as f32,
         ));
         res.push(c);
     }

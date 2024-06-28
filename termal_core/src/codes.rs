@@ -94,7 +94,7 @@ macro_rules! csi_macro {
             $(#[doc = __repnl__($doc, " ")])?
             #[macro_export]
             macro_rules! $name {
-                (__start__($($(__s__ $nam:expr,)?)+)) => {
+                (__start__($($(__s__ $nam:expr,)?)+) __s__ (,)?) => {
                     __s__ crate::csi!($i, $($(__s__ $nam)? $($lit)?),+)
                 }
             }

@@ -256,10 +256,10 @@ pub use termal_proc as proc;
 /// ```
 #[macro_export]
 macro_rules! printcln {
-    ($l:literal) => {
+    ($l:literal $(,)?) => {
         println!("{}", $crate::proc::colorize!($l));
     };
-    ($l:literal, $($e:expr),+) => {
+    ($l:literal, $($e:expr),+ $(,)?) => {
         println!("{}", $crate::proc::colorize!($l, $($e),+));
     };
 }
@@ -275,10 +275,10 @@ macro_rules! printcln {
 /// ```
 #[macro_export]
 macro_rules! printc {
-    ($l:literal) => {
+    ($l:literal $(,)?) => {
         print!("{}", $crate::proc::colorize!($l));
     };
-    ($l:literal, $($e:expr),+) => {
+    ($l:literal, $($e:expr),+ $(,)?) => {
         print!("{}", $crate::proc::colorize!($l, $($e),+));
     };
 }
@@ -294,10 +294,10 @@ macro_rules! printc {
 /// ```
 #[macro_export]
 macro_rules! eprintcln {
-    ($l:literal) => {
+    ($l:literal $(,)?) => {
         eprintln!("{}", $crate::proc::colorize!($l));
     };
-    ($l:literal, $($e:expr),+) => {
+    ($l:literal, $($e:expr),+ $(,)?) => {
         eprintln!("{}", $crate::proc::colorize!($l, $($e),+));
     };
 }
@@ -313,10 +313,10 @@ macro_rules! eprintcln {
 /// ```
 #[macro_export]
 macro_rules! eprintc {
-    ($l:literal) => {
+    ($l:literal $(,)?) => {
         eprint!("{}", $crate::proc::colorize!($l));
     };
-    ($l:literal, $($e:expr),+) => {
+    ($l:literal, $($e:expr),+ $(,)?) => {
         eprint!("{}", $crate::proc::colorize!($l, $($e),+));
     };
 }
@@ -332,10 +332,10 @@ macro_rules! eprintc {
 /// ```
 #[macro_export]
 macro_rules! formatc {
-    ($l:literal) => {
+    ($l:literal $(,)?) => {
         $crate::proc::colorize!($l)
     };
-    ($l:literal, $($e:expr),+) => {
+    ($l:literal, $($e:expr),+ $(,)?) => {
         $crate::proc::colorize!($l, $($e),+)
     };
 }
@@ -350,10 +350,10 @@ macro_rules! formatc {
 /// ```
 #[macro_export]
 macro_rules! printncln {
-    ($l:literal) => {
+    ($l:literal $(,)?) => {
         println!("{}", $crate::proc::uncolor!($l));
     };
-    ($l:literal, $($e:expr),+) => {
+    ($l:literal, $($e:expr),+ $(,)?) => {
         println!("{}", $crate::proc::uncolor!($l, $($e),+));
     };
 }
@@ -368,10 +368,10 @@ macro_rules! printncln {
 /// ```
 #[macro_export]
 macro_rules! printnc {
-    ($l:literal) => {
+    ($l:literal $(,)?) => {
         print!("{}", $crate::proc::uncolor!($l));
     };
-    ($l:literal, $($e:expr),+) => {
+    ($l:literal, $($e:expr),+ $(,)?) => {
         print!("{}", $crate::proc::uncolor!($l, $($e),+));
     };
 }
@@ -386,10 +386,10 @@ macro_rules! printnc {
 /// ```
 #[macro_export]
 macro_rules! eprintncln {
-    ($l:literal) => {
+    ($l:literal $(,)?) => {
         eprintln!("{}", $crate::proc::uncolor!($l));
     };
-    ($l:literal, $($e:expr),+) => {
+    ($l:literal, $($e:expr),+ $(,)?) => {
         eprintln!("{}", $crate::proc::uncolor!($l, $($e),+));
     };
 }
@@ -404,10 +404,10 @@ macro_rules! eprintncln {
 /// ```
 #[macro_export]
 macro_rules! eprintnc {
-    ($l:literal) => {
+    ($l:literal $(,)?) => {
         eprint!("{}", $crate::proc::uncolor!($l));
     };
-    ($l:literal, $($e:expr),+) => {
+    ($l:literal, $($e:expr),+ $(,)?) => {
         eprint!("{}", $crate::proc::uncolor!($l, $($e),+));
     };
 }
@@ -422,10 +422,10 @@ macro_rules! eprintnc {
 /// ```
 #[macro_export]
 macro_rules! formatnc {
-    ($l:literal) => {
+    ($l:literal $(,)?) => {
         $crate::proc::uncolor!($l)
     };
-    ($l:literal, $($e:expr),+) => {
+    ($l:literal, $($e:expr),+ $(,)?) => {
         $crate::proc::uncolor!($l, $($e),+)
     };
 }
@@ -440,14 +440,14 @@ macro_rules! formatnc {
 /// ```
 #[macro_export]
 macro_rules! printmcln {
-    ($cond:expr, $l:literal) => {
+    ($cond:expr, $l:literal $(,)?) => {
         if $cond {
             println!("{}", $crate::proc::colorize!($l));
         } else {
             println!("{}", $crate::proc::uncolor!($l));
         }
     };
-    ($cond:expr, $l:literal, $($e:expr),+) => {
+    ($cond:expr, $l:literal, $($e:expr),+ $(,)?) => {
         if $cond {
             println!("{}", $crate::proc::colorize!($l, $($e),+));
         } else {
@@ -466,14 +466,14 @@ macro_rules! printmcln {
 /// ```
 #[macro_export]
 macro_rules! printmc {
-    ($cond:expr, $l:literal) => {
+    ($cond:expr, $l:literal $(,)?) => {
         if $cond {
             print!("{}", $crate::proc::colorize!($l));
         } else {
             print!("{}", $crate::proc::uncolor!($l));
         }
     };
-    ($cond:expr, $l:literal, $($e:expr),+) => {
+    ($cond:expr, $l:literal, $($e:expr),+ $(,)?) => {
         if $cond {
             print!("{}", $crate::proc::colorize!($l, $($e),+));
         } else {
@@ -493,14 +493,14 @@ macro_rules! printmc {
 /// ```
 #[macro_export]
 macro_rules! eprintmcln {
-    ($cond:expr, $l:literal) => {
+    ($cond:expr, $l:literal $(,)?) => {
         if $cond {
             eprintln!("{}", $crate::proc::colorize!($l));
         } else {
             eprintln!("{}", $crate::proc::uncolor!($l));
         }
     };
-    ($cond:expr, $l:literal, $($e:expr),+) => {
+    ($cond:expr, $l:literal, $($e:expr),+ $(,)?) => {
         if $cond {
             eprintln!("{}", $crate::proc::colorize!($l, $($e),+));
         } else {
@@ -519,14 +519,14 @@ macro_rules! eprintmcln {
 /// ```
 #[macro_export]
 macro_rules! eprintmc {
-    ($cond:expr, $l:literal) => {
+    ($cond:expr, $l:literal $(,)?) => {
         if $cond {
             eprint!("{}", $crate::proc::colorize!($l));
         } else {
             eprint!("{}", $crate::proc::uncolor!($l));
         }
     };
-    ($cond:expr, $l:literal, $($e:expr),+) => {
+    ($cond:expr, $l:literal, $($e:expr),+ $(,)?) => {
         if $cond {
             eprint!("{}", $crate::proc::colorize!($l, $($e),+));
         } else {
@@ -545,14 +545,14 @@ macro_rules! eprintmc {
 /// ```
 #[macro_export]
 macro_rules! formatmc {
-    ($cond:expr, $l:literal) => {
+    ($cond:expr, $l:literal $(,)?) => {
         if $cond {
             $crate::proc::colorize!($l)
         } else {
             $crate::proc::uncolor!($l)
         }
     };
-    ($cond:expr, $l:literal, $($e:expr),+) => {
+    ($cond:expr, $l:literal, $($e:expr),+ $(,)?) => {
         if $cond {
             $crate::proc::colorize!($l, $($e),+)
         } else {
@@ -572,7 +572,7 @@ mod tests {
         print!("Expect 'BonnyAD9' as pink to magenta gradient: ");
         printcln!(
             "{}{'_}",
-            gradient("BonnyAD9", (250, 50, 170), (180, 50, 240))
+            gradient("BonnyAD9", (250, 50, 170), (180, 50, 240)),
         );
         _ = stdout().flush();
     }
