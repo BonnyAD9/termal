@@ -582,10 +582,17 @@ macro_rules! formatmc {
 #[macro_export]
 macro_rules! printacln {
     ($l:literal $(,)?) => {
-        $crate::printmcln!(std::io::IsTerminal::is_terminal(&std::io::stdout()), $l);
+        $crate::printmcln!(
+            std::io::IsTerminal::is_terminal(&std::io::stdout()),
+            $l,
+        );
     };
     ($l:literal, $($e:expr),+ $(,)?) => {
-        $crate::printmcln!(std::io::IsTerminal::is_terminal(&std::io::stdout()), $l, $($e),+);
+        $crate::printmcln!(
+            std::io::IsTerminal::is_terminal(&std::io::stdout()),
+            $l,
+            $($e),+,
+        );
     };
 }
 
@@ -602,10 +609,17 @@ macro_rules! printacln {
 #[macro_export]
 macro_rules! printac {
     ($l:literal $(,)?) => {
-        $crate::printmc!(std::io::IsTerminal::is_terminal(&std::io::stdout()), $l);
+        $crate::printmc!(
+            std::io::IsTerminal::is_terminal(&std::io::stdout()),
+            $l,
+        );
     };
     ($l:literal, $($e:expr),+ $(,)?) => {
-        $crate::printmc!(std::io::IsTerminal::is_terminal(&std::io::stdout()), $l, $($e),+);
+        $crate::printmc!(
+            std::io::IsTerminal::is_terminal(&std::io::stdout()),
+            $l,
+            $($e),+,
+        );
     };
 }
 
@@ -622,10 +636,17 @@ macro_rules! printac {
 #[macro_export]
 macro_rules! eprintacln {
     ($l:literal $(,)?) => {
-        $crate::eprintmcln!(std::io::IsTerminal::is_terminal(&std::io::stderr()), $l);
+        $crate::eprintmcln!(
+            std::io::IsTerminal::is_terminal(&std::io::stderr()),
+            $l,
+        );
     };
     ($l:literal, $($e:expr),+ $(,)?) => {
-        $crate::eprintmcln!(std::io::IsTerminal::is_terminal(&std::io::stderr()), $l, $($e),+);
+        $crate::eprintmcln!(
+            std::io::IsTerminal::is_terminal(&std::io::stderr()),
+            $l,
+            $($e),+,
+        );
     };
 }
 
@@ -642,10 +663,17 @@ macro_rules! eprintacln {
 #[macro_export]
 macro_rules! eprintac {
     ($l:literal $(,)?) => {
-        $crate::eprintmc!(std::io::IsTerminal::is_terminal(&std::io::stderr()), $l);
+        $crate::eprintmc!(
+            std::io::IsTerminal::is_terminal(&std::io::stderr()),
+            $l,
+        );
     };
     ($l:literal, $($e:expr),+ $(,)?) => {
-        $crate::eprintmc!(std::io::IsTerminal::is_terminal(&std::io::stderr()), $l, $($e),+);
+        $crate::eprintmc!(
+            std::io::IsTerminal::is_terminal(&std::io::stderr()),
+            $l,
+            $($e),+,
+        );
     };
 }
 
