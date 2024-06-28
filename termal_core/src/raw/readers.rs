@@ -1,6 +1,5 @@
 use std::{
-    io::{stdout, IsTerminal, Write},
-    time::Duration,
+    io::{stdout, IsTerminal, Write}, thread, time::Duration
 };
 
 use crate::{
@@ -98,6 +97,7 @@ where
     }
 
     fn get_all(&mut self) -> Result<()> {
+        self.pbuf += "\x1b[?7l";
         loop {
             while matches!(
                 wait_for_stdin(Duration::from_millis(100)),
@@ -127,7 +127,20 @@ where
         if self.size == size {
             return;
         }
-        self.move_start();
+        thread::sleep(Duration::from_secs(1));
+        let Ok(size) = term_size().map(|s| (s.char_width, s.char_height))
+        else {
+            return;
+        };
+        let pos = self.cur_pos();
+        if pos.0 == 0 && pos.1 != 0 && self.pos == self.buf.len() {
+            if size.0 > self.size.0 {
+                self.pbuf += &codes::move_up!(pos.1);
+            } else {
+                self.pbuf += &codes::move_up!(self.pos / size.0 + (self.pos % size.0 > 0) as usize);
+            }
+        }
+        self.pbuf += &codes::move_left!(pos.0);
         self.size = size;
         let pos = self.pos;
         self.reprint_dont_move(0);
@@ -285,15 +298,25 @@ where
         self.pos = pos;
         let new = self.cur_pos();
 
+        let new_line_adj = new.0.saturating_sub(old.0) > 0 && new.0 == 0 && !self.buf.is_empty();
+
         if new.0 > old.0 {
             self.pbuf += &codes::move_right!(new.0 - old.0);
         } else {
             self.pbuf += &codes::move_left!(old.0 - new.0);
         }
         if new.1 > old.1 {
-            self.pbuf += &codes::move_down!(new.1 - old.1);
+            if new_line_adj {
+                self.pbuf += &codes::move_down!(new.1 - old.1 - 1);
+            } else {
+                self.pbuf += &codes::move_down!(new.1 - old.1);
+            }
         } else {
             self.pbuf += &codes::move_up!(old.1 - new.1);
+        }
+
+        if new_line_adj {
+            self.pbuf.push('\n');
         }
     }
 
@@ -320,6 +343,9 @@ where
         }));
 
         self.pos = self.buf.len();
+        if self.cur_pos().0 == 0 && !self.buf.is_empty() {
+            self.pbuf += "\r\n";
+        }
     }
 
     fn commit(&mut self) -> Result<()> {
