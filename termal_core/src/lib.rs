@@ -1,7 +1,9 @@
 //! Core library of termal, contains the implementation.
 
 pub mod codes;
+pub mod error;
 pub mod proc;
+pub mod raw;
 
 /// Appends linear gradient to the given string
 pub fn write_gradient(

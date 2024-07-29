@@ -13,7 +13,8 @@ readme = "README.md"
 [workspace]
 members = [
     "termal_core",
-    "termal_proc"
+    "termal_proc",
+    "app"
 ]
 
 [dependencies]
