@@ -1,27 +1,21 @@
 use std::{
     collections::VecDeque,
     io::{self, BufRead},
-    mem,
 };
 
 use crate::error::{Error, Result};
 
-use super::{
-    events::{AmbigousEvent, AnyEvent, Event, KeyCode},
-    TermRead,
-};
+use super::events::{AmbigousEvent, AnyEvent, Event};
 
 #[derive(Default)]
 pub struct Terminal {
     buffer: VecDeque<u8>,
-    line_buf: Vec<char>,
 }
 
 impl Terminal {
     pub fn new() -> Self {
         Terminal {
             buffer: VecDeque::new(),
-            line_buf: vec![],
         }
     }
 
@@ -47,20 +41,6 @@ impl Terminal {
         }
         self.fill_buffer()?;
         self.buffer.pop_front().ok_or(Error::StdInEof)
-    }
-
-    pub fn read_line_to(&mut self, s: &mut String) -> Result<()> {
-        let buf = mem::take(&mut self.line_buf);
-        let mut reader = TermRead::reuse(self, KeyCode::Enter, buf);
-        reader.read_to_str(s)?;
-        self.line_buf = reader.into();
-        Ok(())
-    }
-
-    pub fn read_line(&mut self) -> Result<String> {
-        let mut s = String::new();
-        self.read_line_to(&mut s)?;
-        Ok(s)
     }
 
     pub fn has_buffered_input(&self) -> bool {
