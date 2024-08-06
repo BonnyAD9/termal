@@ -681,6 +681,8 @@ macro_rules! eprintac {
 mod tests {
     use std::io::{stdout, Write};
 
+    use term_text::TermText;
+
     use super::*;
 
     #[test]
@@ -725,7 +727,11 @@ mod tests {
     }
 
     #[test]
-    fn try_test() {
-        raw::events::AmbigousEvent::from_code(b"\x1b[?1;2c");
+    fn term_text() {
+        let txt = TermText::new(gradient("Hello", (0, 0, 0), (255, 255, 255)));
+
+        assert_eq!(5, txt.display_char_cnt());
+        assert_eq!(5, txt.display_bytes_cnt());
+        assert_eq!("Hello", txt.strip_control());
     }
 }
