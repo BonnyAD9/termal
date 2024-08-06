@@ -1,6 +1,6 @@
 [package]
 name = "termal"
-version = "1.1.0"
+version = "1.2.0"
 edition = "2021"
 license-file = "LICENSE"
 description = "Rust library for fancy colored cli using ansi codes"
@@ -18,5 +18,5 @@ members = [
 ]
 
 [dependencies]
-termal_core = { path = "termal_core", version = "1.0.1" }
-termal_proc = { path = "termal_proc", version = "1.0.1" }
+termal_core = { path = "termal_core", version = "1.1.0" }
+termal_proc = { path = "termal_proc", version = "1.1.0" }

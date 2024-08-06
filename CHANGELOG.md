@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v1.2.0
+- Add raw mode for linux and support reading char by char.
+- Add `TermText` that can be used to get information about string with control
+  sequences.
+
 ## v1.1.0
 - Allow additional comma in all the macros.
 - Add automatic coloring macros: `printac`, `printacln`, `eprintac`,
