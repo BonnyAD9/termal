@@ -26,10 +26,19 @@ impl<'a> TermText<'a> {
         }
     }
 
-    /// Creates new [`TermText`] with the given metadata. This is market unsafe
-    /// because the chached metadata has to be valid in safe rust.
-    pub unsafe fn from_metadata(text: impl Into<Cow<'a, str>>, metadata: TermTextMetadata) -> Self {
-        Self { text: text.into(), metadata: Cell::new(Some(metadata)) }
+    /// Creates new [`TermText`] with the given metadata.
+    ///
+    /// # Safety
+    /// This is marked unsafe because the chached metadata has to be valid in
+    /// safe rust.
+    pub unsafe fn from_metadata(
+        text: impl Into<Cow<'a, str>>,
+        metadata: TermTextMetadata,
+    ) -> Self {
+        Self {
+            text: text.into(),
+            metadata: Cell::new(Some(metadata)),
+        }
     }
 
     /// Create new [`TermText`] and immidietely cache the metadata.
@@ -130,7 +139,7 @@ impl<'a> TermText<'a> {
 
     /// Converts the text to string. This will also cache the metadata if it is
     /// not already cached. To avoid caching use `.as_str().to_string()`
-    pub fn to_string(&mut self) -> String {
+    pub fn to_string_cache(&self) -> String {
         if self.metadata.get().is_some() {
             self.to_string()
         } else {
@@ -158,10 +167,16 @@ impl<'a> TermText<'a> {
     /// Get owned version of the term text.
     pub fn to_owned(self) -> TermText<'static> {
         match self.text {
-            Cow::Owned(s) => TermText { text: Cow::Owned(s), metadata: self.metadata },
+            Cow::Owned(s) => TermText {
+                text: Cow::Owned(s),
+                metadata: self.metadata,
+            },
             Cow::Borrowed(_) => {
                 let text = self.to_string();
-                TermText { text: Cow::Owned(text), metadata: self.metadata }
+                TermText {
+                    text: Cow::Owned(text),
+                    metadata: self.metadata,
+                }
             }
         }
     }

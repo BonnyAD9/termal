@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## v2.0.0
+- Rename `TermText::to_string` to `to_string_cache`.
+
 ## v1.2.0
 - Add raw mode for linux and support reading char by char.
 - Add `TermText` that can be used to get information about string with control

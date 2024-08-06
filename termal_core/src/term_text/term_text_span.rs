@@ -10,8 +10,8 @@ pub struct TermTextSpan<'a> {
 
 impl<'a> TermTextSpan<'a> {
     /// Get the text of the span.
-    pub fn text(&self) -> &str {
-        &self.text
+    pub fn text(&self) -> &'a str {
+        self.text
     }
 
     /// Get the number of chars in the span. This is cached.
@@ -29,14 +29,25 @@ impl<'a> TermTextSpan<'a> {
     /// # Returns
     /// The span and rest of the string.
     pub fn create(text: &str) -> (TermTextSpan<'_>, &str) {
-        let found = text.char_indices().chain([(usize::MAX, '\0')]).enumerate().find(|(_, (_, c))| c.is_ascii_control());
+        let found = text
+            .char_indices()
+            .chain([(usize::MAX, '\0')])
+            .enumerate()
+            .find(|(_, (_, c))| c.is_ascii_control());
         let Some((idx, (ind, chr))) = found else {
             unreachable!();
         };
 
         // The whole text is not control sequence
         if ind == usize::MAX && chr == '\0' {
-            return (TermTextSpan { text, chars: idx, control: false }, "");
+            return (
+                TermTextSpan {
+                    text,
+                    chars: idx,
+                    control: false,
+                },
+                "",
+            );
         }
 
         // The first part is not control sequence
@@ -51,7 +62,7 @@ impl<'a> TermTextSpan<'a> {
 
         // Only the escape char. This is invalid escape sequence but it is a
         // control sequence.
-        let Some(chr) = text.chars().skip(1).next() else {
+        let Some(chr) = text.chars().nth(1) else {
             return Self::split_from(text, 1, 1, true);
         };
 
@@ -59,7 +70,9 @@ impl<'a> TermTextSpan<'a> {
             // DCS | OSC | PM | APC
             0x50 | 0x5d | 0x5e | 0x5f => Self::end_with_str(text, "\x1b\x5c"),
             // CSI
-            0x5b => Self::end_with_pat(text, 2, |c| (0x40..0x7f).contains(&(c as u32))),
+            0x5b => Self::end_with_pat(text, 2, |c| {
+                (0x40..0x7f).contains(&(c as u32))
+            }),
             // SS2 | SS3
             0x4e | 0x4f => Self::split_from(text, 3, 3, true),
             // Two char C1 escape sequence
@@ -69,30 +82,72 @@ impl<'a> TermTextSpan<'a> {
         }
     }
 
-    fn split_from(text: &str, ind: usize, chars: usize, control: bool) -> (TermTextSpan<'_>, &str) {
-        (TermTextSpan { text: &text[..ind], chars, control }, &text[ind..])
+    fn split_from(
+        text: &str,
+        ind: usize,
+        chars: usize,
+        control: bool,
+    ) -> (TermTextSpan<'_>, &str) {
+        (
+            TermTextSpan {
+                text: &text[..ind],
+                chars,
+                control,
+            },
+            &text[ind..],
+        )
     }
 
-    fn end_with_str<'b>(text: &'b str, pat: &str) -> (TermTextSpan<'b>, &'b str) {
+    fn end_with_str<'b>(
+        text: &'b str,
+        pat: &str,
+    ) -> (TermTextSpan<'b>, &'b str) {
         if let Some(p) = text.find(pat) {
             let ind = p + pat.len();
             Self::split_from(text, ind, text[..ind].chars().count(), true)
         } else {
-            (TermTextSpan { text, chars: text.chars().count(), control: true }, "")
+            (
+                TermTextSpan {
+                    text,
+                    chars: text.chars().count(),
+                    control: true,
+                },
+                "",
+            )
         }
     }
 
-    fn end_with_pat(text: &str, skip: usize, f: impl Fn(char) -> bool) -> (TermTextSpan, &str) {
-        let end = text[skip..].char_indices().chain([(usize::MAX, '0')]).enumerate().find(|(_, (_, c))| f(*c));
+    fn end_with_pat(
+        text: &str,
+        skip: usize,
+        f: impl Fn(char) -> bool,
+    ) -> (TermTextSpan, &str) {
+        let end = text[skip..]
+            .char_indices()
+            .chain([(usize::MAX, '0')])
+            .enumerate()
+            .find(|(_, (_, c))| f(*c));
         let Some((idx, (ind, c))) = end else {
             unreachable!();
         };
 
         if ind == usize::MAX && c == '0' {
             // sequence is missing the final character
-            (TermTextSpan { text, chars: idx + skip, control: true }, "")
+            (
+                TermTextSpan {
+                    text,
+                    chars: idx + skip,
+                    control: true,
+                },
+                "",
+            )
         } else {
-            Self::split_from(text, ind + c.len_utf8() + skip, idx + 1 + skip, true)
+            Self::split_from(
+                text,
+                ind + c.len_utf8() + skip,
+                idx + 1 + skip,
+                true,
+            )
         }
     }
 }
