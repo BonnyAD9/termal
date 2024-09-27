@@ -681,6 +681,7 @@ macro_rules! eprintac {
 mod tests {
     use std::io::{stdout, Write};
 
+    use sixel::{Mat, Rgb};
     use term_text::TermText;
 
     use super::*;
@@ -733,5 +734,21 @@ mod tests {
         assert_eq!(5, txt.display_char_cnt());
         assert_eq!(5, txt.display_bytes_cnt());
         assert_eq!("Hello", txt.strip_control());
+    }
+
+    #[test]
+    fn sixel_test() {
+        let img_data = vec![
+            (255, 255, 255), (0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0), (255, 255, 255),
+            (0, 0, 0), (255, 255, 255), (0, 0, 0), (0, 0, 0), (255, 255, 255), (0, 0, 0),
+            (0, 0, 0), (0, 0, 0), (255, 255, 255), (255, 255, 255), (0, 0, 0), (0, 0, 0),
+            (0, 0, 0), (0, 0, 0), (255, 255, 255), (255, 255, 255), (0, 0, 0), (0, 0, 0),
+            (0, 0, 0), (255, 255, 255), (0, 0, 0), (0, 0, 0), (255, 255, 255), (0, 0, 0),
+            (255, 255, 255), (0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0), (255, 255, 255),
+        ];
+        let img: Mat<Rgb> = Mat::from_vec(6, 6, img_data);
+        let mut res = String::new();
+        sixel::push_sixel(&mut res, &img);
+        println!("{}", res);
     }
 }
