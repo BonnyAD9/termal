@@ -2,9 +2,12 @@ use bitflags::bitflags;
 
 use super::csi::Csi;
 
+/// Information about terminal.
 #[derive(Debug, Copy, Clone)]
 pub struct TermAttr {
+    /// Type of the terminal. (Which terminal this terminal emulates.)
     pub typ: TermType,
+    /// Features of the terminal.
     pub features: TermFeatures,
 }
 
@@ -20,16 +23,19 @@ pub enum TermType {
     Vt320,
     Vt420,
     Vt510,
+    /// Unknown terminal type id.
     Other(Option<u32>),
 }
 
 bitflags! {
     #[derive(Debug, Clone, Copy)]
     pub struct TermFeatures: u32 {
+        /// No extra features.
         const NONE = 0x0;
         const COLUMNS132 = 0x1;
         const PRINTER = 0x2;
         const REGIS_GRAPHICS = 0x4;
+        /// Supports sixel graphics.
         const SIXEL_GRAPHICS = 0x8;
         const SELECTIVE_ERASE = 0x10;
         const USER_DEFINED_KEYS = 0x20;
@@ -46,6 +52,7 @@ bitflags! {
 }
 
 impl TermAttr {
+    /// Create new [`TermAttr`] from its components.
     pub fn new(typ: TermType, features: TermFeatures) -> Self {
         Self { typ, features }
     }
@@ -68,6 +75,7 @@ impl TermAttr {
 }
 
 impl TermType {
+    /// Get terminal type from its id.
     pub fn from_id(id: u32) -> Self {
         match id {
             6 => Self::Vt102,
@@ -83,10 +91,12 @@ impl TermType {
 }
 
 impl TermFeatures {
+    /// Get terminal features from their ids.
     pub fn from_ids(ids: &[u32]) -> Self {
         ids.iter().fold(Self::NONE, |r, f| r | Self::from_id(*f))
     }
 
+    /// Get terminal feature from its id.
     pub fn from_id(id: u32) -> Self {
         match id {
             1 => Self::COLUMNS132,

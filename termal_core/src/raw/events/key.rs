@@ -1,17 +1,27 @@
+/// Key press event.
 #[derive(Debug, Clone, Copy, Hash)]
 pub struct Key {
+    /// Char that should be displayed with this key press.
     pub key_char: Option<char>,
+    /// The pressed key.
     pub code: KeyCode,
+    /// Modifiers that were pressed with the key.
     pub modifiers: Modifiers,
 }
 
 bitflags::bitflags! {
+    #[doc = "Key modifiers. Some of them are usualy not sent to terminals."]
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
     pub struct Modifiers: u32 {
+        #[doc = "No modifiers."]
         const NONE = 0x0;
+        #[doc = "The shift key."]
         const SHIFT = 0x1;
+        #[doc = "The alt key."]
         const ALT = 0x2;
+        #[doc = "The control key."]
         const CONTROL = 0x4;
+        #[doc = "The meta (windows) key."]
         const META = 0x8;
     }
 }
@@ -47,7 +57,6 @@ pub enum KeyCode {
     F19,
     F20,
     Delete,
-    Divide,
     Insert,
     End,
     Home,
@@ -59,6 +68,7 @@ pub enum KeyCode {
 }
 
 impl Key {
+    /// Create new key from its components.
     pub fn new(code: KeyCode, modifiers: Modifiers, chr: char) -> Self {
         Self {
             code,
@@ -67,6 +77,7 @@ impl Key {
         }
     }
 
+    /// Create new key without key char.
     pub fn mcode(code: KeyCode, modifiers: Modifiers) -> Self {
         Self {
             code,
@@ -75,6 +86,7 @@ impl Key {
         }
     }
 
+    /// Create new key without key char and no modifiers.
     pub fn code(code: KeyCode) -> Self {
         Self {
             code,
@@ -85,12 +97,12 @@ impl Key {
 }
 
 impl KeyCode {
+    /// Create key code from its representative character.
     pub fn from_char(chr: char) -> Self {
         match chr.to_ascii_lowercase() {
             ' ' | '\0' => Self::Space,
             '\t' => Self::Tab,
             '\r' => Self::Enter,
-            '/' => Self::Divide,
             '\x7f' => Self::Backspace,
             '\x1b' => Self::Esc,
             'a' | '\x01' => Self::Char('a'),
@@ -123,6 +135,7 @@ impl KeyCode {
         }
     }
 
+    /// Craete key code from VT id.
     pub fn from_vt_id(id: u32) -> Option<Self> {
         match id {
             1 => Some(Self::Home),
@@ -158,6 +171,7 @@ impl KeyCode {
         }
     }
 
+    /// Get key code from xterm id.
     pub fn from_xterm_id(id: char) -> Option<Self> {
         match id {
             'A' => Some(Self::Up),
@@ -177,6 +191,7 @@ impl KeyCode {
 }
 
 impl Modifiers {
+    /// Get modifiers from their ID.
     pub fn from_id(id: u32) -> Self {
         Modifiers::from_bits_retain(id - 1)
     }

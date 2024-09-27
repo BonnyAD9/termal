@@ -5,14 +5,23 @@ use crate::error::{Error, Result};
 #[cfg(unix)]
 mod unix;
 
+/// Size of terminal.
 #[derive(Clone, Debug)]
 pub struct TermSize {
+    /// Width in characters.
     pub char_width: usize,
+    /// Height in charaters.
     pub char_height: usize,
+    /// Width in pixels.
     pub pixel_width: usize,
+    /// Height in pixels.
     pub pixel_height: usize,
 }
 
+/// Enables raw terminal.
+///
+/// # Support
+/// - Unix (Linux)
 pub fn enable_raw_mode() -> Result<()> {
     #[cfg(unix)]
     {
@@ -23,6 +32,10 @@ pub fn enable_raw_mode() -> Result<()> {
     Err(Error::NotSupportedOnPlatform("raw mode"))
 }
 
+/// Disables raw terminal.
+///
+/// # Support
+/// - Unix (Linux)
 pub fn disable_raw_mode() -> Result<()> {
     #[cfg(unix)]
     {
@@ -33,6 +46,10 @@ pub fn disable_raw_mode() -> Result<()> {
     Err(Error::NotSupportedOnPlatform("raw mode"))
 }
 
+/// Checks if raw mode is enabled.
+///
+/// # Support
+/// - Unix (Linux)
 pub fn is_raw_mode_enabled() -> bool {
     #[cfg(unix)]
     {
@@ -43,6 +60,10 @@ pub fn is_raw_mode_enabled() -> bool {
     false
 }
 
+/// Gets the terminal size.
+///
+/// # Support
+/// - Unix (Linux)
 pub fn term_size() -> Result<TermSize> {
     #[cfg(unix)]
     {
@@ -53,6 +74,14 @@ pub fn term_size() -> Result<TermSize> {
     Err(Error::NotSupportedOnPlatform("terminal size"))
 }
 
+/// Wait for any event on stdin, but not longer than the timeout.
+///
+/// # Returns
+/// `true` if there is event on stdin. If this returns due to timeout or
+/// interrupt, returns `false`.
+///
+/// # Support
+/// - Unix (Linux)
 pub fn wait_for_stdin(timeout: Duration) -> Result<bool> {
     #[cfg(unix)]
     {

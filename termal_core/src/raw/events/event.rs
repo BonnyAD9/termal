@@ -2,23 +2,35 @@ use crate::raw::events::csi::Csi;
 
 use super::{Key, KeyCode, Modifiers, TermAttr};
 
+/// Possibly ambiguous terminal event.
+///
+/// Some terminal events are amiguous. This will contain all sensible
+/// possibilities.
 pub struct AmbigousEvent {
+    /// The main (most propable) event.
     pub event: AnyEvent,
+    /// Other amiguous events.
     pub other: Vec<Event>,
 }
 
+/// Either known or unknown event.
 pub enum AnyEvent {
+    /// Known parsed event.
     Known(Event),
+    /// Unknown unparsed event.
     Unknown(Vec<u8>),
 }
 
 #[derive(Debug, Clone, Copy)]
 pub enum Event {
+    /// Key was pressed.
     KeyPress(Key),
+    /// Received terminal attributes.
     TermAttr(TermAttr),
 }
 
 impl AmbigousEvent {
+    /// Create unknown event from the given data.
     pub fn unknown<B>(data: B) -> Self
     where
         B: Into<Vec<u8>>,
@@ -29,24 +41,25 @@ impl AmbigousEvent {
         }
     }
 
+    /// Create unambiguous event.
     pub fn event(evt: Event) -> Self {
-        AmbigousEvent {
+        Self {
             event: AnyEvent::Known(evt),
             other: vec![],
         }
     }
 
+    /// Create unambiguous key event.
     pub fn key(key: Key) -> Self {
-        Self {
-            event: AnyEvent::Known(Event::KeyPress(key)),
-            other: vec![],
-        }
+        Self::event(Event::KeyPress(key))
     }
 
+    /// Parse single char event.
     pub fn from_char_code(code: char) -> Self {
         Self::char_key(code)
     }
 
+    /// Parse the code into event.
     pub fn from_code(code: &[u8]) -> Self {
         std::str::from_utf8(code)
             .ok()
