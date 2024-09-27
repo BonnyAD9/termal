@@ -31,8 +31,15 @@ fn main() -> Result<()> {
 
 fn start() -> Result<()> {
     println!("{:?}\r", term_size()?);
-    _keys()
+    _reader()
+    //_keys()
     //_chars()
+}
+
+fn _reader() -> Result<()> {
+    let mut term = Terminal::new();
+    println!("\n\rreaded: {}\r", term.read_line()?);
+    Ok(())
 }
 
 fn _chars() -> Result<()> {
