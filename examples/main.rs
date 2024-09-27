@@ -1,21 +1,13 @@
 use std::io::{self, Read, Write};
 
-use termal::raw::{
-    disable_raw_mode, enable_raw_mode,
-    events::{Event, Key, KeyCode, Modifiers},
-    term_size, Terminal,
+use termal::{
+    error::Result,
+    raw::{
+        disable_raw_mode, enable_raw_mode,
+        events::{Event, Key, KeyCode, Modifiers},
+        term_size, Terminal,
+    },
 };
-use thiserror::Error;
-
-type Result<T> = std::result::Result<T, Error>;
-
-#[derive(Debug, Error)]
-enum Error {
-    #[error(transparent)]
-    Termal(#[from] termal::error::Error),
-    #[error(transparent)]
-    Io(#[from] std::io::Error),
-}
 
 fn main() -> Result<()> {
     enable_raw_mode()?;
@@ -34,6 +26,7 @@ fn start() -> Result<()> {
     _reader()
     //_keys()
     //_chars()
+    //Ok(())
 }
 
 fn _reader() -> Result<()> {
