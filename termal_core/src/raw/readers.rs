@@ -1,5 +1,8 @@
 use std::{
-    io::{stdout, IsTerminal, Write}, thread, time::Duration
+    cmp::Ordering,
+    io::{stdout, IsTerminal, Write},
+    thread,
+    time::Duration,
 };
 
 use crate::{
@@ -26,6 +29,7 @@ where
     }
 }
 
+/// Terminal reader.
 pub struct TermRead<'a, P>
 where
     P: Predicate<Event>,
@@ -54,6 +58,7 @@ where
 }
 
 impl<'a> TermRead<'a, KeyCode> {
+    /// Gets reader that ends on enter.
     pub fn lines(term: &'a mut Terminal) -> Self {
         Self::new(term, KeyCode::Enter)
     }
@@ -63,6 +68,7 @@ impl<'a, P> TermRead<'a, P>
 where
     P: Predicate<Event>,
 {
+    /// Creates new terminal reader that exits with the given predicate.
     pub fn new(term: &'a mut Terminal, exit: P) -> Self {
         Self::reuse(term, exit, vec![])
     }
@@ -83,6 +89,7 @@ where
         }
     }
 
+    /// Appends readed text to a string.
     pub fn read_to_str(&mut self, s: &mut String) -> Result<()> {
         self.get_all()?;
         s.extend(self.buf.iter().copied());
@@ -90,6 +97,7 @@ where
         Ok(())
     }
 
+    /// Reads from console and returns the readed string.
     pub fn read_str(&mut self) -> Result<String> {
         let mut s = String::new();
         self.read_to_str(&mut s)?;
@@ -97,7 +105,6 @@ where
     }
 
     fn get_all(&mut self) -> Result<()> {
-        self.pbuf += "\x1b[?7l";
         loop {
             while matches!(
                 wait_for_stdin(Duration::from_millis(100)),
@@ -137,7 +144,9 @@ where
             if size.0 > self.size.0 {
                 self.pbuf += &codes::move_up!(pos.1);
             } else {
-                self.pbuf += &codes::move_up!(self.pos / size.0 + (self.pos % size.0 > 0) as usize);
+                self.pbuf += &codes::move_up!(
+                    self.pos / size.0 + (self.pos % size.0 > 0) as usize
+                );
             }
         }
         self.pbuf += &codes::move_left!(pos.0);
@@ -298,21 +307,27 @@ where
         self.pos = pos;
         let new = self.cur_pos();
 
-        let new_line_adj = new.0.saturating_sub(old.0) > 0 && new.0 == 0 && !self.buf.is_empty();
+        let new_line_adj = new.0.saturating_sub(old.0) > 0
+            && new.0 == 0
+            && !self.buf.is_empty();
 
-        if new.0 > old.0 {
-            self.pbuf += &codes::move_right!(new.0 - old.0);
-        } else {
-            self.pbuf += &codes::move_left!(old.0 - new.0);
-        }
-        if new.1 > old.1 {
-            if new_line_adj {
-                self.pbuf += &codes::move_down!(new.1 - old.1 - 1);
-            } else {
-                self.pbuf += &codes::move_down!(new.1 - old.1);
+        match new.0.cmp(&old.0) {
+            Ordering::Greater => {
+                self.pbuf += &codes::move_right!(new.0 - old.0)
             }
-        } else {
-            self.pbuf += &codes::move_up!(old.1 - new.1);
+            Ordering::Less => self.pbuf += &codes::move_left!(old.0 - new.0),
+            _ => {}
+        }
+        match new.1.cmp(&old.1) {
+            Ordering::Greater => {
+                if new_line_adj {
+                    self.pbuf += &codes::move_down!(new.1 - old.1 - 1);
+                } else {
+                    self.pbuf += &codes::move_down!(new.1 - old.1);
+                }
+            }
+            Ordering::Less => self.pbuf += &codes::move_up!(old.1 - new.1),
+            _ => {}
         }
 
         if new_line_adj {
