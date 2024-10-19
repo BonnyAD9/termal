@@ -4,8 +4,8 @@ pub mod codes;
 pub mod error;
 pub mod proc;
 pub mod raw;
-pub mod term_text;
 pub mod sixel;
+pub mod term_text;
 
 /// Appends linear gradient to the given string
 pub fn write_gradient(

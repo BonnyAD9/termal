@@ -1,4 +1,8 @@
-use std::{collections::{BTreeMap, BTreeSet}, hint::black_box, ops::{Index, IndexMut}};
+use std::{
+    collections::{BTreeMap, BTreeSet},
+    hint::black_box,
+    ops::{Index, IndexMut},
+};
 
 pub type Rgb = (u8, u8, u8);
 
@@ -6,6 +10,45 @@ pub trait SixelImage {
     fn sixel_width(&self) -> usize;
     fn sixel_height(&self) -> usize;
     fn sixel_get_pixel(&self, x: usize, y: usize) -> Rgb;
+}
+
+pub struct RawImg {
+    data: Vec<u8>,
+    width: usize,
+    height: usize,
+}
+
+impl RawImg {
+    pub fn from_rgb(data: Vec<u8>, width: usize, height: usize) -> Self {
+        if width * height * 3 != data.len() {
+            panic!(
+                "Invalid raw image data length of {} for \
+                [{width}, {height}]({})",
+                data.len(),
+                width * height
+            );
+        }
+        Self {
+            data,
+            width,
+            height,
+        }
+    }
+}
+
+impl SixelImage for RawImg {
+    fn sixel_width(&self) -> usize {
+        self.width
+    }
+
+    fn sixel_height(&self) -> usize {
+        self.height
+    }
+
+    fn sixel_get_pixel(&self, x: usize, y: usize) -> Rgb {
+        let pos = (self.width * y + x) * 3;
+        (self.data[pos], self.data[pos + 1], self.data[pos + 2])
+    }
 }
 
 pub struct Mat<T> {
@@ -29,7 +72,10 @@ impl SixelImage for Mat<Rgb> {
 }
 
 impl<T> Mat<T> {
-    pub fn new(width: usize, height: usize) -> Self where T: Default {
+    pub fn new(width: usize, height: usize) -> Self
+    where
+        T: Default,
+    {
         let mut data = vec![];
         data.resize_with(width * height, Default::default);
         Self {
@@ -41,12 +87,16 @@ impl<T> Mat<T> {
 
     pub fn from_vec(width: usize, height: usize, data: Vec<T>) -> Self {
         if data.len() != width * height {
-            panic!("Invalid Mat data length of {} for [{width}, {height}]({})", data.len(), width * height);
+            panic!(
+                "Invalid Mat data length of {} for [{width}, {height}]({})",
+                data.len(),
+                width * height
+            );
         }
         Self {
             width,
             height,
-            data
+            data,
         }
     }
 
@@ -71,8 +121,7 @@ impl<T> Index<(usize, usize)> for Mat<T> {
         if x > self.width || y > self.height {
             panic!(
                 "Mat index [{x}, {y}] out of range of [{}, {}]",
-                self.width,
-                self.height
+                self.width, self.height
             );
         }
         &self.data[y * self.width + x]
@@ -84,8 +133,7 @@ impl<T> IndexMut<(usize, usize)> for Mat<T> {
         if x > self.width || y > self.height {
             panic!(
                 "Mat index [{x}, {y}] out of range of [{}, {}]",
-                self.width,
-                self.height
+                self.width, self.height
             );
         }
         &mut self.data[y * self.width + x]
@@ -97,7 +145,10 @@ struct Sixel([Rgb; 6]);
 
 const NO_COLOR: Rgb = (0, 0, 0);
 
-struct SixelState<'a, I> where I: SixelImage {
+struct SixelState<'a, I>
+where
+    I: SixelImage,
+{
     lines: Mat<Sixel>,
     colors: BTreeMap<Rgb, usize>,
     img: &'a I,
@@ -141,13 +192,16 @@ pub fn push_sixel(out: &mut String, img: &impl SixelImage) {
         lines: Mat::new(img.sixel_width(), img.sixel_height() / 6),
         colors: BTreeMap::new(),
         img,
-        out
+        out,
     };
 
     state.encode();
 }
 
-impl<'a, I> SixelState<'a, I> where I: SixelImage {
+impl<'a, I> SixelState<'a, I>
+where
+    I: SixelImage,
+{
     pub fn encode(&mut self) {
         *self.out += "\x1bPq";
 
