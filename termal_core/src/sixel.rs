@@ -157,12 +157,9 @@ where
 
 impl Sixel {
     pub fn from_img(img: &impl SixelImage, (x, y): (usize, usize)) -> Self {
-        fn c_map(c: u8) -> u8 {
-            (c as usize * 100 / 255) as u8
-        }
-
         fn rgb_map((r, g, b): (u8, u8, u8)) -> Rgb {
-            (c_map(r), c_map(g), c_map(b))
+            //(c_map(r), c_map(g), c_map(b))
+            (r, g, b)
         }
 
         let mut data = [NO_COLOR; 6];
@@ -175,10 +172,10 @@ impl Sixel {
         Self(data)
     }
 
-    pub fn color_char(&self, rgb: Rgb) -> char {
+    pub fn color_char(&self, rgb: u8) -> char {
         let mut code: u8 = 0;
         for (i, c) in self.0.iter().copied().enumerate() {
-            if c == rgb {
+            if color_256(&c) == rgb {
                 code |= 1 << i;
             }
         }
@@ -232,8 +229,15 @@ where
     }
 
     pub fn define_colors(&mut self) {
-        for ((r, g, b), id) in &self.colors {
-            *self.out += &format!("#{id};2;{r};{g};{b}");
+        for c in 1..=255 {
+            let mut r = c >> 5;
+            r = c_256_to_100((r << 5) | (r << 2) | (r >> 1));
+            let mut g = (c >> 2) & 7;
+            g = c_256_to_100((g << 5) | (g << 2) | (g >> 1));
+            let mut b = c & 3;
+            b |= b << 2;
+            b |= c_256_to_100(b << 4);
+            *self.out += &format!("#{c};2;{r};{g};{b}");
         }
     }
 
@@ -241,11 +245,11 @@ where
         let line = self.lines.get_line(y);
         let mut line_colors = BTreeSet::new();
         for sx in line {
-            line_colors.extend(sx.0);
+            line_colors.extend(sx.0.iter().map(color_256));
         }
 
         for c in line_colors {
-            *self.out += &format!("#{}", self.colors.get(&c).unwrap());
+            *self.out += &format!("#{c}");
             for sx in line {
                 self.out.push(sx.color_char(c));
             }
@@ -254,4 +258,12 @@ where
 
         self.out.push('-');
     }
+}
+
+fn color_256((r, g, b): &(u8, u8, u8)) -> u8 {
+    (r & 0b11100000) | ((g >> 3) & 0b11100) | (b >> 6)
+}
+
+fn c_256_to_100(c: u8) -> u8 {
+    (c as usize * 100 / 255) as u8
 }
