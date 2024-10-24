@@ -2,6 +2,8 @@
 
 ## future
 - Support sixels
+- Add `writecln`, `writec`, `writencln`, `writenc`, `writemcln` and `writemc`
+  macros.
 
 ## v2.0.0
 - Rename `TermText::to_string` to `to_string_cache`.

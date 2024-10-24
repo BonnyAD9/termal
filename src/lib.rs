@@ -1,10 +1,11 @@
 //! Library for working with ansi codes to create beutiful terminal outputs.
 //!
 //! The main focus of this library are the macros [`formatc`], [`printc`],
-//! [`printcln`], [`eprintc`] and [`eprintcln`]. They can be used in the same
-//! way as you would use the standard rust macros [`format`], [`print`],
-//! [`println`], [`eprint`] and [`eprintln`]. In addition the macros in this
-//! crate have special syntax for encoding terminal commands.
+//! [`printcln`], [`eprintc`], [`eprintcln`], [`writecln`] adn [`writecln`].
+//! They can be used in the same way as you would use the standard rust macros
+//! [`format`], [`print`], [`println`], [`eprint`], [`eprintln`], [`write`] and
+//! [`writeln`]. In addition the macros in this crate have special syntax for
+//! encoding terminal commands.
 //!
 //! ## The macros
 //! For all these macros the following applies:
@@ -165,8 +166,8 @@
 //! useful when you need to conditionaly print with colors or without colors.
 //!
 //! The macros have the same names but they have `n` before the `c` to signify
-//! *no color*: [`formatnc`], [`printnc`], [`printncln`], [`eprintnc`] and
-//! [`eprintncln`].
+//! *no color*: [`formatnc`], [`printnc`], [`printncln`], [`eprintnc`],
+//! [`eprintncln`], [`writenc`] and [`writencln`].
 //!
 //! ## The conditionally coloring macros
 //! Theese are same as the normal coloring macros except they take additional
@@ -174,7 +175,7 @@
 //!
 //! They have the same names as the uncoloring macros but they have `m` instead
 //! of the `n` to signify *maybe color*:[`formatmc`], [`printmc`],
-//! [`printmcln`], [`eprintmc`] and [`eprintmcln`].
+//! [`printmcln`], [`eprintmc`], [`eprintmcln`], [`writemc`] and [`writemcln`].
 //!
 //! ## Automatically coloring macros.
 //! Theese are same as the normal coloring macros except the will not color the
@@ -348,6 +349,30 @@ macro_rules! formatc {
     };
 }
 
+/// Works as [`writeln!`], in addition can generate ansi escape codes.
+/// To generate the ansi codes use `"{'...}"`.
+#[macro_export]
+macro_rules! writecln {
+    ($f:expr, $l:literal $(,)?) => {
+        writeln!($f, "{}", $crate::proc::colorize!($l))
+    };
+    ($f:expr, $l:literal, $($e:expr),+ $(,)?) => {
+        writeln!($f, "{}", $crate::proc::colorize!($l, $($e),+))
+    };
+}
+
+/// Works as [`write!`], in addition can generate ansi escape codes.
+/// To generate the ansi codes use `"{'...}"`.
+#[macro_export]
+macro_rules! writec {
+    ($f:expr, $l:literal $(,)?) => {
+        write!($f, "{}", $crate::proc::colorize!($l))
+    };
+    ($f:expr, $l:literal, $($e:expr),+ $(,)?) => {
+        write!($f, "{}", $crate::proc::colorize!($l, $($e),+))
+    };
+}
+
 /// Works as [`println!`], skips terminal commands in `"{'...}"`.
 ///
 /// # Examples
@@ -438,13 +463,35 @@ macro_rules! formatnc {
     };
 }
 
+/// Works as [`writeln!`], skips terminal commands in `"{'...}"`.
+#[macro_export]
+macro_rules! writencln {
+    ($f:expr, $l:literal $(,)?) => {
+        writeln!($f, "{}", $crate::proc::uncolor!($l))
+    };
+    ($f:expr, $l:literal, $($e:expr),+ $(,)?) => {
+        writeln!($f, "{}", $crate::proc::uncolor!($l, $($e),+))
+    };
+}
+
+/// Works as [`write!`], skips terminal commands in `"{'...}"`.
+#[macro_export]
+macro_rules! writenc {
+    ($f:expr, $l:literal $(,)?) => {
+        write!($f, "{}", $crate::proc::uncolor!($l))
+    };
+    ($f:expr, $l:literal, $($e:expr),+ $(,)?) => {
+        write!($f, "{}", $crate::proc::uncolor!($l, $($e),+))
+    };
+}
+
 /// Works as [`println!`], conditionally skips terminal commands in `"{'...}"`.
 ///
 /// # Examples
 /// ```
 /// use termal::*;
 /// // Print 'hello' (not in yellow, the terminal commands are skipped):
-/// printncln!("{'yellow}hello{'reset}");
+/// printmcln!(false, "{'yellow}hello{'reset}");
 /// ```
 #[macro_export]
 macro_rules! printmcln {
@@ -470,7 +517,7 @@ macro_rules! printmcln {
 /// ```
 /// use termal::*;
 /// // Print 'hello' (not in yellow, the terminal commands are skipped):
-/// printnc!("{'yellow}hello{'reset}");
+/// printmc!(false, "{'yellow}hello{'reset}");
 /// ```
 #[macro_export]
 macro_rules! printmc {
@@ -497,7 +544,7 @@ macro_rules! printmc {
 /// ```
 /// use termal::*;
 /// // Print 'hello' (not in yellow, the terminal commands are skipped):
-/// eprintncln!("{'yellow}hello{'reset}");
+/// eprintmcln!(false, "{'yellow}hello{'reset}");
 /// ```
 #[macro_export]
 macro_rules! eprintmcln {
@@ -523,7 +570,7 @@ macro_rules! eprintmcln {
 /// ```
 /// use termal::*;
 /// // Print 'hello' (not in yellow, the terminal commands are skipped):
-/// printnc!("{'yellow}hello{'reset}");
+/// printmc!(false, "{'yellow}hello{'reset}");
 /// ```
 #[macro_export]
 macro_rules! eprintmc {
@@ -549,7 +596,7 @@ macro_rules! eprintmc {
 /// ```
 /// use termal::*;
 /// // Generate 'hello' (not in yellow, the terminal commands are skipped):
-/// printcln!("{'yellow}hello{'reset}");
+/// printmcln!(false, "{'yellow}hello{'reset}");
 /// ```
 #[macro_export]
 macro_rules! formatmc {
@@ -565,6 +612,44 @@ macro_rules! formatmc {
             $crate::proc::colorize!($l, $($e),+)
         } else {
             $crate::proc::uncolor!($l, $($e),+)
+        }
+    };
+}
+
+/// Works as [`writeln!`], conditionally skips terminal commands in `"{'...}"`.
+#[macro_export]
+macro_rules! writemcln {
+    ($f:expr, $cond:expr, $l:literal $(,)?) => {
+        if $cond {
+            writeln!($f, "{}", $crate::proc::colorize!($l))
+        } else {
+            writeln!$f, ("{}", $crate::proc::uncolor!($l))
+        }
+    };
+    ($f:expr, $cond:expr, $l:literal, $($e:expr),+ $(,)?) => {
+        if $cond {
+            writeln!($f, "{}", $crate::proc::colorize!($l, $($e),+))
+        } else {
+            writeln!($f, "{}", $crate::proc::uncolor!($l, $($e),+))
+        }
+    };
+}
+
+/// Works as [`write!`], conditionally skips terminal commands in `"{'...}"`.
+#[macro_export]
+macro_rules! writemc {
+    ($f:expr, $cond:expr, $l:literal $(,)?) => {
+        if $cond {
+            write!($f, "{}", $crate::proc::colorize!($l))
+        } else {
+            write!($f, "{}", $crate::proc::uncolor!($l))
+        }
+    };
+    ($f:expr, $cond:expr, $l:literal, $($e:expr),+ $(,)?) => {
+        if $cond {
+            write!($f, "{}", $crate::proc::colorize!($l, $($e),+))
+        } else {
+            write!($f, "{}", $crate::proc::uncolor!($l, $($e),+))
         }
     };
 }
@@ -679,7 +764,10 @@ macro_rules! eprintac {
 
 #[cfg(test)]
 mod tests {
-    use std::io::{stdout, Write};
+    use std::{
+        fmt::Display,
+        io::{stdout, Write},
+    };
 
     use term_text::TermText;
 
@@ -733,5 +821,21 @@ mod tests {
         assert_eq!(5, txt.display_char_cnt());
         assert_eq!(5, txt.display_bytes_cnt());
         assert_eq!("Hello", txt.strip_control());
+    }
+
+    #[test]
+    fn test_write() {
+        struct Lol {}
+
+        impl Display for Lol {
+            fn fmt(
+                &self,
+                f: &mut std::fmt::Formatter<'_>,
+            ) -> std::fmt::Result {
+                writec!(f, "{'y}hello{'_}")
+            }
+        }
+
+        assert_eq!(format!("{}", Lol {}), formatc!("{'y}hello{'_}"))
     }
 }
