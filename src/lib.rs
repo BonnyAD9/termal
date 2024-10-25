@@ -623,7 +623,7 @@ macro_rules! writemcln {
         if $cond {
             writeln!($f, "{}", $crate::proc::colorize!($l))
         } else {
-            writeln!$f, ("{}", $crate::proc::uncolor!($l))
+            writeln!($f, "{}", $crate::proc::uncolor!($l))
         }
     };
     ($f:expr, $cond:expr, $l:literal, $($e:expr),+ $(,)?) => {

@@ -1,6 +1,9 @@
 # CHANGELOG
 
-## future
+## v1.2.2
+- Fix `writemcln` macro.
+
+## v1.2.1
 - Support sixels
 - Add `writecln`, `writec`, `writencln`, `writenc`, `writemcln` and `writemc`
   macros.
