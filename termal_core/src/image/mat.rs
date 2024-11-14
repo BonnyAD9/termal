@@ -1,6 +1,6 @@
 use std::ops::{Index, IndexMut};
 
-use super::{Rgb, SixelImage};
+use super::{Image, Rgb};
 
 /// Fixed size matrix. Wrapper around [`Vec`]
 pub struct Mat<T> {
@@ -60,16 +60,16 @@ impl<T> Mat<T> {
     }
 }
 
-impl SixelImage for Mat<Rgb> {
-    fn sixel_width(&self) -> usize {
+impl Image for Mat<Rgb> {
+    fn width(&self) -> usize {
         self.width
     }
 
-    fn sixel_height(&self) -> usize {
+    fn height(&self) -> usize {
         self.height
     }
 
-    fn sixel_get_pixel(&self, x: usize, y: usize) -> Rgb {
+    fn get_pixel(&self, x: usize, y: usize) -> Rgb {
         self[(x, y)]
     }
 }

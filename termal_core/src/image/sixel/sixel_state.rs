@@ -1,11 +1,13 @@
 use std::collections::BTreeSet;
 
-use super::{Rgb, Sixel, SixelImage};
+use crate::image::{Image, Rgb};
+
+use super::Sixel;
 
 /// State when generating sixel image.
 pub(super) struct SixelState<'a, I>
 where
-    I: SixelImage,
+    I: Image,
 {
     line: Vec<Sixel>,
     img: &'a I,
@@ -14,13 +16,13 @@ where
 
 impl<'a, I> SixelState<'a, I>
 where
-    I: SixelImage,
+    I: Image,
 {
     /// Create new sixel state. Output will be appended to `out`. To actually
     /// generate the sixel data, call `encode`.
     pub fn new(img: &'a I, out: &'a mut String) -> Self {
         Self {
-            line: Vec::with_capacity(img.sixel_width()),
+            line: Vec::with_capacity(img.width()),
             img,
             out,
         }
@@ -32,7 +34,7 @@ where
 
         self.define_colors();
 
-        for y in 0..(self.img.sixel_height() / 6) {
+        for y in 0..(self.img.height() / 6) {
             self.get_line(y);
             self.draw_line();
         }
@@ -42,7 +44,7 @@ where
 
     fn get_line(&mut self, y: usize) {
         self.line.clear();
-        for x in 0..self.img.sixel_width() {
+        for x in 0..self.img.width() {
             self.line.push(Sixel::from_img(self.img, (x, y * 6)));
         }
     }

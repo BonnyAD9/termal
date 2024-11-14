@@ -1,4 +1,4 @@
-use super::{Rgb, SixelImage};
+use super::{Image, Rgb};
 
 /// Image with owned raw RGB data.
 pub struct RawImg {
@@ -29,16 +29,16 @@ impl RawImg {
     }
 }
 
-impl SixelImage for RawImg {
-    fn sixel_width(&self) -> usize {
+impl Image for RawImg {
+    fn width(&self) -> usize {
         self.width
     }
 
-    fn sixel_height(&self) -> usize {
+    fn height(&self) -> usize {
         self.height
     }
 
-    fn sixel_get_pixel(&self, x: usize, y: usize) -> Rgb {
+    fn get_pixel(&self, x: usize, y: usize) -> Rgb {
         let pos = (self.width * y + x) * 3;
         (self.data[pos], self.data[pos + 1], self.data[pos + 2]).into()
     }

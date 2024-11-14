@@ -1,9 +1,8 @@
 use texel_state::TexelState;
 
-use crate::{
-    codes::{bg, fg},
-    sixel::{Rgb, SixelImage},
-};
+use crate::codes::{bg, fg};
+
+use super::{Image, Rgb};
 
 mod texel_state;
 
@@ -22,7 +21,7 @@ impl Texel {
 }
 
 pub fn draw_blocks(
-    img: &impl SixelImage,
+    img: &impl Image,
     res: &mut String,
     nl: &str,
     w: usize,

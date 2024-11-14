@@ -1,4 +1,4 @@
-use std::ops::{Add, AddAssign, DivAssign};
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign};
 
 /// Single RGB pixel.
 #[derive(Default, Debug, Copy, Clone, PartialEq, Eq)]
@@ -58,6 +58,10 @@ impl Rgb {
     pub fn map(&self, f: impl Fn(u8) -> u8) -> Self {
         Self::new(f(self.r), f(self.g), f(self.b))
     }
+
+    pub fn as_f32(self) -> Rgb<f32> {
+        Rgb::new(self.r as f32, self.g as f32, self.b as f32)
+    }
 }
 
 impl Rgb<usize> {
@@ -66,11 +70,80 @@ impl Rgb<usize> {
     }
 }
 
+impl Rgb<f32> {
+    pub fn as_u8(self) -> Rgb<u8> {
+        Rgb::new(
+            self.r.round() as u8,
+            self.g.round() as u8,
+            self.b.round() as u8,
+        )
+    }
+}
+
 impl From<(u8, u8, u8)> for Rgb {
     fn from((r, g, b): (u8, u8, u8)) -> Self {
         Self::new(r, g, b)
     }
 }
+
+macro_rules! impl_assign_rgb {
+    ($trait:ident, $fn:ident, $op:tt, $($typ:ty),+ $(,)?) => {
+        $(impl $trait<Rgb<$typ>> for Rgb<$typ> {
+            fn $fn(&mut self, rhs: Rgb<$typ>) {
+                self.r $op rhs.r;
+                self.g $op rhs.g;
+                self.b $op rhs.b;
+            }
+        })+
+    };
+}
+
+macro_rules! impl_assign {
+    ($trait:ident, $fn:ident, $op:tt, $($typ:ty),+ $(,)?) => {
+        $(impl $trait<$typ> for Rgb<$typ> {
+            fn $fn(&mut self, rhs: $typ) {
+                self.r $op rhs;
+                self.g $op rhs;
+                self.b $op rhs;
+            }
+        })+
+    };
+}
+
+macro_rules! _impl_op_rgb {
+    ($trait:ident, $fn:ident, $op:tt, $($typ:ty),+ $(,)?) => {
+        $(impl $trait<Rgb<$typ>> for Rgb<$typ> {
+            type Output = Rgb<$typ>;
+
+            fn $fn(mut self, rhs: Rgb<$typ>) -> Self::Output {
+                self $op rhs;
+                self
+            }
+        })+
+    };
+}
+
+macro_rules! impl_op {
+    ($trait:ident, $fn:ident, $op:tt, $($typ:ty),+ $(,)?) => {
+        $(impl $trait<$typ> for Rgb<$typ> {
+            type Output = Rgb<$typ>;
+
+            fn $fn(mut self, rhs: $typ) -> Self::Output {
+                self $op rhs;
+                self
+            }
+        })+
+    };
+}
+
+impl_assign_rgb!(AddAssign, add_assign, +=, f32);
+impl_assign_rgb!(DivAssign, div_assign, /=, usize);
+
+impl_assign!(DivAssign, div_assign, /=, f32, usize);
+impl_assign!(MulAssign, mul_assign, *=, f32);
+
+impl_op!(Div, div, /=, f32);
+impl_op!(Mul, mul, *=, f32);
 
 impl AddAssign<Rgb<u8>> for Rgb<usize> {
     fn add_assign(&mut self, rhs: Rgb<u8>) {
@@ -86,13 +159,5 @@ impl Add<Rgb<u8>> for Rgb<usize> {
     fn add(mut self, rhs: Rgb<u8>) -> Self::Output {
         self += rhs;
         self
-    }
-}
-
-impl DivAssign<usize> for Rgb<usize> {
-    fn div_assign(&mut self, rhs: usize) {
-        self.r /= rhs;
-        self.g /= rhs;
-        self.b /= rhs;
     }
 }

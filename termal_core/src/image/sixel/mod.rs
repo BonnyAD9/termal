@@ -1,22 +1,18 @@
-mod mat;
-mod raw_img;
-mod rgb;
-mod sixel_image;
 mod sixel_state;
 
 use sixel_state::SixelState;
 
-pub use self::{mat::*, raw_img::*, rgb::*, sixel_image::*};
+use super::Image;
 
 #[derive(Default)]
 struct Sixel([u8; 6]);
 
 impl Sixel {
-    fn from_img(img: &impl SixelImage, (x, y): (usize, usize)) -> Self {
+    fn from_img(img: &impl Image, (x, y): (usize, usize)) -> Self {
         let mut data = [Default::default(); 6];
 
-        for yo in y..img.sixel_height().min(y + 6) {
-            data[yo - y] = img.sixel_get_pixel(x, yo).to_332();
+        for yo in y..img.height().min(y + 6) {
+            data[yo - y] = img.get_pixel(x, yo).to_332();
         }
 
         Self(data)
@@ -35,7 +31,7 @@ impl Sixel {
 }
 
 /// Generate sixel image and append it to the string `out`.
-pub fn push_sixel(out: &mut String, img: &impl SixelImage) {
+pub fn push_sixel(out: &mut String, img: &impl Image) {
     let mut state = SixelState::new(img, out);
     state.encode();
 }

@@ -1,13 +1,13 @@
 use crate::{
     codes,
-    sixel::{Mat, Rgb, SixelImage},
+    image::{Image, Mat, Rgb},
 };
 
 use super::Texel;
 
 pub struct TexelState<'a, I>
 where
-    I: SixelImage,
+    I: Image,
 {
     img: &'a I,
     texw: usize,
@@ -17,11 +17,11 @@ where
 
 impl<'a, I> TexelState<'a, I>
 where
-    I: SixelImage,
+    I: Image,
 {
     pub fn new(img: &'a I, w: usize, h: usize) -> Self {
-        let texw = img.sixel_width() / w;
-        let texh = img.sixel_height() / h;
+        let texw = img.width() / w;
+        let texh = img.height() / h;
         Self {
             img,
             texw,
@@ -60,9 +60,9 @@ where
     fn get_avg(&self, x: usize, y: usize, w: usize, h: usize) -> Rgb {
         let mut res: Rgb<usize> = Rgb::default();
 
-        for y in y..(y + h).min(self.img.sixel_height()) {
-            for x in x..(x + w).min(self.img.sixel_width()) {
-                res += self.img.sixel_get_pixel(x, y);
+        for y in y..(y + h).min(self.img.height()) {
+            for x in x..(x + w).min(self.img.width()) {
+                res += self.img.get_pixel(x, y);
             }
         }
 
