@@ -6,6 +6,7 @@ pub mod proc;
 pub mod raw;
 pub mod sixel;
 pub mod term_text;
+pub mod texel;
 
 /// Appends linear gradient to the given string
 pub fn write_gradient(

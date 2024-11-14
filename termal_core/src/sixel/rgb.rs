@@ -1,20 +1,24 @@
+use std::ops::{Add, AddAssign, DivAssign};
+
 /// Single RGB pixel.
 #[derive(Default, Debug, Copy, Clone, PartialEq, Eq)]
-pub struct Rgb {
+pub struct Rgb<T = u8> {
     /// Red component of the pixel.
-    pub r: u8,
+    pub r: T,
     /// Green component of the pixel.
-    pub g: u8,
+    pub g: T,
     /// Blue component of the pixel.
-    pub b: u8,
+    pub b: T,
+}
+
+impl<T> Rgb<T> {
+    /// Create new rgb pixel.
+    pub fn new(r: T, g: T, b: T) -> Self {
+        Self { r, g, b }
+    }
 }
 
 impl Rgb {
-    /// Create new rgb pixel.
-    pub fn new(r: u8, g: u8, b: u8) -> Self {
-        Self { r, g, b }
-    }
-
     /// Create new rgb pixel from single byte rgb pixel.
     ///
     /// The single byte has the components (from high bits to low bits):
@@ -56,8 +60,39 @@ impl Rgb {
     }
 }
 
+impl Rgb<usize> {
+    pub fn as_u8(self) -> Rgb<u8> {
+        Rgb::new(self.r as u8, self.g as u8, self.b as u8)
+    }
+}
+
 impl From<(u8, u8, u8)> for Rgb {
     fn from((r, g, b): (u8, u8, u8)) -> Self {
         Self::new(r, g, b)
+    }
+}
+
+impl AddAssign<Rgb<u8>> for Rgb<usize> {
+    fn add_assign(&mut self, rhs: Rgb<u8>) {
+        self.r += rhs.r as usize;
+        self.g += rhs.g as usize;
+        self.b += rhs.b as usize;
+    }
+}
+
+impl Add<Rgb<u8>> for Rgb<usize> {
+    type Output = Rgb<usize>;
+
+    fn add(mut self, rhs: Rgb<u8>) -> Self::Output {
+        self += rhs;
+        self
+    }
+}
+
+impl DivAssign<usize> for Rgb<usize> {
+    fn div_assign(&mut self, rhs: usize) {
+        self.r /= rhs;
+        self.g /= rhs;
+        self.b /= rhs;
     }
 }
