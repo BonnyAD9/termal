@@ -1,4 +1,6 @@
-use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign};
+use std::ops::{
+    Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign,
+};
 
 /// Single RGB pixel.
 #[derive(Default, Debug, Copy, Clone, PartialEq, Eq)]
@@ -59,28 +61,42 @@ impl Rgb {
         Self::new(f(self.r), f(self.g), f(self.b))
     }
 
+    /// Converts the components to [`f32`]. This doesn't scale them in any way.
     pub fn as_f32(self) -> Rgb<f32> {
         Rgb::new(self.r as f32, self.g as f32, self.b as f32)
     }
 }
 
 impl Rgb<usize> {
+    /// Converts the components to [`u8`].
     pub fn as_u8(self) -> Rgb<u8> {
         Rgb::new(self.r as u8, self.g as u8, self.b as u8)
     }
 
+    /// Converts the components to [`f32`].
     pub fn as_f32(self) -> Rgb<f32> {
         Rgb::new(self.r as f32, self.g as f32, self.b as f32)
     }
 }
 
 impl Rgb<f32> {
+    /// Converts the components to [`u8`].
     pub fn as_u8(self) -> Rgb<u8> {
         Rgb::new(
             self.r.round() as u8,
             self.g.round() as u8,
             self.b.round() as u8,
         )
+    }
+
+    /// Gets the absolute value of each component.
+    pub fn abs(self) -> Self {
+        Self::new(self.r.abs(), self.g.abs(), self.b.abs())
+    }
+
+    /// Sums all the components.
+    pub fn sum(self) -> f32 {
+        self.r + self.g + self.b
     }
 }
 
@@ -114,7 +130,7 @@ macro_rules! impl_assign {
     };
 }
 
-macro_rules! _impl_op_rgb {
+macro_rules! impl_op_rgb {
     ($trait:ident, $fn:ident, $op:tt, $($typ:ty),+ $(,)?) => {
         $(impl $trait<Rgb<$typ>> for Rgb<$typ> {
             type Output = Rgb<$typ>;
@@ -142,9 +158,12 @@ macro_rules! impl_op {
 
 impl_assign_rgb!(AddAssign, add_assign, +=, f32);
 impl_assign_rgb!(DivAssign, div_assign, /=, usize);
+impl_assign_rgb!(SubAssign, sub_assign, -=, f32);
 
 impl_assign!(DivAssign, div_assign, /=, f32, usize);
 impl_assign!(MulAssign, mul_assign, *=, f32);
+
+impl_op_rgb!(Sub, sub, -=, f32);
 
 impl_op!(Div, div, /=, f32);
 impl_op!(Mul, mul, *=, f32);
