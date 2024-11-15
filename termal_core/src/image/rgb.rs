@@ -68,6 +68,10 @@ impl Rgb<usize> {
     pub fn as_u8(self) -> Rgb<u8> {
         Rgb::new(self.r as u8, self.g as u8, self.b as u8)
     }
+
+    pub fn as_f32(self) -> Rgb<f32> {
+        Rgb::new(self.r as f32, self.g as f32, self.b as f32)
+    }
 }
 
 impl Rgb<f32> {

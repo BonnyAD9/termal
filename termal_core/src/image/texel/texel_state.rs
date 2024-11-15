@@ -1,6 +1,6 @@
 use crate::{
     codes,
-    image::{Image, Mat, Rgb},
+    image::{Image, Mat},
 };
 
 use super::Texel;
@@ -10,8 +10,8 @@ where
     I: Image,
 {
     img: &'a I,
-    texw: usize,
-    texh: usize,
+    texw: f32,
+    texh: f32,
     res: Mat<Texel>,
 }
 
@@ -20,8 +20,8 @@ where
     I: Image,
 {
     pub fn new(img: &'a I, w: usize, h: usize) -> Self {
-        let texw = img.width() / w;
-        let texh = img.height() / h;
+        let texw = img.width() as f32 / w as f32;
+        let texh = img.height() as f32 / h as f32;
         Self {
             img,
             texw,
@@ -44,29 +44,20 @@ where
     fn process(&mut self) {
         for y in 0..self.res.height() {
             for x in 0..self.res.width() {
-                self.res[(x, y)] =
-                    self.get_texel(x * self.texw, y * self.texh);
+                self.res[(x, y)] = self.get_texel(x, y);
             }
         }
     }
 
     fn get_texel(&self, x: usize, y: usize) -> Texel {
-        let half = self.texh / 2;
-        let top = self.get_avg(x, y, self.texw, half);
-        let bot = self.get_avg(x, y + half, self.texw, self.texh - half);
-        Texel { top, bot }
-    }
-
-    fn get_avg(&self, x: usize, y: usize, w: usize, h: usize) -> Rgb {
-        let mut res: Rgb<usize> = Rgb::default();
-
-        for y in y..(y + h).min(self.img.height()) {
-            for x in x..(x + w).min(self.img.width()) {
-                res += self.img.get_pixel(x, y);
-            }
+        let x = x as f32 * self.texw;
+        let y = y as f32 * self.texh;
+        let half = self.texh / 2.;
+        let top = self.img.get_avg(x, y, self.texw, half);
+        let bot = self.img.get_avg(x, y + half, self.texw, self.texh - half);
+        Texel {
+            top: top.as_u8(),
+            bot: bot.as_u8(),
         }
-
-        res /= w * h;
-        res.as_u8()
     }
 }
