@@ -323,6 +323,43 @@ pub const ENABLE_ALTERNATIVE_BUFFER: &str = "\x1b[?1049h";
 pub const DISABLE_ALTERNATIVE_BUFFER: &str = "\x1b[?1049l";
 
 // Other
+/// Request the device attributes.
+pub const REQUEST_DEVICE_ATTRIBUTES: &str = "\x1b[c";
+
+/// Enables mouse tracking for X and Y coordinate on press.
+pub const ENABLE_MOUSE_XY_TRACKING: &str = "\x1b[?9h";
+/// Disables mouse tracking for X and Y coordinate on press.
+pub const DISABLE_MOUSE_XY_TRACKING: &str = "\x1b[?9l";
+/// Enables mouse tracking for X and Y coordinate on press and release.
+pub const ENABLE_MOUSE_XY_PR_TRACKING: &str = "\x1b[?1000h";
+/// Disables mouse tracking for X and Y coordinate on press and release.
+pub const DISABLE_MOUSE_XY_PR_TRACKING: &str = "\x1b[?1000l";
+/// Enables mouse tracking for X and Y coordinate on press, release and drag.
+pub const ENABLE_MOUSE_XY_DRAG_TRACKING: &str = "\x1b[?1002h";
+/// Disables mouse tracking for X and Y coordinate on press, release and drag.
+pub const DISABLE_MOUSE_XY_DRAG_TRACKING: &str = "\x1b[?1002l";
+/// Enables mouse tracking for X and Y coordinate on press, release, drag and
+/// move.
+pub const ENABLE_MOUSE_XY_ALL_TRACKING: &str = "\x1b[?1002h";
+/// Disables mouse tracking for X and Y coordinate on press, release, drag and
+/// move.
+pub const DISABLE_MOUSE_XY_ALL_TRACKING: &str = "\x1b[?1002l";
+/// Enables sending event on focus gain.
+pub const ENABLE_FOCUS_EVENT: &str = "\x1b[?1004h";
+/// Disables sending event on focus gain.
+pub const DISABLES_FOCUS_EVENT: &str = "\x1b[?1004h";
+/// Enables extension to send mouse inputs in different format as position in
+/// characters.
+pub const ENABLE_MOUSE_XY_EXT: &str = "\x1b[?1006h";
+/// Disables extension to send mouse inputs in different format as position in
+/// characters.
+pub const DISABLE_MOUSE_XY_EXT: &str = "\x1b[?1006l";
+/// Enables extension to send mouse inputs in different format as position in
+/// pixels.
+pub const ENABLE_MOUSE_XY_PIX_EXT: &str = "\x1b[?1016h";
+/// Disables extension to send mouse inputs in different format as position in
+/// pixels.
+pub const DISABLE_MOUSE_XY_PIX_EXT: &str = "\x1b[?1016l";
 
 /*#[macro_export]
 macro_rules! resize_window {

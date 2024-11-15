@@ -6,6 +6,7 @@ use super::{Key, KeyCode, Modifiers, TermAttr};
 ///
 /// Some terminal events are amiguous. This will contain all sensible
 /// possibilities.
+#[derive(Clone, Debug)]
 pub struct AmbigousEvent {
     /// The main (most propable) event.
     pub event: AnyEvent,
@@ -14,6 +15,7 @@ pub struct AmbigousEvent {
 }
 
 /// Either known or unknown event.
+#[derive(Clone, Debug)]
 pub enum AnyEvent {
     /// Known parsed event.
     Known(Event),
