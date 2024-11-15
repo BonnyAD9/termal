@@ -3,6 +3,7 @@
 ## Future
 - Move around some logic around sixels.
 - Add texels - drawing images using charactes.
+- Add option for nearest when scaling image.
 
 ## v1.2.2
 - Fix `writemcln` macro.

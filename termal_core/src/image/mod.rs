@@ -4,8 +4,9 @@ mod rect;
 mod rgb;
 mod sixel;
 mod texel;
+mod img_nearest;
 
-pub use self::{mat::*, raw_img::*, rect::*, rgb::*, sixel::*, texel::*};
+pub use self::{mat::*, raw_img::*, rect::*, rgb::*, sixel::*, texel::*, img_nearest::*};
 
 /// Image data that can be interpreted when generating sixel data.
 pub trait Image {
