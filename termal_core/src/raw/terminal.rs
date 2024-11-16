@@ -103,6 +103,19 @@ impl Terminal {
         }
         let mut cur = self.read_byte()?;
 
+        if cur == b'M' {
+            // Special mouse event that actually doesn't conform to CSI
+            // sequence rules.
+            code.push(cur);
+            for _ in 0..3 {
+                if self.buffer.is_empty() {
+                    return Ok(AmbigousEvent::from_code(&code));
+                }
+                code.push(self.read_byte()?);
+            }
+            return Ok(AmbigousEvent::from_code(&code));
+        }
+
         while (0x30..=0x3F).contains(&cur) {
             code.push(cur);
             cur = self.read_byte()?;

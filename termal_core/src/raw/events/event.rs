@@ -1,6 +1,6 @@
 use crate::raw::events::csi::Csi;
 
-use super::{Key, KeyCode, Modifiers, TermAttr};
+use super::{mouse::Mouse, Key, KeyCode, Modifiers, TermAttr};
 
 /// Possibly ambiguous terminal event.
 ///
@@ -27,6 +27,8 @@ pub enum AnyEvent {
 pub enum Event {
     /// Key was pressed.
     KeyPress(Key),
+    /// Mouse event
+    Mouse(Mouse),
     /// Received terminal attributes.
     TermAttr(TermAttr),
 }
@@ -56,6 +58,10 @@ impl AmbigousEvent {
         Self::event(Event::KeyPress(key))
     }
 
+    pub fn mouse(mouse: Mouse) -> Self {
+        Self::event(Event::Mouse(mouse))
+    }
+
     /// Parse single char event.
     pub fn from_char_code(code: char) -> Self {
         Self::char_key(code)
@@ -63,6 +69,15 @@ impl AmbigousEvent {
 
     /// Parse the code into event.
     pub fn from_code(code: &[u8]) -> Self {
+        if code.len() == 6 && code.starts_with(b"\x1b[M") {
+            return AmbigousEvent::mouse(Mouse::from_data(
+                code[3] as u32 - 32,
+                code[4] as usize - 32,
+                code[5] as usize - 32,
+                None,
+            ));
+        }
+
         std::str::from_utf8(code)
             .ok()
             .and_then(Self::from_code_str)

@@ -11,11 +11,7 @@ use termal::{
 };
 
 fn main() -> Result<()> {
-    print!(
-        "{}{}\x1b[?1003h\x1b[?1006h",
-        codes::REQUEST_DEVICE_ATTRIBUTES,
-        ""
-    );
+    print!("{}{}\x1b[?1003h", codes::REQUEST_DEVICE_ATTRIBUTES, "");
     _ = io::stdout().flush();
     enable_raw_mode()?;
 
