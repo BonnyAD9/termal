@@ -4,6 +4,8 @@
 - Move around some logic around sixels.
 - Add texels - drawing images using charactes.
 - Add option for nearest when scaling image.
+- Add codes related to mouse events
+- Parse mouse events
 
 ## v1.2.2
 - Fix `writemcln` macro.
