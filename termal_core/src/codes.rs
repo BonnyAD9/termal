@@ -47,6 +47,8 @@ pub const CSI: &str = "\x1b[";
 pub const DCS: &str = "\x1bP";
 /// Operating System Command: Start of OCS sequence
 pub const OCS: &str = "\x1b]";
+/// String terminator. Terminates for example DCS.
+pub const ST: &str = "\x1b\\";
 
 /// Creates escape sequence, the first literal is the end of the sequence,
 /// the other arguments are the values in the sequence
@@ -334,6 +336,8 @@ pub const REQUEST_CURSOR_POSITION: &str = "\x1b[6n";
 /// [`REQUEST_CURSOR_POSITION`] is that the response is not ambigous, but it is
 /// not supported by some terminals that support [`REQUEST_CURSOR_POSITION`].
 pub const REQUEST_CURSOR_POSITION2: &str = "\x1b[?6n";
+/// Requests the terminal name and version.
+pub const REQUEST_TERMINAL_NAME: &str = "\x1b[>0q";
 
 /// Enables mouse tracking for X and Y coordinate on press.
 pub const ENABLE_MOUSE_XY_TRACKING: &str = "\x1b[?9h";

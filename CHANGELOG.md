@@ -8,6 +8,7 @@
 - Parse mouse events (classic, SGR, UTF-8, URXVT).
 - Parse focus events.
 - Parse cursor position responses.
+- Parse terminal name response.
 
 ## v1.2.2
 - Fix `writemcln` macro.

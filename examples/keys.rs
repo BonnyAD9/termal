@@ -10,7 +10,7 @@ use termal::{
 };
 
 fn main() -> Result<()> {
-    print!("\x1b[6n");
+    print!("\x1b[>0q");
     _ = io::stdout().flush();
     enable_raw_mode()?;
 

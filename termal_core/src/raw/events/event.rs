@@ -1,4 +1,4 @@
-use crate::raw::events::csi::Csi;
+use crate::{codes, raw::events::csi::Csi};
 
 use super::{mouse::Mouse, Key, KeyCode, Modifiers, Status, TermAttr};
 
@@ -23,7 +23,7 @@ pub enum AnyEvent {
     Unknown(Vec<u8>),
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 pub enum Event {
     /// Key was pressed.
     KeyPress(Key),
@@ -142,24 +142,29 @@ impl AmbigousEvent {
         }
 
         // check if it is CSI
-        let Some(cscode) = code.strip_prefix("\x1b[") else {
-            // This is bug in some terminals for F1 - F4 keys
-            return code.strip_prefix("\x1bO").and_then(|cscode| {
+        if let Some(code) = code.strip_prefix(codes::CSI) {
+            Self::csi(code)
+        } else if let Some(code) = code.strip_prefix(codes::DCS) {
+            Self::dcs(code)
+        } else {
+            code.strip_prefix("\x1bO").and_then(|cscode| {
                 let csi = Csi::parse(cscode);
                 matches!(csi.postfix.as_str(), "P" | "Q" | "R" | "S")
                     .then(|| Self::csi_xterm(csi))
                     .flatten()
-            });
-        };
+            })
+        }
+    }
 
-        match cscode {
+    fn csi(code: &str) -> Option<Self> {
+        match code {
             "I" => return Some(Self::event(Event::Focus)),
             "O" => return Some(Self::event(Event::FocusLost)),
             "0n" => return Some(Self::status(Status::Ok)),
             _ => {}
         }
 
-        let csi = Csi::parse(cscode);
+        let csi = Csi::parse(code);
 
         match (csi.prefix.as_str(), &csi.args[..], csi.postfix.as_str()) {
             // Ambiguous (F3 with modifiers or specific cursor position)
@@ -201,6 +206,13 @@ impl AmbigousEvent {
             ("", _, post) if post.len() == 1 => Self::csi_xterm(csi),
             _ => None,
         }
+    }
+
+    fn dcs(code: &str) -> Option<Self> {
+        let code = code.strip_suffix(codes::ST)?;
+
+        code.strip_prefix(">|")
+            .map(|name| Self::status(Status::TerminalName(name.into())))
     }
 
     fn csi_xterm(csi: Csi) -> Option<Self> {

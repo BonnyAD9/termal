@@ -91,6 +91,7 @@ impl Terminal {
         match cur {
             b'[' => self.read_csi(),
             b'O' if self.buffer.len() > 1 => self.read_ss3(),
+            b'P' => self.read_dcs(),
             _ => self.read_alt(),
         }
     }
@@ -173,6 +174,15 @@ impl Terminal {
         let mut buf: [u8; 5] = [0x1b, 0, 0, 0, 0];
         let chr = self.read_utf8((&mut buf[1..]).try_into().unwrap())?;
         Ok(AmbigousEvent::from_code(&buf[..=chr.len_utf8()]))
+    }
+
+    fn read_dcs(&mut self) -> Result<AmbigousEvent> {
+        self.read_byte()?;
+        let mut code: Vec<_> = b"\x1bP".into();
+        while !self.buffer.is_empty() && !code.ends_with(b"\x1b\\") {
+            code.push(self.read_byte()?);
+        }
+        Ok(AmbigousEvent::from_code(&code))
     }
 
     fn read_char(&mut self) -> Result<AmbigousEvent> {
