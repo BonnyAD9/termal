@@ -8,7 +8,7 @@ use termal::{
 
 fn main() -> Result<()> {
     print!(
-        "{}{}\x1b[?1003h\x1b[?1006h",
+        "{}{}\x1b[?1003h\x1b[?1005h",
         codes::REQUEST_DEVICE_ATTRIBUTES,
         ""
     );
@@ -18,7 +18,7 @@ fn main() -> Result<()> {
     start()?;
 
     disable_raw_mode()?;
-    print!("{}\x1b[?1006l\x1b[?1003l", "");
+    print!("{}\x1b[?1005l\x1b[?1003l", "");
     _ = stdout().flush();
 
     Ok(())
@@ -40,7 +40,7 @@ fn start() -> Result<()> {
             }
             if chr == '\x1b' {
                 print!("ESC");
-            } else if chr.is_ascii_control() {
+            } else if chr.is_ascii_control() || *byte > 0x7F {
                 print!("0x{byte:02X}");
             } else {
                 print!("{chr}");

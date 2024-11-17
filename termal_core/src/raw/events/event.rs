@@ -118,7 +118,7 @@ impl AmbigousEvent {
 
         // check if it is CSI
         let Some(cscode) = code.strip_prefix("\x1b[") else {
-            // This is bug in some terminal for F1 - F4 keys
+            // This is bug in some terminals for F1 - F4 keys
             return code.strip_prefix("\x1bO").and_then(|cscode| {
                 let csi = Csi::parse(cscode);
                 matches!(csi.postfix.as_str(), "P" | "Q" | "R" | "S")
@@ -129,21 +129,24 @@ impl AmbigousEvent {
 
         let csi = Csi::parse(cscode);
 
-        if csi.prefix == "?" && csi.postfix == "c" {
-            return Some(Self::event(Event::TermAttr(TermAttr::parse(csi))));
+        match (csi.prefix.as_str(), csi.postfix.as_str(), &csi.args[..]) {
+            // Terminal attributes
+            ("?", "c", _) => {
+                Some(Self::event(Event::TermAttr(TermAttr::parse(csi))))
+            }
+            // Mouse event with the SGR extension
+            ("<", d @ ("M" | "m"), [s, x, y]) if csi.args.len() == 3 => {
+                Some(Self::mouse(Mouse::from_data(
+                    *s,
+                    *x as usize,
+                    *y as usize,
+                    Some(d == "M"),
+                )))
+            }
+            ("", "~", _) => Self::csi_vt(csi),
+            ("", post, _) if post.len() == 1 => Self::csi_xterm(csi),
+            _ => None,
         }
-
-        if !csi.prefix.is_empty() {
-            return None;
-        }
-
-        if csi.postfix == "~" {
-            return Self::csi_vt(csi);
-        }
-
-        (csi.postfix.len() == 1)
-            .then(|| Self::csi_xterm(csi))
-            .flatten()
     }
 
     fn csi_xterm(csi: Csi) -> Option<Self> {

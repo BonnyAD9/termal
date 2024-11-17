@@ -55,7 +55,11 @@ impl Mouse {
         down: Option<bool>,
     ) -> Self {
         let state = State::from_bits_retain(state);
-        let button = state.into();
+        let button = if state.contains(State::SCROLL) {
+            Button::None
+        } else {
+            state.into()
+        };
         let event = if state.contains(State::MOVE) {
             Event::Move
         } else if (state & State::SCROLL) == State::SCROLL_UP {
