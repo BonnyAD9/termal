@@ -200,6 +200,34 @@ impl AmbigousEvent {
                     y: *y as usize,
                 }))
             }
+            // Size of buffer in pixels
+            ("", [4, h, w], "t") => {
+                Some(Self::status(Status::TextAreaSizePx {
+                    w: *w as usize,
+                    h: *h as usize,
+                }))
+            }
+            // Size of single character
+            ("", [6, h, w], "t") => Some(Self::status(Status::CharSize {
+                w: *w as usize,
+                h: *h as usize,
+            })),
+            // Size of terminal in characters
+            ("", [8, h, w], "t") => Some(Self::status(Status::TextAreaSize {
+                w: *w as usize,
+                h: *h as usize,
+            })),
+            // Sixel color register count
+            ("?", [1, 0, v], "S") => {
+                Some(Self::status(Status::SixelColors(*v as usize)))
+            }
+            // Max sixel image size
+            ("?", [2, 0, w, h], "S") => {
+                Some(Self::status(Status::SixelSize {
+                    w: *w as usize,
+                    h: *h as usize,
+                }))
+            }
             // Possibly VT key press
             ("", _, "~") => Self::csi_vt(csi),
             // Possibly xterm key press

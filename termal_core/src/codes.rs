@@ -100,7 +100,7 @@ macro_rules! csi_macro {
                     __s__ crate::csi!($i, $($(__s__ $nam)? $($lit)?),+)
                 }
             }
-            pub (crate) use $name;
+            pub use $name;
         )+}
     };
     (!= $ex:literal => $(
@@ -120,7 +120,7 @@ macro_rules! csi_macro {
                     }
                 }
             }
-            pub (crate) use $name;
+            pub use $name;
         )+}
     };
 }
@@ -300,6 +300,8 @@ csi_macro! {
     bg, 48, 2, r, g, b; 'm'
         ? "creates a true rgb background color. R, G and B must be values in
            range 0..256",
+    repeat_char, n; 'b'
+        ? "Repeat the previous char n times."
 }
 
 // Screen modes
@@ -325,6 +327,9 @@ pub const ENABLE_ALTERNATIVE_BUFFER: &str = "\x1b[?1049h";
 pub const DISABLE_ALTERNATIVE_BUFFER: &str = "\x1b[?1049l";
 
 // Other
+/// Full terminal reset. Clear the screen, buffer, reset all modes, ...
+pub const FULL_RESET: &str = "\x1bc";
+
 /// Request the device attributes.
 pub const REQUEST_DEVICE_ATTRIBUTES: &str = "\x1b[c";
 /// Request the device status.
@@ -338,6 +343,14 @@ pub const REQUEST_CURSOR_POSITION: &str = "\x1b[6n";
 pub const REQUEST_CURSOR_POSITION2: &str = "\x1b[?6n";
 /// Requests the terminal name and version.
 pub const REQUEST_TERMINAL_NAME: &str = "\x1b[>0q";
+/// Request the text area size of terminal in pixels.
+pub const REQUEST_TEXT_AREA_SIZE_PX: &str = "\x1b[14t";
+/// Request size of single character on creen in pixels.
+pub const REQUEST_CHAR_SIZE: &str = "\x1b[16t";
+/// Request size of the text area in characters.
+pub const REQUEST_TEXT_AREA_SIZE: &str = "\x1b[18t";
+/// Request the number of sixel color registers.
+pub const REQUEST_SIXEL_COLORS: &str = "\x1b[1;1;1S";
 
 /// Enables mouse tracking for X and Y coordinate on press.
 pub const ENABLE_MOUSE_XY_TRACKING: &str = "\x1b[?9h";
@@ -373,6 +386,25 @@ pub const ENABLE_MOUSE_XY_PIX_EXT: &str = "\x1b[?1016h";
 /// Disables extension to send mouse inputs in different format as position in
 /// pixels.
 pub const DISABLE_MOUSE_XY_PIX_EXT: &str = "\x1b[?1016l";
+
+#[derive(Clone, Debug, Copy, Eq, PartialEq)]
+pub enum CursorStyle {
+    Block(Option<bool>),
+    Underline(bool),
+    Bar(bool),
+}
+
+pub fn set_cursor(style: CursorStyle) -> &'static str {
+    match style {
+        CursorStyle::Block(Some(true)) => "\x1b[0 q",
+        CursorStyle::Block(None) => "\x1b[1 q",
+        CursorStyle::Block(Some(false)) => "\x1b[2 q",
+        CursorStyle::Underline(true) => "\x1b[3 q",
+        CursorStyle::Underline(false) => "\x1b[4 q",
+        CursorStyle::Bar(true) => "\x1b[5 q",
+        CursorStyle::Bar(false) => "\x1b[6 q",
+    }
+}
 
 /*#[macro_export]
 macro_rules! resize_window {

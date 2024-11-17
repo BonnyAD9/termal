@@ -1,12 +1,13 @@
 use std::io::{self, stdout, Read, Write};
 
 use termal::{
+    codes,
     error::Result,
     raw::{disable_raw_mode, enable_raw_mode},
 };
 
 fn main() -> Result<()> {
-    print!("\x1b[>0q");
+    print!("a{}", codes::repeat_char!(5));
     _ = stdout().flush();
     enable_raw_mode()?;
 

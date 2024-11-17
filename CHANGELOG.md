@@ -9,6 +9,7 @@
 - Parse focus events.
 - Parse cursor position responses.
 - Parse terminal name response.
+- Parse terminal window parameters responses.
 
 ## v1.2.2
 - Fix `writemcln` macro.
