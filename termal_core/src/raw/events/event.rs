@@ -31,6 +31,10 @@ pub enum Event {
     Mouse(Mouse),
     /// Received terminal attributes.
     TermAttr(TermAttr),
+    /// The terminal has gained focus.
+    Focus,
+    /// The terminal has lost focus.
+    FocusLost,
 }
 
 impl AmbigousEvent {
@@ -143,6 +147,14 @@ impl AmbigousEvent {
                     .flatten()
             });
         };
+
+        loop {
+            return Some(match cscode {
+                "I" => Self::event(Event::Focus),
+                "O" => Self::event(Event::FocusLost),
+                _ => break,
+            });
+        }
 
         let csi = Csi::parse(cscode);
 

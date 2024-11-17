@@ -7,18 +7,14 @@ use termal::{
 };
 
 fn main() -> Result<()> {
-    print!(
-        "{}{}\x1b[?1003h\x1b[?1015h",
-        codes::REQUEST_DEVICE_ATTRIBUTES,
-        ""
-    );
+    print!("{}{}\x1b[?1004h", codes::REQUEST_DEVICE_ATTRIBUTES, "");
     _ = stdout().flush();
     enable_raw_mode()?;
 
     start()?;
 
     disable_raw_mode()?;
-    print!("{}\x1b[?1015l\x1b[?1003l", "");
+    print!("{}\x1b[?1004l", "");
     _ = stdout().flush();
 
     Ok(())
