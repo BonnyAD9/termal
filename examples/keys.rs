@@ -1,7 +1,6 @@
 use std::io::{self, Write};
 
 use termal::{
-    codes,
     error::Result,
     raw::{
         disable_raw_mode, enable_raw_mode,
@@ -11,14 +10,14 @@ use termal::{
 };
 
 fn main() -> Result<()> {
-    print!("{}{}\x1b[?1004h", codes::REQUEST_DEVICE_ATTRIBUTES, "");
+    print!("\x1b[6n");
     _ = io::stdout().flush();
     enable_raw_mode()?;
 
     start()?;
 
     disable_raw_mode()?;
-    print!("{}\x1b[?1004l", "");
+    print!("");
     _ = io::stdout().flush();
 
     Ok(())

@@ -325,6 +325,15 @@ pub const DISABLE_ALTERNATIVE_BUFFER: &str = "\x1b[?1049l";
 // Other
 /// Request the device attributes.
 pub const REQUEST_DEVICE_ATTRIBUTES: &str = "\x1b[c";
+/// Request the device status.
+pub const REQUEST_STATUS_REPORT: &str = "\x1b[5n";
+/// Request the current cursor position. In some terminals, the report may be
+/// ambigous with F3 key press with modifiers.
+pub const REQUEST_CURSOR_POSITION: &str = "\x1b[6n";
+/// Request the current cursor position. Difference from
+/// [`REQUEST_CURSOR_POSITION`] is that the response is not ambigous, but it is
+/// not supported by some terminals that support [`REQUEST_CURSOR_POSITION`].
+pub const REQUEST_CURSOR_POSITION2: &str = "\x1b[?6n";
 
 /// Enables mouse tracking for X and Y coordinate on press.
 pub const ENABLE_MOUSE_XY_TRACKING: &str = "\x1b[?9h";

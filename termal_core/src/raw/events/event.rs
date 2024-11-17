@@ -1,6 +1,6 @@
 use crate::raw::events::csi::Csi;
 
-use super::{mouse::Mouse, Key, KeyCode, Modifiers, TermAttr};
+use super::{mouse::Mouse, Key, KeyCode, Modifiers, Status, TermAttr};
 
 /// Possibly ambiguous terminal event.
 ///
@@ -30,7 +30,7 @@ pub enum Event {
     /// Mouse event
     Mouse(Mouse),
     /// Received terminal attributes.
-    TermAttr(TermAttr),
+    Status(Status),
     /// The terminal has gained focus.
     Focus,
     /// The terminal has lost focus.
@@ -64,6 +64,10 @@ impl AmbigousEvent {
 
     pub fn mouse(mouse: Mouse) -> Self {
         Self::event(Event::Mouse(mouse))
+    }
+
+    pub fn status(status: Status) -> Self {
+        Self::event(Event::Status(status))
     }
 
     /// Parse single char event.
@@ -148,34 +152,53 @@ impl AmbigousEvent {
             });
         };
 
-        loop {
-            return Some(match cscode {
-                "I" => Self::event(Event::Focus),
-                "O" => Self::event(Event::FocusLost),
-                _ => break,
-            });
+        match cscode {
+            "I" => return Some(Self::event(Event::Focus)),
+            "O" => return Some(Self::event(Event::FocusLost)),
+            "0n" => return Some(Self::status(Status::Ok)),
+            _ => {}
         }
 
         let csi = Csi::parse(cscode);
 
-        match (csi.prefix.as_str(), csi.postfix.as_str(), &csi.args[..]) {
+        match (csi.prefix.as_str(), &csi.args[..], csi.postfix.as_str()) {
+            // Ambiguous (F3 with modifiers or specific cursor position)
+            ("", [1, x], "R") if *x < 16 => Some(Self {
+                event: AnyEvent::Known(Event::KeyPress(Key::mcode(
+                    KeyCode::F3,
+                    Modifiers::from_id(*x),
+                ))),
+                other: vec![Event::Status(Status::CursorPosition {
+                    x: *x as usize,
+                    y: 1,
+                })],
+            }),
             // Terminal attributes
-            ("?", "c", _) => {
-                Some(Self::event(Event::TermAttr(TermAttr::parse(csi))))
+            ("?", _, "c") => {
+                Some(Self::status(Status::Attributes(TermAttr::parse(csi))))
             }
             // Mouse event with the SGR extension
-            ("<", d @ ("M" | "m"), [s, x, y]) => Some(Self::mouse(
+            ("<", [s, x, y], d @ ("M" | "m")) => Some(Self::mouse(
                 Mouse::from_data(*s, *x as usize, *y as usize, Some(d == "M")),
             )),
             // Mouse event with the URXVT extension
-            ("", "M", [s, x, y]) => Some(Self::mouse(Mouse::from_data(
+            ("", [s, x, y], "M") => Some(Self::mouse(Mouse::from_data(
                 *s - 32,
                 *x as usize,
                 *y as usize,
                 None,
             ))),
-            ("", "~", _) => Self::csi_vt(csi),
-            ("", post, _) if post.len() == 1 => Self::csi_xterm(csi),
+            // Cursor position
+            ("" | "?", [y, x], "R") => {
+                Some(Self::status(Status::CursorPosition {
+                    x: *x as usize,
+                    y: *y as usize,
+                }))
+            }
+            // Possibly VT key press
+            ("", _, "~") => Self::csi_vt(csi),
+            // Possibly xterm key press
+            ("", _, post) if post.len() == 1 => Self::csi_xterm(csi),
             _ => None,
         }
     }
