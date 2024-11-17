@@ -152,14 +152,16 @@ impl AmbigousEvent {
                 Some(Self::event(Event::TermAttr(TermAttr::parse(csi))))
             }
             // Mouse event with the SGR extension
-            ("<", d @ ("M" | "m"), [s, x, y]) if csi.args.len() == 3 => {
-                Some(Self::mouse(Mouse::from_data(
-                    *s,
-                    *x as usize,
-                    *y as usize,
-                    Some(d == "M"),
-                )))
-            }
+            ("<", d @ ("M" | "m"), [s, x, y]) => Some(Self::mouse(
+                Mouse::from_data(*s, *x as usize, *y as usize, Some(d == "M")),
+            )),
+            // Mouse event with the URXVT extension
+            ("", "M", [s, x, y]) => Some(Self::mouse(Mouse::from_data(
+                *s - 32,
+                *x as usize,
+                *y as usize,
+                None,
+            ))),
             ("", "~", _) => Self::csi_vt(csi),
             ("", post, _) if post.len() == 1 => Self::csi_xterm(csi),
             _ => None,
