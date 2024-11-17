@@ -12,7 +12,7 @@ use termal::{
 
 fn main() -> Result<()> {
     print!(
-        "{}{}\x1b[?1003h\x1b[?1006h",
+        "{}{}\x1b[?1003h\x1b[?1005h",
         codes::REQUEST_DEVICE_ATTRIBUTES,
         ""
     );

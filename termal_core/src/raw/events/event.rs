@@ -69,6 +69,17 @@ impl AmbigousEvent {
 
     /// Parse the code into event.
     pub fn from_code(code: &[u8]) -> Self {
+        if (6..=9).contains(&code.len()) && code.starts_with(b"\x1b[M") {
+            return Self::mouse_code(code);
+        }
+
+        std::str::from_utf8(code)
+            .ok()
+            .and_then(Self::from_code_str)
+            .unwrap_or_else(|| Self::unknown(code))
+    }
+
+    fn mouse_code(code: &[u8]) -> Self {
         if code.len() == 6 && code.starts_with(b"\x1b[M") {
             return AmbigousEvent::mouse(Mouse::from_data(
                 code[3] as u32 - 32,
@@ -77,11 +88,17 @@ impl AmbigousEvent {
                 None,
             ));
         }
-
-        std::str::from_utf8(code)
-            .ok()
-            .and_then(Self::from_code_str)
-            .unwrap_or_else(|| Self::unknown(code))
+        let utf_code = std::str::from_utf8(&code[3..])
+            .map(|s| s.chars().collect::<Box<[char]>>());
+        let Ok([s, x, y]) = utf_code.as_deref() else {
+            return Self::unknown(code);
+        };
+        AmbigousEvent::mouse(Mouse::from_data(
+            *s as u32 - 32,
+            *x as usize - 32,
+            *y as usize - 32,
+            None,
+        ))
     }
 
     fn from_code_str(code: &str) -> Option<Self> {

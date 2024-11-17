@@ -5,7 +5,7 @@
 - Add texels - drawing images using charactes.
 - Add option for nearest when scaling image.
 - Add codes related to mouse events
-- Parse mouse events (classic, SGR)
+- Parse mouse events (classic, SGR, UTF-8)
 
 ## v1.2.2
 - Fix `writemcln` macro.

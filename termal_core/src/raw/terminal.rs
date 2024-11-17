@@ -8,7 +8,7 @@ use crate::error::{Error, Result};
 
 use super::{
     events::{AmbigousEvent, AnyEvent, Event, KeyCode},
-    TermRead,
+    utf8_code_len, TermRead,
 };
 
 #[derive(Default)]
@@ -111,7 +111,24 @@ impl Terminal {
                 if self.buffer.is_empty() {
                     return Ok(AmbigousEvent::from_code(&code));
                 }
-                code.push(self.read_byte()?);
+                let Some(b) = self.read_byte_if(|b| b >= 32)? else {
+                    return Ok(AmbigousEvent::from_code(&code));
+                };
+                code.push(b);
+            }
+            if self.buffer.is_empty() {
+                return Ok(AmbigousEvent::from_code(&code));
+            }
+            // UTF-8 extension
+            for i in (1..=3).rev() {
+                if !self.buffer.is_empty()
+                    && utf8_code_len(code[code.len() - i]) != 2
+                {
+                    let Some(b) = self.read_byte_if(|b| b >= 32)? else {
+                        return Ok(AmbigousEvent::from_code(&code));
+                    };
+                    code.push(b);
+                }
             }
             return Ok(AmbigousEvent::from_code(&code));
         }
@@ -184,5 +201,15 @@ impl Terminal {
             }
         }
         Ok(self.read_byte()? as char)
+    }
+
+    fn read_byte_if(&mut self, p: impl Fn(u8) -> bool) -> Result<Option<u8>> {
+        let c = self.read_byte()?;
+        if p(c) {
+            Ok(Some(c))
+        } else {
+            self.buffer.push_front(c);
+            Ok(None)
+        }
     }
 }
