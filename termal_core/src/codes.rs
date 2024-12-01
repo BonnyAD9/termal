@@ -380,13 +380,24 @@ pub const DISABLE_MOUSE_XY_ALL_TRACKING: &str = "\x1b[?1002l";
 /// Enables sending event on focus gain.
 pub const ENABLE_FOCUS_EVENT: &str = "\x1b[?1004h";
 /// Disables sending event on focus gain.
-pub const DISABLES_FOCUS_EVENT: &str = "\x1b[?1004h";
+pub const DISABLES_FOCUS_EVENT: &str = "\x1b[?1004l";
+/// Enables extension to send mouse inputs in format extended to utf8 two byte
+/// characters.
+pub const ENABLE_MOUSE_XY_UTF8_EXT: &str = "\x1b[?1005h";
+/// Disables extension to send mouse inputs in format extended to utf8 two byte
+/// characters.
+pub const DISABLE_MOUSE_XY_UTF8_EXT: &str = "\x1b[?1005l";
 /// Enables extension to send mouse inputs in different format as position in
 /// characters.
 pub const ENABLE_MOUSE_XY_EXT: &str = "\x1b[?1006h";
 /// Disables extension to send mouse inputs in different format as position in
 /// characters.
 pub const DISABLE_MOUSE_XY_EXT: &str = "\x1b[?1006l";
+/// Enables URXVT mouse extension. Not recommended, rather use
+/// [`ENABLE_MOUSE_XY_EXT`].
+pub const ENABLE_MOUSE_XY_URXVT_EXT: &str = "\x1b[?1015h";
+/// Disables URXVT mouse extension.
+pub const DISABLE_MOUSE_XY_URXVT_EXT: &str = "\x1b[?1015l";
 /// Enables extension to send mouse inputs in different format as position in
 /// pixels.
 pub const ENABLE_MOUSE_XY_PIX_EXT: &str = "\x1b[?1016h";
@@ -394,7 +405,7 @@ pub const ENABLE_MOUSE_XY_PIX_EXT: &str = "\x1b[?1016h";
 /// pixels.
 pub const DISABLE_MOUSE_XY_PIX_EXT: &str = "\x1b[?1016l";
 
-csi_macro!{
+csi_macro! {
     scroll_region, t, b; 'r'
         ? "Set the scroll region in the terminal. Also moves the cursor to the
            top left."

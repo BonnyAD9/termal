@@ -182,19 +182,19 @@ impl<'a> TermText<'a> {
     }
 }
 
-impl<'a> AsRef<str> for TermText<'a> {
+impl AsRef<str> for TermText<'_> {
     fn as_ref(&self) -> &str {
         self.as_str()
     }
 }
 
-impl<'a> Display for TermText<'a> {
+impl Display for TermText<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.as_str())
     }
 }
 
-impl<'a> From<String> for TermText<'a> {
+impl From<String> for TermText<'_> {
     fn from(value: String) -> Self {
         Self::new(value)
     }

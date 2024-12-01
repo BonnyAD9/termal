@@ -1,7 +1,7 @@
 use std::{
     fs, io, mem,
     os::fd::{AsRawFd, IntoRawFd, RawFd},
-    sync::Mutex,
+    sync::{Mutex, MutexGuard},
     time::Duration,
 };
 
@@ -13,6 +13,12 @@ use libc::{
 use crate::{error::Result, raw::TermSize};
 
 static ORIGINAL_TERMINAL_MODE: Mutex<Option<Termios>> = Mutex::new(None);
+
+fn get_original_terminal_mode() -> MutexGuard<'static, Option<Termios>> {
+    ORIGINAL_TERMINAL_MODE
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+}
 
 struct TtyFd {
     fd: RawFd,
@@ -64,11 +70,11 @@ impl From<winsize> for TermSize {
 }
 
 pub fn is_raw_mode_enabled() -> bool {
-    ORIGINAL_TERMINAL_MODE.lock().unwrap().is_some()
+    get_original_terminal_mode().is_some()
 }
 
 pub(crate) fn enable_raw_mode() -> Result<()> {
-    let mut orig_mode = ORIGINAL_TERMINAL_MODE.lock().unwrap();
+    let mut orig_mode = get_original_terminal_mode();
 
     if orig_mode.is_some() {
         return Ok(());
@@ -88,7 +94,7 @@ pub(crate) fn enable_raw_mode() -> Result<()> {
 }
 
 pub(crate) fn disable_raw_mode() -> Result<()> {
-    let mut orig_mode = ORIGINAL_TERMINAL_MODE.lock().unwrap();
+    let mut orig_mode = get_original_terminal_mode();
 
     if let Some(orig_mode_ios) = orig_mode.as_ref() {
         let tty = TtyFd::get()?;

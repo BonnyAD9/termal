@@ -1,5 +1,10 @@
 //! Core library of termal, contains the implementation.
 
+use std::{
+    io::{self, Write},
+    panic,
+};
+
 pub mod codes;
 pub mod error;
 pub mod image;
@@ -47,4 +52,44 @@ pub fn gradient(
     let len = s.as_ref().chars().count();
     write_gradient(&mut res, s, len, start, end);
     res
+}
+
+/// Resets terminal modes. This should in most cases restore terminal to state
+/// before your app started. Useful for example in case of panic.
+pub fn reset_terminal() {
+    if raw::is_raw_mode_enabled() {
+        _ = raw::disable_raw_mode();
+    }
+    let s = [
+        codes::RESET,
+        codes::SHOW_CURSOR,
+        codes::DISABLE_MOUSE_XY_UTF8_EXT,
+        codes::DISABLE_MOUSE_XY_EXT,
+        codes::DISABLE_MOUSE_XY_URXVT_EXT,
+        codes::DISABLE_MOUSE_XY_PIX_EXT,
+        codes::DISABLE_MOUSE_XY_TRACKING,
+        codes::DISABLE_MOUSE_XY_PR_TRACKING,
+        codes::DISABLE_MOUSE_XY_DRAG_TRACKING,
+        codes::DISABLE_MOUSE_XY_ALL_TRACKING,
+        codes::CUR_SAVE,
+        codes::RESET_SCROLL_REGION,
+        codes::CUR_LOAD,
+        codes::DISABLE_ALTERNATIVE_BUFFER,
+    ]
+    .concat();
+    print!("{}", s);
+    _ = io::stdout().flush();
+}
+
+/// Registers panic hook that will prepend terminal reset before the current
+/// panic hook. Useful for tui apps.
+///
+/// This will make sure that the terminal is set to reasonable state even when
+/// your app panics.
+pub fn register_reset_on_panic() {
+    let hook = panic::take_hook();
+    panic::set_hook(Box::new(move |pci| {
+        reset_terminal();
+        hook(pci)
+    }));
 }

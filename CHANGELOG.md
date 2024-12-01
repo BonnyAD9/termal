@@ -12,6 +12,8 @@
 - Parse terminal window parameters responses.
 - Add code for setting the scroll region.
 - Add codes to insert and delete lines, chars and columns.
+- Add option for universal terminal reset and to regiester panic hook with that
+  reset.
 
 ## v1.2.2
 - Fix `writemcln` macro.
