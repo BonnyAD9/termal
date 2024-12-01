@@ -387,6 +387,14 @@ pub const ENABLE_MOUSE_XY_PIX_EXT: &str = "\x1b[?1016h";
 /// pixels.
 pub const DISABLE_MOUSE_XY_PIX_EXT: &str = "\x1b[?1016l";
 
+csi_macro!{
+    scroll_region, t, b; 'r'
+        ? "Set the scroll region in the terminal. Also moves the cursor to the
+           top left."
+}
+
+pub const RESET_SCROLL_REGION: &str = "\x1b[0;0r";
+
 #[derive(Clone, Debug, Copy, Eq, PartialEq)]
 pub enum CursorStyle {
     Block(Option<bool>),

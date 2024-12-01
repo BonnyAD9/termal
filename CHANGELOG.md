@@ -10,6 +10,7 @@
 - Parse cursor position responses.
 - Parse terminal name response.
 - Parse terminal window parameters responses.
+- Add code for setting the scroll region.
 
 ## v1.2.2
 - Fix `writemcln` macro.
