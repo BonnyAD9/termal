@@ -56,6 +56,10 @@ pub fn gradient(
 
 /// Resets terminal modes. This should in most cases restore terminal to state
 /// before your app started. Useful for example in case of panic.
+///
+/// The reset works on best-effort bases - it may not be fully reliable in all
+/// cases, but it should work in most cases as long as you use this crate to
+/// enable the terminal features.
 pub fn reset_terminal() {
     if raw::is_raw_mode_enabled() {
         _ = raw::disable_raw_mode();
@@ -71,6 +75,7 @@ pub fn reset_terminal() {
         codes::DISABLE_MOUSE_XY_PR_TRACKING,
         codes::DISABLE_MOUSE_XY_DRAG_TRACKING,
         codes::DISABLE_MOUSE_XY_ALL_TRACKING,
+        codes::DISABLE_FOCUS_EVENT,
         codes::CUR_SAVE,
         codes::RESET_SCROLL_REGION,
         codes::CUR_LOAD,

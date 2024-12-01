@@ -380,7 +380,7 @@ pub const DISABLE_MOUSE_XY_ALL_TRACKING: &str = "\x1b[?1002l";
 /// Enables sending event on focus gain.
 pub const ENABLE_FOCUS_EVENT: &str = "\x1b[?1004h";
 /// Disables sending event on focus gain.
-pub const DISABLES_FOCUS_EVENT: &str = "\x1b[?1004l";
+pub const DISABLE_FOCUS_EVENT: &str = "\x1b[?1004l";
 /// Enables extension to send mouse inputs in format extended to utf8 two byte
 /// characters.
 pub const ENABLE_MOUSE_XY_UTF8_EXT: &str = "\x1b[?1005h";
