@@ -138,6 +138,13 @@ csi_macro!( != 0 =>
     move_down, n; 'B' ? "Moves cursor down by N positions",
     move_right, n; 'C' ? "Moves cursor right by N positions",
     move_left, n; 'D' ? "Moves cursor left by N positions",
+    insert_lines, n; 'L' ? "Insert n lines at the cursor moving them down.",
+    delete_lines, n; 'L'
+        ? "Delete n lines at the cursor, moving the remaining from bottom.",
+    insert_chars, n; '@' ? "Insert n characters, moving them to the right.",
+    delete_chars, n; 'P' ? "Delete n characters, moving the chars from right.",
+    insert_columns, n; "'}" ? "Insert n columns, moving them to the right.",
+    delete_columns, n; "'~" ? "Delete n columns, moving them from the right",
 );
 
 csi_macro!(

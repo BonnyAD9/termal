@@ -6,7 +6,7 @@ use termal::{
 };
 
 fn main() -> Result<()> {
-    print!("\x1b[5;10r");
+    print!("");
     _ = stdout().flush();
     enable_raw_mode()?;
 

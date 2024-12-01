@@ -11,6 +11,7 @@
 - Parse terminal name response.
 - Parse terminal window parameters responses.
 - Add code for setting the scroll region.
+- Add codes to insert and delete lines, chars and columns.
 
 ## v1.2.2
 - Fix `writemcln` macro.
