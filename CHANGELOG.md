@@ -1,7 +1,6 @@
 # CHANGELOG
 
 ## Future
-- Move around some logic around sixels.
 - Add texels - drawing images using charactes.
 - Add option for nearest when scaling image.
 - Add new codes.
@@ -14,6 +13,8 @@
 - Add codes to insert and delete lines, chars and columns.
 - Add option for universal terminal reset and to regiester panic hook with that
   reset.
++ Move around some logic around sixels.
++ Split into features.
 
 ## v1.2.2
 - Fix `writemcln` macro.
