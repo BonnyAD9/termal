@@ -54,7 +54,7 @@ where
 
     fn get_pixel(&self, x: usize, y: usize) -> Rgb {
         use image::Pixel;
-    
+
         <Self as image::GenericImageView>::get_pixel(self, x as u32, y as u32)
             .to_rgb()
             .into()

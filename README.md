@@ -2,10 +2,11 @@
 [![crates.io][version-badge]][crate]
 [![donwloads][downloads-badge]][releases]
 
-Rust library for terminal features with ansi escape codes.
+Rust library for terminal features.
 
-Currently the library contains the ansii codes, and a special macro. Works for
-text styles, colors and moving the cursor.
+## RAW terminal support
+- Unix (linux)
+- Windows (not tested)
 
 ## Example
 ### With macro

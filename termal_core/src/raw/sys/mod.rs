@@ -4,6 +4,8 @@ use crate::error::{Error, Result};
 
 #[cfg(unix)]
 mod unix;
+#[cfg(windows)]
+mod windows;
 
 /// Size of terminal.
 #[derive(Clone, Debug)]
@@ -24,9 +26,10 @@ pub struct TermSize {
 /// - Unix (Linux)
 pub fn enable_raw_mode() -> Result<()> {
     #[cfg(unix)]
-    {
-        return unix::enable_raw_mode();
-    }
+    return unix::enable_raw_mode();
+
+    #[cfg(windows)]
+    return windows::enable_raw_mode();
 
     #[allow(unreachable_code)]
     Err(Error::NotSupportedOnPlatform("raw mode"))
@@ -36,11 +39,13 @@ pub fn enable_raw_mode() -> Result<()> {
 ///
 /// # Support
 /// - Unix (Linux)
+/// - Windows (not tested)
 pub fn disable_raw_mode() -> Result<()> {
     #[cfg(unix)]
-    {
-        return unix::disable_raw_mode();
-    }
+    return unix::disable_raw_mode();
+
+    #[cfg(windows)]
+    return windows::disable_raw_mode();
 
     #[allow(unreachable_code)]
     Err(Error::NotSupportedOnPlatform("raw mode"))
@@ -50,11 +55,13 @@ pub fn disable_raw_mode() -> Result<()> {
 ///
 /// # Support
 /// - Unix (Linux)
+/// - Windows (not tested)
 pub fn is_raw_mode_enabled() -> bool {
     #[cfg(unix)]
-    {
-        return unix::is_raw_mode_enabled();
-    }
+    return unix::is_raw_mode_enabled();
+
+    #[cfg(windows)]
+    return windows::is_raw_mode_enabled().unwrap_or_default();
 
     #[allow(unreachable_code)]
     false
@@ -64,11 +71,13 @@ pub fn is_raw_mode_enabled() -> bool {
 ///
 /// # Support
 /// - Unix (Linux)
+/// - Windows (not tested)
 pub fn term_size() -> Result<TermSize> {
     #[cfg(unix)]
-    {
-        return unix::window_size();
-    }
+    return unix::window_size();
+
+    #[cfg(windows)]
+    return windows::term_size();
 
     #[allow(unreachable_code)]
     Err(Error::NotSupportedOnPlatform("terminal size"))
@@ -82,11 +91,13 @@ pub fn term_size() -> Result<TermSize> {
 ///
 /// # Support
 /// - Unix (Linux)
+/// - Windows (not tested)
 pub fn wait_for_stdin(timeout: Duration) -> Result<bool> {
     #[cfg(unix)]
-    {
-        return unix::wait_for_stdin(timeout);
-    }
+    return unix::wait_for_stdin(timeout);
+
+    #[cfg(windows)]
+    return windows::wait_for_stdin(timeout);
 
     #[allow(unreachable_code)]
     Err(Error::NotSupportedOnPlatform("stdin timeout"))

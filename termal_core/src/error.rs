@@ -8,6 +8,8 @@ pub enum Error {
     StdInEof,
     #[error("{0} is not supported on this platform.")]
     NotSupportedOnPlatform(&'static str),
+    #[error("Failed to wait for stdin.")]
+    WaitAbandoned,
     #[error(transparent)]
     Io(#[from] std::io::Error),
 }

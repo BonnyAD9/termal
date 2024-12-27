@@ -15,6 +15,7 @@
   reset.
 + Move around some logic around sixels.
 + Split into features.
++ Windows support (untested)
 
 ## v1.2.2
 - Fix `writemcln` macro.
