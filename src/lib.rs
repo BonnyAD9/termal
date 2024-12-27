@@ -769,8 +769,6 @@ mod tests {
         io::{stdout, Write},
     };
 
-    use term_text::TermText;
-
     use super::*;
 
     #[test]
@@ -814,8 +812,11 @@ mod tests {
         );
     }
 
+    #[cfg(feature = "term_text")]
     #[test]
     fn term_text() {
+        use term_text::TermText;
+
         let txt = TermText::new(gradient("Hello", (0, 0, 0), (255, 255, 255)));
 
         assert_eq!(5, txt.display_char_cnt());

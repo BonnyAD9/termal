@@ -17,5 +17,21 @@ members = [
 ]
 
 [dependencies]
-termal_core = { path = "termal_core", version = "1.1.0" }
-termal_proc = { path = "termal_proc", version = "1.1.0" }
+termal_core = { path = "termal_core", version = "1.1.0", default-features = false }
+termal_proc = { path = "termal_proc", version = "1.1.0", default-features = false }
+
+[features]
+default = ["raw"]
+all = ["image", "raw", "term_text"]
+term_image = ["termal_core/term_image"]
+image = ["termal_core/image"]
+raw = ["termal_core/raw"]
+term_text = ["termal_core/term_text"]
+
+[[example]]
+name = "sixel"
+required_features = ["term_image"]
+
+[[example]]
+name = "texel"
+required_features = ["term_image"]

@@ -87,6 +87,14 @@ cargo add termal
 termal = "1.0.0"
 ```
 
+### Features
++ `raw`: enable features for raw terminal.
+- `term_image`: enables functionality for drawing images to terminal.
+- `image`: enables `term_image` and dependency for `image` with impl for
+  `Image` trait.
+- `term_text`: enable features for basic parsing of ansi escape codes.
+- `all`: enable all features.
+
 ## Links
 - **Author:** [BonnyAD9][author]
 - **GitHub repository:** [BonnyAD/raplay][repo]

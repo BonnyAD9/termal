@@ -7,9 +7,13 @@ use std::{
 
 pub mod codes;
 pub mod error;
+#[cfg(feature = "term_image")]
 pub mod image;
+#[cfg(feature = "proc")]
 pub mod proc;
+#[cfg(feature = "raw")]
 pub mod raw;
+#[cfg(feature = "term_text")]
 pub mod term_text;
 
 /// Appends linear gradient to the given string
@@ -61,6 +65,7 @@ pub fn gradient(
 /// cases, but it should work in most cases as long as you use this crate to
 /// enable the terminal features.
 pub fn reset_terminal() {
+    #[cfg(feature = "raw")]
     if raw::is_raw_mode_enabled() {
         _ = raw::disable_raw_mode();
     }

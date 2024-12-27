@@ -184,3 +184,11 @@ impl Add<Rgb<u8>> for Rgb<usize> {
         self
     }
 }
+
+#[cfg(feature = "image")]
+impl<T> From<image::Rgb<T>> for Rgb<T> {
+    fn from(value: image::Rgb<T>) -> Self {
+        let [r, g, b] = value.0;
+        Self::new(r, g, b)
+    }
+}

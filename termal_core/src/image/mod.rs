@@ -38,3 +38,25 @@ pub trait Image {
         color_sum.as_f32() / (w * h) as f32
     }
 }
+
+#[cfg(feature = "image")]
+impl<T: image::GenericImage> Image for T
+where
+    T::Pixel: image::Pixel<Subpixel = u8>,
+{
+    fn width(&self) -> usize {
+        self.width() as usize
+    }
+
+    fn height(&self) -> usize {
+        self.height() as usize
+    }
+
+    fn get_pixel(&self, x: usize, y: usize) -> Rgb {
+        use image::Pixel;
+    
+        <Self as image::GenericImageView>::get_pixel(self, x as u32, y as u32)
+            .to_rgb()
+            .into()
+    }
+}

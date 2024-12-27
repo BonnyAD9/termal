@@ -10,10 +10,21 @@ readme = "../README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+default = ["raw"]
+term_image = []
+image = ["dep:image", "term_image"]
+raw = []
+term_text = []
+proc = []
+
 [dependencies]
-libc = "0.2.153"
+image =  { version = "0.25.5", optional = true }
 litrs = "0.4.1"
 place_macro = "1.0.0"
 proc-macro2 = "1.0.78"
 thiserror = "1.0.56"
 bitflags = "2.4.2"
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2.153"
