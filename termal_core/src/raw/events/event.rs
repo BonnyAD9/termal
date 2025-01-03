@@ -62,10 +62,12 @@ impl AmbigousEvent {
         Self::event(Event::KeyPress(key))
     }
 
+    /// Create unambiguous mouse event.
     pub fn mouse(mouse: Mouse) -> Self {
         Self::event(Event::Mouse(mouse))
     }
 
+    /// Create unambiguous status event.
     pub fn status(status: Status) -> Self {
         Self::event(Event::Status(status))
     }

@@ -21,6 +21,7 @@ bitflags::bitflags! {
     }
 }
 
+/// Mouse button.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Button {
     None,
@@ -29,6 +30,7 @@ pub enum Button {
     Right,
 }
 
+/// Mouse events.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Event {
     Down,
@@ -38,16 +40,25 @@ pub enum Event {
     Move,
 }
 
+/// Mouse event.
 #[derive(Copy, Clone, Debug)]
 pub struct Mouse {
+    /// Button which interacted.
     pub button: Button,
+    /// Event of that button.
     pub event: Event,
+    /// Keyboard modifiers pressed while the button was down.
     pub modifiers: Modifiers,
+    /// X coordinate of mouse (may be either in chars on pixels depending on
+    /// mouse mode)
     pub x: usize,
+    /// Y coordinate of mouse (may be either in chars on pixels depending on
+    /// mouse mode)
     pub y: usize,
 }
 
 impl Mouse {
+    /// Create new mouse event from mouse event data.
     pub fn from_data(
         state: u32,
         x: usize,

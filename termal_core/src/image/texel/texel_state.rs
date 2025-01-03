@@ -5,6 +5,7 @@ use crate::{
 
 use super::Texel;
 
+/// State when generating texel image.
 pub(super) struct TexelState<'a, I>
 where
     I: Image,
@@ -20,6 +21,7 @@ impl<'a, I> TexelState<'a, I>
 where
     I: Image,
 {
+    /// Create new texel image state.
     pub fn new(img: &'a I, w: usize, h: usize) -> Self {
         let texw = img.width() as f32 / w as f32;
         let texh = img.height() as f32 / h as f32;
@@ -32,10 +34,12 @@ where
         }
     }
 
+    /// Append texel image with half chars to the string `res`.
     pub fn append_half(&mut self, res: &mut String, nl: &str) {
         self.append(res, nl, Self::get_half_texel);
     }
 
+    /// Append texel image with quater chars to the string `res`.
     pub fn append_quater(&mut self, res: &mut String, nl: &str) {
         self.append(res, nl, Self::get_quater_texel);
     }

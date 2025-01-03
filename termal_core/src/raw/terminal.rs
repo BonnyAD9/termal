@@ -1,7 +1,6 @@
 use std::{
     collections::VecDeque,
     io::{self, BufRead, StdinLock},
-    mem,
     time::{Duration, Instant},
 };
 
@@ -12,20 +11,22 @@ use super::{
     utf8_code_len, wait_for_stdin, TermRead,
 };
 
+/// Terminal reader. Abstracts reading from terminal and parsing inputs. Works
+/// properly only if raw mode is enabled.
 #[derive(Default)]
 pub struct Terminal {
     buffer: VecDeque<u8>,
-    line_buf: Vec<char>,
 }
 
 impl Terminal {
+    /// Create new terminal.
     pub fn new() -> Self {
         Terminal {
             buffer: VecDeque::new(),
-            line_buf: vec![],
         }
     }
 
+    /// Read the next known event on stdin. May block.
     pub fn read(&mut self) -> Result<Event> {
         loop {
             if let AnyEvent::Known(ev) = self.read_ambigous()?.event {
@@ -34,6 +35,7 @@ impl Terminal {
         }
     }
 
+    /// Read the next event on stdin. May block.
     pub fn read_ambigous(&mut self) -> Result<AmbigousEvent> {
         if self.cur()? == 0x1b && self.buffer.len() != 1 {
             self.read_escape()
@@ -42,6 +44,7 @@ impl Terminal {
         }
     }
 
+    /// Read next byte from stdin. May block.
     pub fn read_byte(&mut self) -> Result<u8> {
         if let Some(b) = self.buffer.pop_front() {
             return Ok(b);
@@ -50,29 +53,32 @@ impl Terminal {
         self.buffer.pop_front().ok_or(Error::StdInEof)
     }
 
+    /// Appends next line of input from stdin to `s`. May block.
     pub fn read_line_to(&mut self, s: &mut String) -> Result<()> {
-        let buf = mem::take(&mut self.line_buf);
-        let mut reader = TermRead::reuse(self, KeyCode::Enter, buf);
+        let mut reader = TermRead::new(self, KeyCode::Enter);
         reader.read_to_str(s)?;
-        self.line_buf = reader.into();
         Ok(())
     }
 
+    /// Read the next line from stdin. May block.
     pub fn read_line(&mut self) -> Result<String> {
         let mut s = String::new();
         self.read_line_to(&mut s)?;
         Ok(s)
     }
 
+    /// Checks whether there is any buffered input in [`Terminal`]
     pub fn has_buffered_input(&self) -> bool {
         !self.buffer.is_empty()
     }
 
+    /// Checks whether the next input is available immidietely.
     pub fn has_input(&self) -> bool {
         self.has_buffered_input()
             || wait_for_stdin(Duration::ZERO).unwrap_or_default()
     }
 
+    /// Wait for input on the terminal. Block for at most the given duration.
     pub fn wait_for_input(&self, timeout: Duration) -> Result<bool> {
         if self.has_buffered_input() {
             Ok(true)
@@ -81,6 +87,7 @@ impl Terminal {
         }
     }
 
+    /// Read the next event on terminal. Block for at most the given duration.
     pub fn read_ambigous_timeout(
         &mut self,
         timeout: Duration,
@@ -92,6 +99,8 @@ impl Terminal {
         }
     }
 
+    /// Read the next known event on stdin. Block for at most the given
+    /// duration.
     pub fn read_timeout(
         &mut self,
         timeout: Duration,
@@ -103,6 +112,8 @@ impl Terminal {
         }
     }
 
+    /// Read raw bytes from the terminal to `res`. Returns the number of readed
+    /// bytes. Returns [`Error::StdInEof`] when reaches eof. May block.
     pub fn read_raw(&mut self, res: &mut [u8]) -> Result<usize> {
         let mut read = self.read_buffered(res)?;
         let mut stdin = io::stdin().lock();
@@ -112,6 +123,10 @@ impl Terminal {
         Ok(read)
     }
 
+    /// Read raw bytes from the terminal to `res`. Returns the number of readed
+    /// bytes. Returns [`Error::StdInEof`] when reaches eof. Block for at most
+    /// the given duration for each read from the terminal (so possibly
+    /// idefinitely if the input comes in periodically)
     pub fn read_raw_timeout(
         &mut self,
         res: &mut [u8],
@@ -125,6 +140,9 @@ impl Terminal {
         Ok(read)
     }
 
+    /// Read raw bytes from the terminal to `res`. Returns the number of readed
+    /// bytes. Returns [`Error::StdInEof`] when reaches eof. Block for at most
+    /// the given total duration.
     pub fn read_raw_single_timeout(
         &mut self,
         res: &mut [u8],
@@ -144,6 +162,7 @@ impl Terminal {
         Ok(read)
     }
 
+    /// Read one byte from stdin. Block for at most the given timeout.
     pub fn read_byte_timeout(
         &mut self,
         timeout: Duration,

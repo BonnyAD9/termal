@@ -1,3 +1,4 @@
+/// Basic CSI ANSI code.
 pub(crate) struct Csi {
     pub prefix: String,
     pub args: Vec<u32>,
@@ -5,6 +6,7 @@ pub(crate) struct Csi {
 }
 
 impl Csi {
+    /// Parse CSI code from string.
     pub fn parse(code: &str) -> Self {
         let mut code = code.chars();
         let mut prefix = String::new();

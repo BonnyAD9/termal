@@ -11,6 +11,7 @@ pub struct TermAttr {
     pub features: TermFeatures,
 }
 
+/// Type of simulated terminal.
 #[derive(Debug, Copy, Clone)]
 pub enum TermType {
     Vt100,
@@ -28,6 +29,7 @@ pub enum TermType {
 }
 
 bitflags! {
+    #[doc = "Terminal features."]
     #[derive(Debug, Clone, Copy)]
     pub struct TermFeatures: u32 {
         /// No extra features.
@@ -57,6 +59,7 @@ impl TermAttr {
         Self { typ, features }
     }
 
+    /// Create new [`TermAttr`] from csi code.
     pub(crate) fn parse(csi: Csi) -> Self {
         assert_eq!(csi.prefix, "?");
         assert_eq!(csi.postfix, "c");

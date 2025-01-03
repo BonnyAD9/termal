@@ -41,22 +41,26 @@ struct Handle {
     close: bool,
 }
 
+/// Enables raw mode on windows.
 pub fn enable_raw_mode() -> Result<()> {
     let in_buf = Handle::current_in_buf()?;
     in_buf.set_mode(in_buf.get_mode()? & !NO_RAW_BITS)
 }
 
+/// Disables raw mode on windows.
 pub fn disable_raw_mode() -> Result<()> {
     let in_buf = Handle::current_in_buf()?;
     in_buf.set_mode(in_buf.get_mode()? | NO_RAW_BITS)
 }
 
+/// Checks whether raw mode is enabled on windows.
 pub fn is_raw_mode_enabled() -> Result<bool> {
     Handle::current_in_buf()?
         .get_mode()
         .map(|m| (m & NO_RAW_BITS) == 0)
 }
 
+/// Get the terminal size on windows. The size in pixels is not supported.
 pub fn term_size() -> Result<TermSize> {
     Handle::current_out_buf()?.get_info().map(|i| TermSize {
         char_width: (i.srWindow.Right - i.srWindow.Left) as usize,
@@ -67,6 +71,8 @@ pub fn term_size() -> Result<TermSize> {
     })
 }
 
+/// Wait for stdin on windows with the given timeout. If timeout is zero
+/// returns immidietely whether there is data on stdin.
 pub fn wait_for_stdin(timeout: Duration) -> Result<bool> {
     let stdin = handle_result(unsafe { GetStdHandle(STD_INPUT_HANDLE) })?;
     let r = unsafe {

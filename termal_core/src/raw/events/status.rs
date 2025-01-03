@@ -1,14 +1,24 @@
 use super::TermAttr;
 
+/// Status event.
 #[derive(Debug, Clone)]
 pub enum Status {
+    /// Terminal attributes.
     Attributes(TermAttr),
+    /// Status OK
     Ok,
+    /// Cursor position report.
     CursorPosition { x: usize, y: usize },
+    /// Terminal name report.
     TerminalName(String),
+    /// Size of text area in pixels report.
     TextAreaSizePx { w: usize, h: usize },
+    /// Size of text area in characters report.
     TextAreaSize { w: usize, h: usize },
+    /// Size of character in pixels.
     CharSize { w: usize, h: usize },
+    /// Number of supported sixel colors.
     SixelColors(usize),
+    /// Maximum size of sixel image.
     SixelSize { w: usize, h: usize },
 }

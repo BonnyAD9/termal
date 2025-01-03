@@ -73,6 +73,7 @@ where
         Self::reuse(term, exit, vec![])
     }
 
+    /// Reuse terminal reader buffer.
     pub(crate) fn reuse(
         term: &'a mut Terminal,
         exit: P,

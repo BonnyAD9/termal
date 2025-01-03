@@ -26,6 +26,7 @@ bitflags::bitflags! {
     }
 }
 
+/// Key codes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum KeyCode {
     Up,
@@ -64,6 +65,7 @@ pub enum KeyCode {
     PgDown,
     Backspace,
     Esc,
+    /// Any other key coresponding directly to a character.
     Char(char),
 }
 

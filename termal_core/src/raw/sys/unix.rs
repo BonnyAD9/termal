@@ -69,10 +69,12 @@ impl From<winsize> for TermSize {
     }
 }
 
+/// Check if raw mode on linux is enabled.
 pub fn is_raw_mode_enabled() -> bool {
     get_original_terminal_mode().is_some()
 }
 
+/// Enable raw mode on linux.
 pub(crate) fn enable_raw_mode() -> Result<()> {
     let mut orig_mode = get_original_terminal_mode();
 
@@ -93,6 +95,7 @@ pub(crate) fn enable_raw_mode() -> Result<()> {
     Ok(())
 }
 
+/// Disable raw mode on linux.
 pub(crate) fn disable_raw_mode() -> Result<()> {
     let mut orig_mode = get_original_terminal_mode();
 
@@ -105,6 +108,7 @@ pub(crate) fn disable_raw_mode() -> Result<()> {
     Ok(())
 }
 
+/// Get the window size on linux.
 pub(crate) fn window_size() -> Result<TermSize> {
     let tty = TtyFd::get()?;
     let mut size = winsize {
@@ -120,6 +124,8 @@ pub(crate) fn window_size() -> Result<TermSize> {
     )
 }
 
+/// Wait for stdin input on linux with the given timeout. If zero returns
+/// immidietly whether there is available input.
 pub(crate) fn wait_for_stdin(timeout: Duration) -> Result<bool> {
     let mut pdfs = pollfd {
         fd: libc::STDIN_FILENO,
