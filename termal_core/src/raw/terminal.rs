@@ -342,7 +342,7 @@ fn read_stdin_once(
     res: &mut [u8],
 ) -> Result<usize> {
     let buf = stdin.fill_buf()?;
-    if buf.len() == 0 {
+    if buf.is_empty() {
         return Err(Error::StdInEof);
     }
     let len = buf.len().min(res.len());
