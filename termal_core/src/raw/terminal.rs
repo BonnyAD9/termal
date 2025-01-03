@@ -1,14 +1,15 @@
 use std::{
     collections::VecDeque,
-    io::{self, BufRead},
+    io::{self, BufRead, StdinLock},
     mem,
+    time::{Duration, Instant},
 };
 
 use crate::error::{Error, Result};
 
 use super::{
     events::{AmbigousEvent, AnyEvent, Event, KeyCode},
-    utf8_code_len, TermRead,
+    utf8_code_len, wait_for_stdin, TermRead,
 };
 
 #[derive(Default)]
@@ -67,12 +68,124 @@ impl Terminal {
         !self.buffer.is_empty()
     }
 
+    pub fn has_input(&self) -> bool {
+        self.has_buffered_input()
+            || wait_for_stdin(Duration::ZERO).unwrap_or_default()
+    }
+
+    pub fn wait_for_input(&self, timeout: Duration) -> Result<bool> {
+        if self.has_buffered_input() {
+            Ok(true)
+        } else {
+            wait_for_stdin(timeout)
+        }
+    }
+
+    pub fn read_ambigous_timeout(
+        &mut self,
+        timeout: Duration,
+    ) -> Result<Option<AmbigousEvent>> {
+        if self.wait_for_input(timeout)? {
+            Ok(Some(self.read_ambigous()?))
+        } else {
+            Ok(None)
+        }
+    }
+
+    pub fn read_timeout(
+        &mut self,
+        timeout: Duration,
+    ) -> Result<Option<Event>> {
+        if self.wait_for_input(timeout)? {
+            Ok(Some(self.read()?))
+        } else {
+            Ok(None)
+        }
+    }
+
+    pub fn read_raw(&mut self, res: &mut [u8]) -> Result<usize> {
+        let mut read = self.read_buffered(res)?;
+        let mut stdin = io::stdin().lock();
+        while read < res.len() {
+            read += read_stdin_once(&mut stdin, &mut res[read..])?;
+        }
+        Ok(read)
+    }
+
+    pub fn read_raw_timeout(
+        &mut self,
+        res: &mut [u8],
+        timeout: Duration,
+    ) -> Result<usize> {
+        let mut read = self.read_buffered(res)?;
+        let mut stdin = io::stdin().lock();
+        while read < res.len() && wait_for_stdin(timeout).unwrap_or_default() {
+            read += read_stdin_once(&mut stdin, &mut res[read..])?;
+        }
+        Ok(read)
+    }
+
+    pub fn read_raw_single_timeout(
+        &mut self,
+        res: &mut [u8],
+        mut timeout: Duration,
+    ) -> Result<usize> {
+        let mut read = self.read_buffered(res)?;
+        let mut stdin = io::stdin().lock();
+        while read < res.len() && timeout >= Duration::ZERO {
+            let now = Instant::now();
+            let ready = wait_for_stdin(timeout);
+            timeout -= Instant::now() - now;
+            if !ready.unwrap_or_default() {
+                break;
+            }
+            read += read_stdin_once(&mut stdin, &mut res[read..])?;
+        }
+        Ok(read)
+    }
+
+    pub fn read_byte_timeout(
+        &mut self,
+        timeout: Duration,
+    ) -> Result<Option<u8>> {
+        if self.wait_for_input(timeout).unwrap_or_default() {
+            Ok(Some(self.read_byte()?))
+        } else {
+            Ok(None)
+        }
+    }
+
+    fn read_buffered(&mut self, mut res: &mut [u8]) -> Result<usize> {
+        let (s1, s2) = self.buffer.as_slices();
+
+        // Read from the first slice.
+        if s1.len() >= res.len() {
+            res.copy_from_slice(&s1[..res.len()]);
+            self.buffer.consume(res.len());
+            return Ok(res.len());
+        }
+        res[..s1.len()].copy_from_slice(s1);
+        res = &mut res[s1.len()..];
+
+        // Read from the second slice
+        if s2.len() >= res.len() {
+            res.copy_from_slice(&s2[..res.len()]);
+            let read = s1.len() + res.len();
+            self.buffer.consume(read);
+            return Ok(read);
+        }
+        res[..s2.len()].copy_from_slice(s2);
+        let read = s1.len() + s2.len();
+        self.buffer.clear();
+        Ok(read)
+    }
+
     fn fill_buffer(&mut self) -> Result<()> {
-        let mut stdio = io::stdin().lock();
-        let buf = stdio.fill_buf()?;
+        let mut stdin = io::stdin().lock();
+        let buf = stdin.fill_buf()?;
         self.buffer.extend(buf);
         let len = buf.len();
-        stdio.consume(len);
+        stdin.consume(len);
         Ok(())
     }
 
@@ -222,4 +335,18 @@ impl Terminal {
             Ok(None)
         }
     }
+}
+
+fn read_stdin_once(
+    stdin: &mut StdinLock<'static>,
+    res: &mut [u8],
+) -> Result<usize> {
+    let buf = stdin.fill_buf()?;
+    if buf.len() == 0 {
+        return Err(Error::StdInEof);
+    }
+    let len = buf.len().min(res.len());
+    res[..len].copy_from_slice(&buf[..len]);
+    stdin.consume(len);
+    Ok(len)
 }
