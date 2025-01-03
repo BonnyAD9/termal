@@ -1,2 +1,2 @@
 - Get color configuration (default background color, ...)
-- Window support
+- Global terminal.
