@@ -11,23 +11,26 @@ readme = "../README.md"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
-default = ["raw"]
+default = ["all"]
+all = ["term_image", "image", "raw", "term_text", "proc", "readers", "events"]
 term_image = []
 image = ["dep:image", "term_image"]
-raw = []
+raw = ["dep:bitflags", "dep:libc", "dep:winapi"]
+events = ["raw"]
 term_text = []
-proc = []
+proc = ["dep:litrs", "dep:proc-macro2"]
+readers = ["raw", "term_text", "events"]
 
 [dependencies]
 image =  { version = "0.25.5", optional = true }
-litrs = "0.4.1"
+litrs = { version = "0.4.1", optional = true }
 place_macro = "1.0.0"
-proc-macro2 = "1.0.78"
+proc-macro2 = { version = "1.0.78", optional = true }
 thiserror = "1.0.56"
-bitflags = "2.4.2"
+bitflags = { version = "2.4.2", optional = true }
 
 [target.'cfg(unix)'.dependencies]
-libc = "0.2.153"
+libc = { version = "0.2.153", optional = true }
 
 [target.'cfg(windows)'.dependencies]
-winapi = { version = "0.3.9", features = ["winnt", "handleapi", "fileapi", "consoleapi", "processenv", "winbase", "winuser", "winerror"]}
+winapi = { version = "0.3.9", features = ["winnt", "handleapi", "fileapi", "consoleapi", "processenv", "winbase", "winuser", "winerror"], optional = true}

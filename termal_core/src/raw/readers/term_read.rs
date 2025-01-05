@@ -1,6 +1,7 @@
 use std::{
     cmp::Ordering,
     io::{stdout, IsTerminal, Write},
+    mem,
     time::Duration,
 };
 
@@ -13,7 +14,7 @@ use crate::{
     },
 };
 
-use super::Predicate;
+use super::{Predicate, ReadConf};
 
 /// Terminal reader.
 pub struct TermRead<'a, P>
@@ -41,39 +42,128 @@ where
 {
     /// Creates new terminal reader that exits with the given predicate.
     pub fn new(term: &'a mut Terminal, exit: P) -> Self {
-        Self::reuse(term, exit, vec![])
+        Self::from_config(term, exit, Default::default())
     }
 
-    /// Reuse terminal reader buffer.
-    pub(crate) fn reuse(
+    /// Create terminal reader from configuration.
+    pub fn from_config(
         term: &'a mut Terminal,
         exit: P,
-        mut buf: Vec<char>,
+        conf: ReadConf,
     ) -> Self {
-        buf.clear();
+        let pos = conf
+            .edit_pos
+            .unwrap_or(conf.edit.len())
+            .min(conf.edit.len());
         Self {
-            buf,
+            buf: conf.edit,
             pbuf: String::new(),
-            pos: 0,
+            pos,
             term,
             exit,
             size: (usize::MAX, usize::MAX),
         }
     }
 
+    /// Edit the given string.
+    pub fn edit_str(
+        &mut self,
+        s: &mut String,
+        pos: Option<usize>,
+    ) -> Result<()> {
+        self.set_edit(&s, pos);
+        self.reshow()?;
+        s.clear();
+        self.finish_to_str(s)
+    }
+
+    /// Edit the given string. Return new edited string (the old is unchanged).
+    pub fn edit(
+        &mut self,
+        s: impl AsRef<str>,
+        pos: Option<usize>,
+    ) -> Result<String> {
+        self.set_edit(s, pos);
+        self.reshow()?;
+        self.finish()
+    }
+
+    /// Edit the given vector. This is the most optimal edit as it doesn't do
+    /// any copy of the passed data.
+    pub fn edit_vec(
+        &mut self,
+        s: &mut Vec<char>,
+        pos: Option<usize>,
+    ) -> Result<()> {
+        mem::swap(&mut self.buf, s);
+        self.set_pos(pos);
+        self.reshow()?;
+        self.get_all()?;
+        mem::swap(&mut self.buf, s);
+        self.clear();
+        Ok(())
+    }
+
     /// Appends readed text to a string.
     pub fn read_to_str(&mut self, s: &mut String) -> Result<()> {
-        self.get_all()?;
-        s.extend(self.buf.iter().copied());
-        self.buf.clear();
-        Ok(())
+        self.clear();
+        self.reshow()?;
+        self.finish_to_str(s)
     }
 
     /// Reads from console and returns the readed string.
     pub fn read_str(&mut self) -> Result<String> {
-        let mut s = String::new();
-        self.read_to_str(&mut s)?;
-        Ok(s)
+        self.clear();
+        self.reshow()?;
+        self.finish()
+    }
+
+    /// Continue reading all data and reset.
+    pub fn finish_to_str(&mut self, s: &mut String) -> Result<()> {
+        self.get_all()?;
+        s.extend(&self.buf);
+        self.clear();
+        Ok(())
+    }
+
+    /// Continue reading all the data and reset.
+    pub fn finish(&mut self) -> Result<String> {
+        let mut r = String::new();
+        self.finish_to_str(&mut r)?;
+        Ok(r)
+    }
+
+    /// Get the readed characters.
+    pub fn get_readed(&self) -> &[char] {
+        &self.buf
+    }
+
+    /// Get the position of cursor within the readed characters.
+    pub fn get_pos(&self) -> usize {
+        self.pos
+    }
+
+    /// Set string to edit.
+    pub fn set_edit(&mut self, s: impl AsRef<str>, pos: Option<usize>) {
+        self.buf.clear();
+        self.buf.extend(s.as_ref().chars());
+        self.set_pos(pos);
+    }
+
+    pub fn set_pos(&mut self, pos: Option<usize>) {
+        self.pos = pos.unwrap_or(self.buf.len()).min(self.buf.len());
+    }
+
+    /// Reset the buffer.
+    pub fn clear(&mut self) {
+        self.pos = 0;
+        self.buf.clear();
+    }
+
+    /// Refresh the view.
+    pub fn reshow(&mut self) -> Result<()> {
+        self.reprint_all();
+        self.commit()
     }
 
     fn get_all(&mut self) -> Result<()> {
@@ -306,13 +396,19 @@ where
         }
     }
 
+    fn reprint_all(&mut self) {
+        let pos = self.pos;
+        self.reprint_dont_move(0);
+        self.move_to_pos(pos);
+    }
+
     fn reprint_pos(&mut self) {
         self.reprint_from(self.pos);
     }
 
     fn reprint_from(&mut self, pos: usize) {
         let save = self.pos;
-        self.move_to_pos(pos);
+        //self.move_to_pos(pos);
 
         self.reprint_dont_move(pos);
         self.move_to_pos(save);

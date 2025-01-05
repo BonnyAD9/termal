@@ -15,6 +15,7 @@ fn main() -> Result<()> {
 
 fn start() -> Result<()> {
     let mut term = Terminal::new();
-    println!("\n\rreaded: {}\r", term.read_line()?);
+    print!("Very long prompt is this. Please type here: ");
+    println!("\n\rreaded: {}\r", term.edit_line("old text")?);
     Ok(())
 }

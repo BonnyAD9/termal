@@ -16,7 +16,9 @@
 - Add codes to insert and delete lines, chars and columns.
 - Add option for universal terminal reset and to regiester panic hook with that
   reset.
+- Reader can now edit text.
 + Move around some logic around sixels.
++ Refactor readers.
 + Split into features.
 + Windows support (untested)
 

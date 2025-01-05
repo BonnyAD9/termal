@@ -6,11 +6,12 @@ use std::{
 
 use crate::error::{Error, Result};
 
-use super::{
-    events::{AmbigousEvent, AnyEvent, Event},
-    readers::TermRead,
-    utf8_code_len, wait_for_stdin,
-};
+use super::{events::KeyCode, readers::ReadConf, wait_for_stdin};
+
+#[cfg(feature = "events")]
+use super::events::{AmbigousEvent, AnyEvent, Event};
+#[cfg(feature = "readers")]
+use super::readers::TermRead;
 
 /// Terminal reader. Abstracts reading from terminal and parsing inputs. Works
 /// properly only if raw mode is enabled.
@@ -27,24 +28,6 @@ impl Terminal {
         }
     }
 
-    /// Read the next known event on stdin. May block.
-    pub fn read(&mut self) -> Result<Event> {
-        loop {
-            if let AnyEvent::Known(ev) = self.read_ambigous()?.event {
-                return Ok(ev);
-            }
-        }
-    }
-
-    /// Read the next event on stdin. May block.
-    pub fn read_ambigous(&mut self) -> Result<AmbigousEvent> {
-        if self.cur()? == 0x1b && self.buffer.len() != 1 {
-            self.read_escape()
-        } else {
-            self.read_char()
-        }
-    }
-
     /// Read next byte from stdin. May block.
     pub fn read_byte(&mut self) -> Result<u8> {
         if let Some(b) = self.buffer.pop_front() {
@@ -52,20 +35,6 @@ impl Terminal {
         }
         self.fill_buffer()?;
         self.buffer.pop_front().ok_or(Error::StdInEof)
-    }
-
-    /// Appends next line of input from stdin to `s`. May block.
-    pub fn read_line_to(&mut self, s: &mut String) -> Result<()> {
-        let mut reader = TermRead::lines(self);
-        reader.read_to_str(s)?;
-        Ok(())
-    }
-
-    /// Read the next line from stdin. May block.
-    pub fn read_line(&mut self) -> Result<String> {
-        let mut s = String::new();
-        self.read_line_to(&mut s)?;
-        Ok(s)
     }
 
     /// Checks whether there is any buffered input in [`Terminal`]
@@ -85,31 +54,6 @@ impl Terminal {
             Ok(true)
         } else {
             wait_for_stdin(timeout)
-        }
-    }
-
-    /// Read the next event on terminal. Block for at most the given duration.
-    pub fn read_ambigous_timeout(
-        &mut self,
-        timeout: Duration,
-    ) -> Result<Option<AmbigousEvent>> {
-        if self.wait_for_input(timeout)? {
-            Ok(Some(self.read_ambigous()?))
-        } else {
-            Ok(None)
-        }
-    }
-
-    /// Read the next known event on stdin. Block for at most the given
-    /// duration.
-    pub fn read_timeout(
-        &mut self,
-        timeout: Duration,
-    ) -> Result<Option<Event>> {
-        if self.wait_for_input(timeout)? {
-            Ok(Some(self.read()?))
-        } else {
-            Ok(None)
         }
     }
 
@@ -208,13 +152,103 @@ impl Terminal {
         stdin.consume(len);
         Ok(())
     }
+}
 
-    fn cur(&mut self) -> Result<u8> {
-        if let Some(b) = self.buffer.front() {
-            Ok(*b)
+#[cfg(feature = "readers")]
+impl Terminal {
+    /// Appends next line of input from stdin to `s`. May block.
+    pub fn read_line_to(&mut self, s: &mut String) -> Result<()> {
+        let mut reader = TermRead::lines(self);
+        reader.read_to_str(s)?;
+        Ok(())
+    }
+
+    /// Read the next line from stdin. May block.
+    pub fn read_line(&mut self) -> Result<String> {
+        let mut s = String::new();
+        self.read_line_to(&mut s)?;
+        Ok(s)
+    }
+
+    /// Edit the given string. Newlines are replaced with spaces.
+    pub fn edit_line_in(&mut self, s: &mut String) -> Result<()> {
+        let mut reader = self.get_edit_line_reader(&s);
+        s.clear();
+        reader.reshow()?;
+        reader.finish_to_str(s)
+    }
+
+    pub fn edit_line(&mut self, s: impl AsRef<str>) -> Result<String> {
+        let mut reader = self.get_edit_line_reader(s);
+        reader.reshow()?;
+        reader.finish()
+    }
+
+    fn get_edit_line_reader(
+        &mut self,
+        s: impl AsRef<str>,
+    ) -> TermRead<'_, KeyCode> {
+        TermRead::from_config(
+            self,
+            KeyCode::Enter,
+            ReadConf {
+                edit: s
+                    .as_ref()
+                    .chars()
+                    .filter_map(|c| match c {
+                        '\n' => Some(' '),
+                        '\r' => None,
+                        c => Some(c),
+                    })
+                    .collect(),
+                ..Default::default()
+            },
+        )
+    }
+}
+
+#[cfg(feature = "events")]
+impl Terminal {
+    /// Read the next known event on stdin. May block.
+    pub fn read(&mut self) -> Result<Event> {
+        loop {
+            if let AnyEvent::Known(ev) = self.read_ambigous()?.event {
+                return Ok(ev);
+            }
+        }
+    }
+
+    /// Read the next known event on stdin. Block for at most the given
+    /// duration.
+    pub fn read_timeout(
+        &mut self,
+        timeout: Duration,
+    ) -> Result<Option<Event>> {
+        if self.wait_for_input(timeout)? {
+            Ok(Some(self.read()?))
         } else {
-            self.fill_buffer()?;
-            self.buffer.front().ok_or(Error::StdInEof).copied()
+            Ok(None)
+        }
+    }
+
+    /// Read the next event on stdin. May block.
+    pub fn read_ambigous(&mut self) -> Result<AmbigousEvent> {
+        if self.cur()? == 0x1b && self.buffer.len() != 1 {
+            self.read_escape()
+        } else {
+            self.read_char()
+        }
+    }
+
+    /// Read the next event on terminal. Block for at most the given duration.
+    pub fn read_ambigous_timeout(
+        &mut self,
+        timeout: Duration,
+    ) -> Result<Option<AmbigousEvent>> {
+        if self.wait_for_input(timeout)? {
+            Ok(Some(self.read_ambigous()?))
+        } else {
+            Ok(None)
         }
     }
 
@@ -328,6 +362,15 @@ impl Terminal {
         }
     }
 
+    fn cur(&mut self) -> Result<u8> {
+        if let Some(b) = self.buffer.front() {
+            Ok(*b)
+        } else {
+            self.fill_buffer()?;
+            self.buffer.front().ok_or(Error::StdInEof).copied()
+        }
+    }
+
     fn read_utf8(&mut self, buf: &mut [u8; 4]) -> Result<char> {
         for i in 1..=4 {
             if self.buffer.len() < i {
@@ -369,4 +412,19 @@ fn read_stdin_once(
     res[..len].copy_from_slice(&buf[..len]);
     stdin.consume(len);
     Ok(len)
+}
+
+#[cfg(feature = "events")]
+fn utf8_code_len(first: u8) -> usize {
+    if (first & 0x80) == 0 {
+        1
+    } else if (first & 0xE0) == 0xC0 {
+        2
+    } else if (first & 0xF0) == 0xE0 {
+        3
+    } else if (first & 0xF8) == 0xF0 {
+        4
+    } else {
+        0
+    }
 }
