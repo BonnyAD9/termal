@@ -19,6 +19,7 @@ fn main() -> Result<()> {
 fn start() -> Result<()> {
     let mut term = Terminal::new();
     let mut reader = TermRead::new(&mut term, KeyCode::Esc);
-    println!("\n\rreaded: {}\r", reader.edit("old text", None)?);
+    reader.set_prompt("type here: ");
+    println!("\n\rread: {}\r", reader.edit("old text", None)?);
     Ok(())
 }

@@ -217,3 +217,12 @@ impl<'a> From<TermText<'a>> for Cow<'a, str> {
         value.text
     }
 }
+
+impl Default for TermText<'_> {
+    fn default() -> Self {
+        Self {
+            text: Default::default(),
+            metadata: Cell::new(Some(Default::default())),
+        }
+    }
+}

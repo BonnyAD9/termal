@@ -1,5 +1,4 @@
 use std::{
-    cmp::Ordering,
     io::{stdout, IsTerminal, Write},
     mem,
     time::Duration,
@@ -15,7 +14,7 @@ use crate::{
     term_text::TermText,
 };
 
-use super::{Predicate, ReadConf};
+use super::{Predicate, ReadConf, Vec2};
 
 /// Terminal reader. Supports only single line. Newlines are skipped.
 pub struct TermRead<'a, P>
@@ -23,11 +22,13 @@ where
     P: Predicate<Event>,
 {
     buf: Vec<char>,
+    prompt: TermText<'static>,
     pbuf: String,
     pos: usize,
     term: &'a mut Terminal,
     exit: P,
-    size: (usize, usize),
+    size: Vec2,
+    finished: bool,
 }
 
 impl<'a> TermRead<'a, KeyCode> {
@@ -63,7 +64,9 @@ where
             pos,
             term,
             exit,
-            size: (usize::MAX, usize::MAX),
+            prompt: Default::default(),
+            size: (usize::MAX, usize::MAX).into(),
+            finished: false,
         }
     }
 
@@ -160,6 +163,7 @@ where
         self.set_pos(pos);
     }
 
+    /// Set the position within the buffer.
     pub fn set_pos(&mut self, pos: Option<usize>) {
         self.pos = pos.unwrap_or(self.buf.len()).min(self.buf.len());
     }
@@ -168,6 +172,7 @@ where
     pub fn clear(&mut self) {
         self.pos = 0;
         self.buf.clear();
+        self.finished = false;
     }
 
     /// Refresh the view.
@@ -176,54 +181,84 @@ where
         self.commit()
     }
 
-    fn get_all(&mut self) -> Result<()> {
-        loop {
-            while matches!(
-                wait_for_stdin(Duration::from_millis(100)),
-                Ok(false)
-            ) {
-                self.resize();
-                self.commit()?;
-            }
-            self.resize();
-            self.commit()?;
+    /// Set the prompt.
+    pub fn set_prompt(&mut self, prompt: impl Into<TermText<'static>>) {
+        self.prompt = prompt.into();
+    }
+
+    /// Read one next character or nothing. Doesn't block. Returns `true` if
+    /// the input has ended and the result may be retrieved with
+    /// [`TermRead::get_readed`], [`TermRead::finish`] or
+    /// [`TermRead::finish_to_str`].
+    pub fn read_one(&mut self) -> Result<bool> {
+        if self.finished {
+            return Ok(true);
+        }
+
+        self.finished = self.read_one_inner()?;
+        Ok(self.finished)
+    }
+
+    /// Check if the reading is finished.
+    pub fn is_finished(&self) -> bool {
+        self.finished
+    }
+
+    fn read_one_inner(&mut self) -> Result<bool> {
+        let r = wait_for_stdin(Duration::from_millis(100));
+        self.resize();
+        self.commit()?;
+
+        if matches!(r, Ok(false)) {
+            return Ok(false);
+        }
+
+        if self.read_next()? {
+            return Ok(true);
+        }
+
+        while self.term.has_buffered_input() {
             if self.read_next()? {
-                return Ok(());
-            }
-            while self.term.has_buffered_input() {
-                if self.read_next()? {
-                    return Ok(());
-                }
+                return Ok(true);
             }
         }
+
+        Ok(false)
+    }
+
+    fn get_all(&mut self) -> Result<()> {
+        if self.finished {
+            return Ok(());
+        }
+
+        while !self.read_one_inner()? {}
+        self.finished = true;
+        Ok(())
     }
 
     fn resize(&mut self) {
-        let Ok(size) = term_size().map(|s| (s.char_width, s.char_height))
+        let Ok(size) =
+            term_size().map(|s| Vec2::new(s.char_width, s.char_height))
         else {
             return;
         };
         if self.size == size {
             return;
         }
-        let Ok(size) = term_size().map(|s| (s.char_width, s.char_height))
-        else {
-            return;
-        };
         let pos = self.cur_pos();
-        if pos.0 == 0 && pos.1 != 0 && self.pos == self.buf.len() {
-            if size.0 > self.size.0 {
-                self.pbuf += &codes::move_up!(pos.1);
+        if pos.x == 0 && pos.y != 0 && self.pos == self.buf.len() {
+            if size.x > self.size.x {
+                self.pbuf += &codes::move_up!(pos.y);
             } else {
                 self.pbuf += &codes::move_up!(
-                    self.pos / size.0 + (self.pos % size.0 > 0) as usize
+                    self.pos / size.x + (self.pos % size.y > 0) as usize
                 );
             }
         }
-        self.pbuf += &codes::move_left!(pos.0);
+        self.pbuf += &codes::move_left!(pos.x);
         self.size = size;
         let pos = self.pos;
-        self.reprint_dont_move(0);
+        self.reprint_with_prompt_dont_move();
         self.move_to_pos(pos);
     }
 
@@ -266,7 +301,7 @@ where
                     self.pbuf.push(chr);
                 }
                 self.pos += 1;
-                if self.cur_pos().0 == 0 {
+                if self.cur_pos().x == 0 {
                     self.pbuf += "\r\n";
                 }
             }
@@ -329,14 +364,21 @@ where
         self.move_to_pos(pos);
     }
 
-    fn cur_pos(&self) -> (usize, usize) {
-        (self.pos % self.size.0, self.pos / self.size.0)
+    /// Gets the position + prompt lentgth
+    fn len(&self) -> usize {
+        self.pos + self.prompt.display_char_cnt()
+    }
+
+    fn cur_pos(&self) -> Vec2 {
+        self.size.pos_of_idx(self.len())
+    }
+
+    fn start_pos(&self) -> Vec2 {
+        self.size.pos_of_idx(self.prompt.display_char_cnt())
     }
 
     fn move_start(&mut self) {
-        let pos = self.cur_pos();
-        self.pbuf += &codes::move_left!(pos.0);
-        self.pbuf += &codes::move_up!(pos.1);
+        self.move_rd_dif(self.start_pos(), self.cur_pos());
     }
 
     fn home(&mut self) {
@@ -374,6 +416,27 @@ where
         }
     }
 
+    fn move_right_dif(&mut self, a: usize, b: usize) {
+        if a > b {
+            self.pbuf += &codes::move_right!(a - b);
+        } else {
+            self.pbuf += &codes::move_left!(b - a);
+        }
+    }
+
+    fn move_down_dif(&mut self, a: usize, b: usize) {
+        if a > b {
+            self.pbuf += &codes::move_down!(a - b);
+        } else {
+            self.pbuf += &codes::move_up!(b - a);
+        }
+    }
+
+    fn move_rd_dif(&mut self, a: Vec2, b: Vec2) {
+        self.move_right_dif(a.x, b.x);
+        self.move_down_dif(a.y, b.y);
+    }
+
     fn move_to_pos(&mut self, pos: usize) {
         if pos == self.pos {
             return;
@@ -382,9 +445,10 @@ where
         let old = self.cur_pos();
         self.pos = pos;
         let new = self.cur_pos();
+        self.move_rd_dif(new, old);
 
-        let new_line_adj = new.0.saturating_sub(old.0) > 0
-            && new.0 == 0
+        /*let new_line_adj = new.x.saturating_sub(old.x) > 0
+            && new.x == 0
             && !self.buf.is_empty();
 
         match new.0.cmp(&old.0) {
@@ -408,13 +472,14 @@ where
 
         if new_line_adj {
             self.pbuf.push('\n');
-        }
+        }*/
     }
 
     fn reprint_all(&mut self) {
-        let pos = self.pos;
-        self.reprint_dont_move(0);
-        self.move_to_pos(pos);
+        let save = self.pos;
+        self.move_rd_dif((0, 0).into(), self.cur_pos());
+        self.reprint_with_prompt_dont_move();
+        self.move_to_pos(save);
     }
 
     fn reprint_pos(&mut self) {
@@ -423,14 +488,34 @@ where
 
     fn reprint_from(&mut self, pos: usize) {
         let save = self.pos;
-        //self.move_to_pos(pos);
+        self.move_to_pos(pos);
 
         self.reprint_dont_move(pos);
         self.move_to_pos(save);
     }
 
+    fn reprint_with_prompt_dont_move(&mut self) {
+        self.pbuf += codes::ERASE_TO_END;
+        self.pbuf += self.prompt.as_str();
+        self.print_from_dont_move(0);
+
+        self.pos = self.buf.len();
+        if self.cur_pos().x == 0 && !self.buf.is_empty() {
+            self.pbuf += "\r\n";
+        }
+    }
+
     fn reprint_dont_move(&mut self, pos: usize) {
         self.pbuf += codes::ERASE_TO_END;
+        self.print_from_dont_move(pos);
+
+        self.pos = self.buf.len();
+        if self.cur_pos().x == 0 && !self.buf.is_empty() {
+            self.pbuf += "\r\n";
+        }
+    }
+
+    fn print_from_dont_move(&mut self, pos: usize) {
         self.pbuf.extend(self.buf[pos..].iter().flat_map(|c| {
             Some(c).into_iter().chain(if *c == '\n' {
                 Some(&'\r')
@@ -438,11 +523,6 @@ where
                 None
             })
         }));
-
-        self.pos = self.buf.len();
-        if self.cur_pos().0 == 0 && !self.buf.is_empty() {
-            self.pbuf += "\r\n";
-        }
     }
 
     fn commit(&mut self) -> Result<()> {
