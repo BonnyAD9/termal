@@ -5,13 +5,11 @@ mod vec2;
 
 use std::io::{self, Write};
 
-use crate::{error::Result, raw::is_raw_mode_enabled};
+use crate::error::Result;
 
 pub(crate) use self::vec2::*;
 
 pub use self::{predicate::*, read_conf::*, term_read::*};
-
-use super::{disable_raw_mode, enable_raw_mode, Terminal};
 
 /// Read one line from standard input. This will use custom readline if
 /// supported. Otherwise it will fallback to the default readline function.
@@ -47,10 +45,15 @@ pub fn prompt_to<'a>(res: &mut String, prompt: impl AsRef<str>) -> Result<()> {
     prompt_to_fallback(res, prompt)
 }
 
+#[cfg(any(windows, unix))]
 fn prompt_to_inner<'a>(
     res: &mut String,
     prompt: impl AsRef<str>,
 ) -> Result<()> {
+    use super::{
+        disable_raw_mode, enable_raw_mode, is_raw_mode_enabled, Terminal,
+    };
+
     let raw = is_raw_mode_enabled();
     if !raw {
         enable_raw_mode()?;
