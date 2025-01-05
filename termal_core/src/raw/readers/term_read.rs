@@ -189,8 +189,9 @@ where
     /// Read one next character or nothing. Doesn't block. Returns `true` if
     /// the input has ended and the result may be retrieved with
     /// [`TermRead::get_readed`], [`TermRead::finish`] or
-    /// [`TermRead::finish_to_str`].
-    pub fn read_one(&mut self) -> Result<bool> {
+    /// [`TermRead::finish_to_str`]. This is unsafe because calls to `set_`
+    /// functions may break the input if this is called.
+    pub unsafe fn read_one(&mut self) -> Result<bool> {
         if self.finished {
             return Ok(true);
         }
