@@ -499,33 +499,6 @@ where
         self.pos = pos;
         let new = self.cur_pos();
         self.move_rd_dif(new, old);
-
-        /*let new_line_adj = new.x.saturating_sub(old.x) > 0
-            && new.x == 0
-            && !self.buf.is_empty();
-
-        match new.0.cmp(&old.0) {
-            Ordering::Greater => {
-                self.pbuf += &codes::move_right!(new.0 - old.0)
-            }
-            Ordering::Less => self.pbuf += &codes::move_left!(old.0 - new.0),
-            _ => {}
-        }
-        match new.1.cmp(&old.1) {
-            Ordering::Greater => {
-                if new_line_adj {
-                    self.pbuf += &codes::move_down!(new.1 - old.1 - 1);
-                } else {
-                    self.pbuf += &codes::move_down!(new.1 - old.1);
-                }
-            }
-            Ordering::Less => self.pbuf += &codes::move_up!(old.1 - new.1),
-            _ => {}
-        }
-
-        if new_line_adj {
-            self.pbuf.push('\n');
-        }*/
     }
 
     fn reprint_all(&mut self) {
