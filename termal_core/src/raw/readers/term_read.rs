@@ -108,7 +108,7 @@ where
     ) -> Result<()> {
         mem::swap(&mut self.buf, s);
         // TODO: change when lines are supported
-        self.buf.retain(|c| !matches!(c, '\n' | '\r'));
+        self.buf.retain(|c| !c.is_ascii_control());
         self.set_pos(pos);
         self.reshow()?;
         self.get_all()?;
