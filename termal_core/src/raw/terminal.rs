@@ -4,7 +4,10 @@ use std::{
     time::{Duration, Instant},
 };
 
-use crate::error::{Error, Result};
+use crate::{
+    error::{Error, Result},
+    term_text::TermText,
+};
 
 use super::wait_for_stdin;
 
@@ -180,6 +183,16 @@ impl Terminal {
     pub fn edit_line(&mut self, s: impl AsRef<str>) -> Result<String> {
         let mut reader = TermRead::lines(self);
         reader.edit(s, None)
+    }
+
+    /// Prompt the user with the given prompt and return the entered result.
+    pub fn prompt(
+        &mut self,
+        s: impl Into<TermText<'static>>,
+    ) -> Result<String> {
+        let mut reader = TermRead::lines(self);
+        reader.set_prompt(s);
+        reader.read_str()
     }
 }
 

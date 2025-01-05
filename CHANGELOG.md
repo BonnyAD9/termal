@@ -17,6 +17,8 @@
 - Add option for universal terminal reset and to regiester panic hook with that
   reset.
 - Reader can now edit text.
+- Reader can have prompt.
+- More methods on reader.
 + Move around some logic around sixels.
 + Refactor readers.
 + Split into features.

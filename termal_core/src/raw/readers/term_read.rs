@@ -218,6 +218,11 @@ where
         self.finished
     }
 
+    /// Sets the exit condition for the reader.
+    pub fn set_end_condition(&mut self, c: P) {
+        self.exit = c;
+    }
+
     fn read_one_inner(&mut self) -> Result<bool> {
         let r = wait_for_stdin(Duration::from_millis(100));
         self.resize();
