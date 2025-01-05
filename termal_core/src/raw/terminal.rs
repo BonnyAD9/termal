@@ -7,8 +7,9 @@ use std::{
 use crate::error::{Error, Result};
 
 use super::{
-    events::{AmbigousEvent, AnyEvent, Event, KeyCode},
-    utf8_code_len, wait_for_stdin, TermRead,
+    events::{AmbigousEvent, AnyEvent, Event},
+    readers::TermRead,
+    utf8_code_len, wait_for_stdin,
 };
 
 /// Terminal reader. Abstracts reading from terminal and parsing inputs. Works
@@ -55,7 +56,7 @@ impl Terminal {
 
     /// Appends next line of input from stdin to `s`. May block.
     pub fn read_line_to(&mut self, s: &mut String) -> Result<()> {
-        let mut reader = TermRead::new(self, KeyCode::Enter);
+        let mut reader = TermRead::lines(self);
         reader.read_to_str(s)?;
         Ok(())
     }

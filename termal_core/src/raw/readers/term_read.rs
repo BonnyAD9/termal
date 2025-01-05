@@ -1,33 +1,19 @@
 use std::{
     cmp::Ordering,
     io::{stdout, IsTerminal, Write},
-    thread,
     time::Duration,
 };
 
 use crate::{
     codes,
     error::{Error, Result},
-    raw::events::Key,
+    raw::{
+        events::{Event, KeyCode, Modifiers},
+        term_size, wait_for_stdin, Terminal,
+    },
 };
 
-use super::{
-    events::{Event, KeyCode, Modifiers},
-    term_size, wait_for_stdin, Terminal,
-};
-
-pub trait Predicate<T> {
-    fn matches(&self, value: &T) -> bool;
-}
-
-impl<F, T> Predicate<T> for F
-where
-    F: Fn(&T) -> bool,
-{
-    fn matches(&self, value: &T) -> bool {
-        self(value)
-    }
-}
+use super::Predicate;
 
 /// Terminal reader.
 pub struct TermRead<'a, P>
@@ -40,21 +26,6 @@ where
     term: &'a mut Terminal,
     exit: P,
     size: (usize, usize),
-}
-
-impl Predicate<Event> for KeyCode {
-    fn matches(&self, value: &Event) -> bool {
-        matches!(value, Event::KeyPress(Key { code, .. }) if code == self)
-    }
-}
-
-impl<'a, P> From<TermRead<'a, P>> for Vec<char>
-where
-    P: Predicate<Event>,
-{
-    fn from(value: TermRead<'a, P>) -> Self {
-        value.buf
-    }
 }
 
 impl<'a> TermRead<'a, KeyCode> {
@@ -135,7 +106,6 @@ where
         if self.size == size {
             return;
         }
-        thread::sleep(Duration::from_secs(1));
         let Ok(size) = term_size().map(|s| (s.char_width, s.char_height))
         else {
             return;
