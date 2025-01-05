@@ -6,7 +6,7 @@ use std::{
 
 use crate::error::{Error, Result};
 
-use super::{events::KeyCode, readers::ReadConf, wait_for_stdin};
+use super::wait_for_stdin;
 
 #[cfg(feature = "events")]
 use super::events::{AmbigousEvent, AnyEvent, Event};
@@ -170,40 +170,16 @@ impl Terminal {
         Ok(s)
     }
 
-    /// Edit the given string. Newlines are replaced with spaces.
+    /// Edit the given string. Newlines are ignored.
     pub fn edit_line_in(&mut self, s: &mut String) -> Result<()> {
-        let mut reader = self.get_edit_line_reader(&s);
-        s.clear();
-        reader.reshow()?;
-        reader.finish_to_str(s)
+        let mut reader = TermRead::lines(self);
+        reader.edit_str(s, None)
     }
 
+    /// Edit the given string. Newlines are ignored.
     pub fn edit_line(&mut self, s: impl AsRef<str>) -> Result<String> {
-        let mut reader = self.get_edit_line_reader(s);
-        reader.reshow()?;
-        reader.finish()
-    }
-
-    fn get_edit_line_reader(
-        &mut self,
-        s: impl AsRef<str>,
-    ) -> TermRead<'_, KeyCode> {
-        TermRead::from_config(
-            self,
-            KeyCode::Enter,
-            ReadConf {
-                edit: s
-                    .as_ref()
-                    .chars()
-                    .filter_map(|c| match c {
-                        '\n' => Some(' '),
-                        '\r' => None,
-                        c => Some(c),
-                    })
-                    .collect(),
-                ..Default::default()
-            },
-        )
+        let mut reader = TermRead::lines(self);
+        reader.edit(s, None)
     }
 }
 

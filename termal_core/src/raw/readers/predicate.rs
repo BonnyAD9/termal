@@ -18,3 +18,9 @@ impl Predicate<Event> for KeyCode {
         matches!(value, Event::KeyPress(Key { code, .. }) if code == self)
     }
 }
+
+impl Predicate<Event> for Key {
+    fn matches(&self, value: &Event) -> bool {
+        matches!(value, Event::KeyPress(key) if self.same_key(key))
+    }
+}

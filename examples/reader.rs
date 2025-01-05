@@ -1,6 +1,9 @@
 use termal::{
     error::Result,
-    raw::{disable_raw_mode, enable_raw_mode, Terminal},
+    raw::{
+        disable_raw_mode, enable_raw_mode, events::KeyCode, readers::TermRead,
+        Terminal,
+    },
 };
 
 fn main() -> Result<()> {
@@ -15,7 +18,7 @@ fn main() -> Result<()> {
 
 fn start() -> Result<()> {
     let mut term = Terminal::new();
-    print!("Very long prompt is this. Please type here: ");
-    println!("\n\rreaded: {}\r", term.edit_line("old text")?);
+    let mut reader = TermRead::new(&mut term, KeyCode::Esc);
+    println!("\n\rreaded: {}\r", reader.edit("old text", None)?);
     Ok(())
 }

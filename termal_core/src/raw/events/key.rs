@@ -79,6 +79,11 @@ impl Key {
         }
     }
 
+    /// Checks if the key code and modifiers are same.
+    pub fn same_key(&self, other: &Key) -> bool {
+        self.code == other.code && self.modifiers == other.modifiers
+    }
+
     /// Create new key without key char.
     pub fn mcode(code: KeyCode, modifiers: Modifiers) -> Self {
         Self {

@@ -12,11 +12,12 @@ use crate::{
         events::{Event, KeyCode, Modifiers},
         term_size, wait_for_stdin, Terminal,
     },
+    term_text::TermText,
 };
 
 use super::{Predicate, ReadConf};
 
-/// Terminal reader.
+/// Terminal reader. Supports only single line. Newlines are skipped.
 pub struct TermRead<'a, P>
 where
     P: Predicate<Event>,
@@ -49,12 +50,13 @@ where
     pub fn from_config(
         term: &'a mut Terminal,
         exit: P,
-        conf: ReadConf,
+        mut conf: ReadConf,
     ) -> Self {
         let pos = conf
             .edit_pos
             .unwrap_or(conf.edit.len())
             .min(conf.edit.len());
+        conf.edit.retain(|c| !c.is_ascii_control());
         Self {
             buf: conf.edit,
             pbuf: String::new(),
@@ -96,6 +98,8 @@ where
         pos: Option<usize>,
     ) -> Result<()> {
         mem::swap(&mut self.buf, s);
+        // TODO: change when lines are supported
+        self.buf.retain(|c| !matches!(c, '\n' | '\r'));
         self.set_pos(pos);
         self.reshow()?;
         self.get_all()?;
@@ -146,7 +150,13 @@ where
     /// Set string to edit.
     pub fn set_edit(&mut self, s: impl AsRef<str>, pos: Option<usize>) {
         self.buf.clear();
-        self.buf.extend(s.as_ref().chars());
+        // TODO: change when newlines supported
+        self.buf.extend(
+            TermText::new(s.as_ref())
+                .spans()
+                .filter(|s| !s.is_control())
+                .flat_map(|s| s.text().chars()),
+        );
         self.set_pos(pos);
     }
 
@@ -239,13 +249,18 @@ where
         };
 
         if let Some(chr) = key.key_char {
+            // TODO: change when newlines are supported.
+            if chr == '\n' {
+                return Ok(false);
+            }
+
             self.buf.insert(self.pos, chr);
 
             if self.pos + 1 < self.buf.len() {
                 self.reprint_pos();
                 self.move_right();
             } else {
-                if key.code == KeyCode::Enter {
+                if chr == '\n' {
                     self.pbuf += "\r\n";
                 } else {
                     self.pbuf.push(chr);
