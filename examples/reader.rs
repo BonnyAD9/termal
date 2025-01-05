@@ -1,9 +1,6 @@
 use termal::{
     error::Result,
-    raw::{
-        disable_raw_mode, enable_raw_mode, events::KeyCode, readers::TermRead,
-        Terminal,
-    },
+    raw::{disable_raw_mode, enable_raw_mode, readers::prompt},
 };
 
 fn main() -> Result<()> {
@@ -17,9 +14,6 @@ fn main() -> Result<()> {
 }
 
 fn start() -> Result<()> {
-    let mut term = Terminal::new();
-    let mut reader = TermRead::new(&mut term, KeyCode::Enter);
-    reader.set_prompt("type here: ");
-    println!("\n\rread: {}\r", reader.edit("old text", None)?);
+    println!("\n\rread: {}\r", prompt("type\nhere: ")?);
     Ok(())
 }

@@ -17,41 +17,41 @@ use crate::{
 use super::{Predicate, ReadConf, Vec2};
 
 /// Terminal reader. Supports only single line. Newlines are skipped.
-pub struct TermRead<'a, P>
+pub struct TermRead<'t, 'p, P>
 where
     P: Predicate<Event>,
 {
     buf: Vec<char>,
-    prompt: TermText<'static>,
+    prompt: TermText<'p>,
     pbuf: String,
     pos: usize,
-    term: &'a mut Terminal,
+    term: &'t mut Terminal,
     exit: P,
     size: Vec2,
     finished: bool,
 }
 
-impl<'a> TermRead<'a, KeyCode> {
+impl<'t> TermRead<'t, '_, KeyCode> {
     /// Gets reader that ends on enter.
-    pub fn lines(term: &'a mut Terminal) -> Self {
+    pub fn lines(term: &'t mut Terminal) -> Self {
         Self::new(term, KeyCode::Enter)
     }
 }
 
-impl<'a, P> TermRead<'a, P>
+impl<'t, 'p, P> TermRead<'t, 'p, P>
 where
     P: Predicate<Event>,
 {
     /// Creates new terminal reader that exits with the given predicate.
-    pub fn new(term: &'a mut Terminal, exit: P) -> Self {
+    pub fn new(term: &'t mut Terminal, exit: P) -> Self {
         Self::from_config(term, exit, Default::default())
     }
 
     /// Create terminal reader from configuration.
     pub fn from_config(
-        term: &'a mut Terminal,
+        term: &'t mut Terminal,
         exit: P,
-        mut conf: ReadConf,
+        mut conf: ReadConf<'p>,
     ) -> Self {
         let pos = conf
             .edit_pos
@@ -182,12 +182,12 @@ where
     }
 
     /// Set the prompt.
-    pub fn set_prompt(&mut self, prompt: impl Into<TermText<'static>>) {
+    pub fn set_prompt(&mut self, prompt: impl Into<TermText<'p>>) {
         self.prompt = prompt.into();
     }
 
     /// Reconfigure the reader.
-    pub fn configure(&mut self, conf: ReadConf) {
+    pub fn configure(&mut self, conf: ReadConf<'p>) {
         self.set_buf(conf.edit, conf.edit_pos);
         self.set_prompt(conf.prompt);
     }

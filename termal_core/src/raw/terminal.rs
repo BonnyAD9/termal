@@ -186,13 +186,25 @@ impl Terminal {
     }
 
     /// Prompt the user with the given prompt and return the entered result.
-    pub fn prompt(
+    pub fn prompt<'a>(
         &mut self,
-        s: impl Into<TermText<'static>>,
+        s: impl Into<TermText<'a>>,
     ) -> Result<String> {
         let mut reader = TermRead::lines(self);
         reader.set_prompt(s);
         reader.read_str()
+    }
+
+    /// Prompt the user with the given prompt and append the entered result to
+    /// the given string.
+    pub fn prompt_to<'a>(
+        &mut self,
+        s: &mut String,
+        prompt: impl Into<TermText<'a>>,
+    ) -> Result<()> {
+        let mut reader = TermRead::lines(self);
+        reader.set_prompt(prompt);
+        reader.read_to_str(s)
     }
 }
 

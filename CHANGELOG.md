@@ -19,6 +19,8 @@
 - Reader can now edit text.
 - Reader can have prompt.
 - More methods on reader.
+- Add best effort readline functions: `prompt_to`, `prompt`, `read_line_to` and
+  `read_line`.
 + Move around some logic around sixels.
 + Refactor readers.
 + Split into features.
