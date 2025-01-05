@@ -1,6 +1,8 @@
 use std::{
+    collections::VecDeque,
     io::{stdout, IsTerminal, Write},
     mem,
+    ops::RangeBounds,
     time::Duration,
 };
 
@@ -29,6 +31,8 @@ where
     exit: P,
     size: Vec2,
     finished: bool,
+    last_event: Option<Event>,
+    queue: VecDeque<Event>,
 }
 
 impl<'t> TermRead<'t, '_, KeyCode> {
@@ -67,6 +71,8 @@ where
             prompt: conf.prompt,
             size: (usize::MAX, usize::MAX).into(),
             finished: false,
+            last_event: None,
+            queue: VecDeque::new(),
         }
     }
 
@@ -141,7 +147,7 @@ where
     }
 
     /// Get the readed characters.
-    pub fn get_readed(&self) -> &[char] {
+    pub fn get_input(&self) -> &[char] {
         &self.buf
     }
 
@@ -223,26 +229,41 @@ where
         self.exit = c;
     }
 
+    /// Modify the buffer. Control characters are ignored.
+    pub fn splice(
+        &mut self,
+        range: impl RangeBounds<usize>,
+        it: impl IntoIterator<Item = char>,
+    ) {
+        self.buf
+            .splice(range, it.into_iter().filter(|c| !c.is_ascii_control()));
+        self.pos = self.pos.min(self.buf.len());
+    }
+
+    /// Gets the last event.
+    pub fn last_event(&self) -> Option<&Event> {
+        self.last_event.as_ref()
+    }
+
+    pub fn queue(&mut self, evt: impl IntoIterator<Item = Event>) {
+        self.queue.extend(evt);
+    }
+
     fn read_one_inner(&mut self) -> Result<bool> {
+        if !self.queue.is_empty() || self.term.has_buffered_input() {
+            return self.read_next();
+        }
+
         let r = wait_for_stdin(Duration::from_millis(100));
         self.resize();
         self.commit()?;
 
         if matches!(r, Ok(false)) {
+            self.last_event = None;
             return Ok(false);
         }
 
-        if self.read_next()? {
-            return Ok(true);
-        }
-
-        while self.term.has_buffered_input() {
-            if self.read_next()? {
-                return Ok(true);
-            }
-        }
-
-        Ok(false)
+        self.read_next()
     }
 
     fn get_all(&mut self) -> Result<()> {
@@ -282,6 +303,10 @@ where
     }
 
     fn read_next(&mut self) -> Result<bool> {
+        if let Some(evt) = self.queue.pop_front() {
+            return self.handle_event(evt);
+        }
+
         let evt = match self.term.read() {
             Ok(e) => e,
             Err(Error::StdInEof) => {
@@ -292,15 +317,23 @@ where
             Err(e) => Err(e)?,
         };
 
+        self.handle_event(evt)
+    }
+
+    fn handle_event(&mut self, evt: Event) -> Result<bool> {
         if self.exit.matches(&evt) {
+            self.last_event = Some(evt);
             self.end();
             self.commit()?;
             return Ok(true);
         }
 
         let Event::KeyPress(key) = evt else {
+            self.last_event = Some(evt);
             return Ok(false);
         };
+
+        self.last_event = Some(evt);
 
         if let Some(chr) = key.key_char {
             // TODO: change when newlines are supported.
