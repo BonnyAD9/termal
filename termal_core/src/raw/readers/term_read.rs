@@ -245,6 +245,7 @@ where
         self.last_event.as_ref()
     }
 
+    /// Queue event to the reader.
     pub fn queue(&mut self, evt: impl IntoIterator<Item = Event>) {
         self.queue.extend(evt);
     }
