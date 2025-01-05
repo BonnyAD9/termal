@@ -64,7 +64,7 @@ where
             pos,
             term,
             exit,
-            prompt: Default::default(),
+            prompt: conf.prompt,
             size: (usize::MAX, usize::MAX).into(),
             finished: false,
         }
@@ -184,6 +184,19 @@ where
     /// Set the prompt.
     pub fn set_prompt(&mut self, prompt: impl Into<TermText<'static>>) {
         self.prompt = prompt.into();
+    }
+
+    /// Reconfigure the reader.
+    pub fn configure(&mut self, conf: ReadConf) {
+        self.set_buf(conf.edit, conf.edit_pos);
+        self.set_prompt(conf.prompt);
+    }
+
+    /// Set the read buffer. It is filtered for non control characters.
+    pub fn set_buf(&mut self, buf: Vec<char>, pos: Option<usize>) {
+        self.buf = buf;
+        self.buf.retain(|c| !c.is_ascii_control());
+        self.set_pos(pos);
     }
 
     /// Read one next character or nothing. Doesn't block. Returns `true` if
