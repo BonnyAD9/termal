@@ -112,13 +112,14 @@ macro_rules! csi_macro {
             $(#[doc = __repnl__($doc, " ")])?
             #[macro_export]
             macro_rules! $name {
-                (__start__(__s__ $nam:expr,)) => {
-                    if __s__ $nam == $ex {
+                (__start__(__s__ $nam:expr,)) => {{
+                    let v = __s__ $nam;
+                    if v == $ex {
                         "".into()
                     } else {
-                        __s__ crate::csi!($i, __s__ $nam)
+                        __s__ crate::csi!($i, v)
                     }
-                }
+                }}
             }
             pub use $name;
         )+}
@@ -132,6 +133,8 @@ macro_rules! move_to {
         $crate::csi!('H', $y, $x)
     };
 }
+
+pub use move_to;
 
 csi_macro!( != 0 =>
     move_up, n; 'A' ? "Moves cursor up by N positions",

@@ -25,6 +25,9 @@
 + Refactor readers.
 + Split into features.
 + Windows support (untested)
+- Fix publicity of macro `codes::move_up`.
+- Macros in `codes` now evaluate their arguments only once. (also fixes
+  affected codes in color macros)
 
 ## v1.2.2
 - Fix `writemcln` macro.
