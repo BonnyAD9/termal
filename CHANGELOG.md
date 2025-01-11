@@ -21,6 +21,8 @@
 - More methods on reader.
 - Add best effort readline functions: `prompt_to`, `prompt`, `read_line_to` and
   `read_line`.
+- Add new codes: `DONT_LIMIT_PRINT_TO_SCROLL_REGION` and
+  `LIMIT_PRINT_TO_SCROLL_REGION`.
 + Move around some logic around sixels.
 + Refactor readers.
 + Split into features.
@@ -29,6 +31,7 @@
 - Macros in `codes` now evaluate their arguments only once. (also fixes
   affected codes in color macros)
 - Fix `move_to` and `mt` in color marcros.
+- Fix `delete_lines`, `insert_columns`, `set_down` and `set_up` codes.
 
 ## v1.2.2
 - Fix `writemcln` macro.

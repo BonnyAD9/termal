@@ -142,17 +142,17 @@ csi_macro!( != 0 =>
     move_right, n; 'C' ? "Moves cursor right by N positions",
     move_left, n; 'D' ? "Moves cursor left by N positions",
     insert_lines, n; 'L' ? "Insert n lines at the cursor moving them down.",
-    delete_lines, n; 'L'
+    delete_lines, n; 'M'
         ? "Delete n lines at the cursor, moving the remaining from bottom.",
     insert_chars, n; '@' ? "Insert n characters, moving them to the right.",
     delete_chars, n; 'P' ? "Delete n characters, moving the chars from right.",
-    insert_columns, n; "'}" ? "Insert n columns, moving them to the right.",
+    insert_columns, n; "'}}" ? "Insert n columns, moving them to the right.",
     delete_columns, n; "'~" ? "Delete n columns, moving them from the right",
+    set_down, n; 'E' ? "Moves cursor to the start of line N lines down",
+    set_up, n; 'F' ? "Moves cursor to the start of line N lines up",
 );
 
 csi_macro!(
-    set_down, n; 'E' ? "Moves cursor to the start of line N lines down",
-    set_up, n; 'E' ? "Moves cursor to the start of line N lines up",
     column, n; 'G' ? "Moves cursor to the given column",
 );
 
@@ -414,12 +414,27 @@ csi_macro! {
            top left."
 }
 
+/// Reset the scroll region
 pub const RESET_SCROLL_REGION: &str = "\x1b[0;0r";
+/// Don't limit the printing area.
+pub const DONT_LIMIT_PRINT_TO_SCROLL_REGION: &str = "\x1b[19h";
+/// Limit printing area only to scroll region.
+pub const LIMIT_PRINT_TO_SCROLL_REGION: &str = "\x1b[19l";
 
 #[derive(Clone, Debug, Copy, Eq, PartialEq)]
 pub enum CursorStyle {
+    /// Set cursor to block.
+    /// - `true` -> blink
+    /// - `false` -> don't blink
+    /// - [`None`] -> blink (default)
     Block(Option<bool>),
+    /// Set cursor to underline.
+    /// - `true` -> blink
+    /// - `false` -> don't blink
     Underline(bool),
+    /// Set cursor vertical bar.
+    /// - `true` -> blink
+    /// - `false` -> don't blink
     Bar(bool),
 }
 
