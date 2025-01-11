@@ -286,7 +286,7 @@ where
                 i.next();
             }
             '}' | ' ' => break,
-            c if c.is_ascii_digit() => break,
+            c if c.is_ascii_digit() || *c == ',' => break,
             _ => {
                 return Err(ProcError::msg(format!(
                     "Invalid color format, didn't expect character '{}'",
@@ -317,16 +317,22 @@ where
         "delete" | "del" => "\x7f",
 
         "move_to" | "mt" => {
-            let x = maybe_read_num(i).unwrap_or_default();
-            if !matches!(i.next(), Some(',')) {
+            let x = maybe_read_num(i);
+            if matches!(i.peek(), Some(',')) && x.is_some() {
+                i.next();
+            } else if x.is_some() {
                 return Err(ProcError::msg(format!(
                     "'{}', takes two arguments",
                     s
                 )));
             }
-            let y = maybe_read_num(i).unwrap_or_default();
-            owner = move_to!(x, y);
-            &owner
+            let y = maybe_read_num(i);
+            if x.is_none() && y.is_none() {
+                "\x1b[H"
+            } else {
+                owner = move_to!(x.unwrap_or_default(), y.unwrap_or_default());
+                &owner
+            }
         }
         "move_up" | "mu" => m_arm!(move_up, 1, owner),
         "move_down" | "md" => m_arm!(move_down, 1, owner),

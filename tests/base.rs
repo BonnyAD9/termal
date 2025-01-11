@@ -1,13 +1,21 @@
-use termal::{codes, formatc, formatmc, gradient};
+use termal::{codes, formatc, formatmc, gradient, write_gradient};
 
 #[test]
 fn test_gradient() {
-    let g = gradient("BonnyAD9", (250, 50, 170), (180, 50, 240));
+    let txt = "BonnyAD9";
+    let s = (250, 50, 170);
+    let e = (180, 50, 240);
+
+    let g = gradient(txt, s, e);
     let v = "\x1b[38;2;250;50;170mB\x1b[38;2;240;50;180mo\
         \x1b[38;2;230;50;190mn\x1b[38;2;220;50;200mn\x1b[38;2;210;50;210my\
         \x1b[38;2;200;50;220mA\x1b[38;2;190;50;230mD\x1b[38;2;180;50;240m9";
 
     assert_eq!(g, v);
+
+    let mut g2 = String::new();
+    write_gradient(&mut g2, txt, txt.chars().count(), s, e);
+    assert_eq!(g, g2);
 }
 
 #[test]
@@ -207,5 +215,25 @@ fn test_formatc_codes() {
     assert_eq!(formatc!("{'fg56}"), codes::fg256!(56));
     assert_eq!(formatc!("{'bg56}"), codes::bg256!(56));
 
-    // TODO
+    // Other
+    assert_eq!(formatc!("{'line_wrap}"), codes::ENABLE_LINE_WRAP);
+    assert_eq!(formatc!("{'wrap}"), codes::ENABLE_LINE_WRAP);
+    assert_eq!(formatc!("{'_line_wrap}"), codes::DISABLE_LINE_WRAP);
+    assert_eq!(formatc!("{'_wrap}"), codes::DISABLE_LINE_WRAP);
+
+    assert_eq!(formatc!("{'hide_cursor}"), codes::HIDE_CURSOR);
+    assert_eq!(formatc!("{'nocur}"), codes::HIDE_CURSOR);
+    assert_eq!(formatc!("{'show_cursor}"), codes::SHOW_CURSOR);
+    assert_eq!(formatc!("{'_nocur}"), codes::SHOW_CURSOR);
+    assert_eq!(formatc!("{'save_screen}"), codes::SAVE_SCREEN);
+    assert_eq!(formatc!("{'sscr}"), codes::SAVE_SCREEN);
+    assert_eq!(formatc!("{'load_screen}"), codes::LOAD_SCREEN);
+    assert_eq!(formatc!("{'lscr}"), codes::LOAD_SCREEN);
+    assert_eq!(formatc!("{'alt_buf}"), codes::ENABLE_ALTERNATIVE_BUFFER);
+    assert_eq!(formatc!("{'abuf}"), codes::ENABLE_ALTERNATIVE_BUFFER);
+    assert_eq!(formatc!("{'_alt_buf}"), codes::DISABLE_ALTERNATIVE_BUFFER);
+    assert_eq!(formatc!("{'_abuf}"), codes::DISABLE_ALTERNATIVE_BUFFER);
+
+    assert_eq!(formatc!("{'clear}"), formatc!("{'e mt}"));
+    assert_eq!(formatc!("{'cls}"), formatc!("{'e mt}"));
 }

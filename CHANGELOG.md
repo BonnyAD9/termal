@@ -28,6 +28,7 @@
 - Fix publicity of macro `codes::move_up`.
 - Macros in `codes` now evaluate their arguments only once. (also fixes
   affected codes in color macros)
+- Fix `move_to` and `mt` in color marcros.
 
 ## v1.2.2
 - Fix `writemcln` macro.
