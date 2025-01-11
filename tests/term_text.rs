@@ -1,6 +1,9 @@
 use std::borrow::Cow;
 
-use termal::{formatc, term_text::{TermText, TermTextSpan}};
+use termal::{
+    formatc,
+    term_text::{TermText, TermTextSpan},
+};
 
 #[test]
 fn test_term_text() {
@@ -18,7 +21,10 @@ fn test_term_text() {
     assert_eq!(text.display_char_cnt(), 8);
 
     fn sf(txt: &TermText, f: impl Fn(&TermTextSpan) -> bool) -> String {
-        txt.spans().filter(f).flat_map(|s| s.text().chars()).collect::<String>()
+        txt.spans()
+            .filter(f)
+            .flat_map(|s| s.text().chars())
+            .collect::<String>()
     }
 
     assert_eq!(sf(&text, |_| true), s);

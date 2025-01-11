@@ -49,7 +49,7 @@ impl<'a> TermText<'a> {
     }
 
     /// Create reference to this term text.
-    pub fn reference<'b>(&'b self) -> TermText<'b> {
+    pub fn reference(&self) -> TermText<'_> {
         TermText {
             text: self.as_str().into(),
             metadata: Cell::new(self.metadata.get()),

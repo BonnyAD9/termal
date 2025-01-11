@@ -5,7 +5,7 @@ use termal::{
     raw::{
         disable_raw_mode, enable_raw_mode,
         events::{AmbigousEvent, AnyEvent, Event, Key, KeyCode, Modifiers},
-        Terminal,
+        StdioProvider, Terminal,
     },
 };
 
@@ -25,7 +25,7 @@ fn main() -> Result<()> {
 
 fn start() -> Result<()> {
     let mut stdout = io::stdout();
-    let mut term = Terminal::new();
+    let mut term = Terminal::<StdioProvider>::default();
 
     loop {
         let key = term.read_ambigous()?;

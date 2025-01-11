@@ -25,7 +25,7 @@ pub fn read_line_to(res: &mut String) -> Result<()> {
 
 /// Prompt the user with the given prompt. This will use custom readline if
 /// supported. Otherwise it will fallback to the default readline function.
-pub fn prompt<'a>(prompt: impl AsRef<str>) -> Result<String> {
+pub fn prompt(prompt: impl AsRef<str>) -> Result<String> {
     let mut res = String::new();
     prompt_to(&mut res, prompt)?;
     Ok(res)
@@ -33,7 +33,7 @@ pub fn prompt<'a>(prompt: impl AsRef<str>) -> Result<String> {
 
 /// Prompt the user with better read line capabilities.
 #[cfg(any(windows, unix))]
-pub fn prompt_to<'a>(res: &mut String, prompt: impl AsRef<str>) -> Result<()> {
+pub fn prompt_to(res: &mut String, prompt: impl AsRef<str>) -> Result<()> {
     prompt_to_inner(res, prompt.as_ref())
         .or_else(|_| prompt_to_fallback(res, prompt))
 }
@@ -41,15 +41,12 @@ pub fn prompt_to<'a>(res: &mut String, prompt: impl AsRef<str>) -> Result<()> {
 /// Prompt the user. Better readline is not supported on this platform, so this
 /// will just fallback to default readline.
 #[cfg(not(any(windows, unix)))]
-pub fn prompt_to<'a>(res: &mut String, prompt: impl AsRef<str>) -> Result<()> {
+pub fn prompt_to(res: &mut String, prompt: impl AsRef<str>) -> Result<()> {
     prompt_to_fallback(res, prompt)
 }
 
 #[cfg(any(windows, unix))]
-fn prompt_to_inner<'a>(
-    res: &mut String,
-    prompt: impl AsRef<str>,
-) -> Result<()> {
+fn prompt_to_inner(res: &mut String, prompt: impl AsRef<str>) -> Result<()> {
     use super::{
         disable_raw_mode, enable_raw_mode, is_raw_mode_enabled, Terminal,
     };
@@ -69,7 +66,7 @@ fn prompt_to_inner<'a>(
         println!("{s}\r");
     }
 
-    let r = Terminal::new().prompt_to(res, prompt);
+    let r = Terminal::default().prompt_to(res, prompt);
 
     if !raw {
         _ = disable_raw_mode();
@@ -78,7 +75,7 @@ fn prompt_to_inner<'a>(
     r
 }
 
-fn prompt_to_fallback<'a>(
+fn prompt_to_fallback(
     res: &mut String,
     prompt: impl AsRef<str>,
 ) -> Result<()> {

@@ -8,14 +8,14 @@ use termal::{
         disable_raw_mode, enable_raw_mode,
         events::{Event, Key, KeyCode},
         readers::TermRead,
-        Terminal,
+        StdioProvider, Terminal,
     },
 };
 
 fn main() -> Result<()> {
     enable_raw_mode()?;
 
-    let mut terminal = Terminal::new();
+    let mut terminal = Terminal::<StdioProvider>::default();
     let mut reader = TermRead::lines(&mut terminal);
     let mut buf = String::new();
 

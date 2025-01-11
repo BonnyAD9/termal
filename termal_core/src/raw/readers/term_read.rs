@@ -1,9 +1,5 @@
 use std::{
-    collections::VecDeque,
-    io::{stdout, IsTerminal, Write},
-    mem,
-    ops::RangeBounds,
-    time::Duration,
+    collections::VecDeque, io::Write, mem, ops::RangeBounds, time::Duration,
 };
 
 use crate::{
@@ -11,7 +7,7 @@ use crate::{
     error::{Error, Result},
     raw::{
         events::{Event, KeyCode, Modifiers},
-        term_size, wait_for_stdin, Terminal,
+        term_size, IoProvider, StdioProvider, Terminal,
     },
     term_text::TermText,
 };
@@ -19,7 +15,7 @@ use crate::{
 use super::{Predicate, ReadConf, Vec2};
 
 /// Terminal reader. Supports only single line. Newlines are skipped.
-pub struct TermRead<'t, 'p, P>
+pub struct TermRead<'t, 'p, P, T: IoProvider = StdioProvider>
 where
     P: Predicate<Event>,
 {
@@ -27,7 +23,7 @@ where
     prompt: TermText<'p>,
     pbuf: String,
     pos: usize,
-    term: &'t mut Terminal,
+    term: &'t mut Terminal<T>,
     exit: P,
     size: Vec2,
     finished: bool,
@@ -35,25 +31,26 @@ where
     queue: VecDeque<Event>,
 }
 
-impl<'t> TermRead<'t, '_, KeyCode> {
+impl<'t, T: IoProvider> TermRead<'t, '_, KeyCode, T> {
     /// Gets reader that ends on enter.
-    pub fn lines(term: &'t mut Terminal) -> Self {
+    pub fn lines(term: &'t mut Terminal<T>) -> Self {
         Self::new(term, KeyCode::Enter)
     }
 }
 
-impl<'t, 'p, P> TermRead<'t, 'p, P>
+impl<'t, 'p, P, T> TermRead<'t, 'p, P, T>
 where
     P: Predicate<Event>,
+    T: IoProvider,
 {
     /// Creates new terminal reader that exits with the given predicate.
-    pub fn new(term: &'t mut Terminal, exit: P) -> Self {
+    pub fn new(term: &'t mut Terminal<T>, exit: P) -> Self {
         Self::from_config(term, exit, Default::default())
     }
 
     /// Create terminal reader from configuration.
     pub fn from_config(
-        term: &'t mut Terminal,
+        term: &'t mut Terminal<T>,
         exit: P,
         mut conf: ReadConf<'p>,
     ) -> Self {
@@ -208,8 +205,11 @@ where
     /// Read one next character or nothing. Doesn't block. Returns `true` if
     /// the input has ended and the result may be retrieved with
     /// [`TermRead::get_readed`], [`TermRead::finish`] or
-    /// [`TermRead::finish_to_str`]. This is unsafe because calls to `set_`
-    /// functions may break the input if this is called.
+    /// [`TermRead::finish_to_str`].
+    ///
+    /// # Safety
+    /// This is unsafe because calls to `set_` functions may break the input if
+    /// this is called.
     pub unsafe fn read_one(&mut self) -> Result<bool> {
         if self.finished {
             return Ok(true);
@@ -255,7 +255,7 @@ where
             return self.read_next();
         }
 
-        let r = wait_for_stdin(Duration::from_millis(100));
+        let r = self.term.wait_for_input(Duration::from_millis(100));
         self.resize();
         self.commit()?;
 
@@ -552,19 +552,10 @@ where
     }
 
     fn commit(&mut self) -> Result<()> {
-        if !self.pbuf.is_empty() {
-            print_str(&self.pbuf)?;
-            self.pbuf.clear();
+        if !self.pbuf.is_empty() && self.term.is_out_terminal() {
+            self.term.write_all(self.pbuf.as_bytes())?;
+            self.term.flush()?;
         }
         Ok(())
     }
-}
-
-fn print_str(s: &str) -> Result<()> {
-    let mut out = stdout().lock();
-    if out.is_terminal() {
-        out.write_all(s.as_bytes())?;
-        out.flush()?;
-    }
-    Ok(())
 }

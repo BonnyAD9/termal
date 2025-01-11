@@ -1,6 +1,6 @@
 use std::{
     collections::VecDeque,
-    io::{self, BufRead, StdinLock},
+    io::{BufRead, Read, Write},
     time::{Duration, Instant},
 };
 
@@ -9,7 +9,7 @@ use crate::{
     term_text::TermText,
 };
 
-use super::wait_for_stdin;
+use super::{IoProvider, StdioProvider, WaitForIn};
 
 #[cfg(feature = "events")]
 use super::events::{AmbigousEvent, AnyEvent, Event};
@@ -18,16 +18,18 @@ use super::readers::TermRead;
 
 /// Terminal reader. Abstracts reading from terminal and parsing inputs. Works
 /// properly only if raw mode is enabled.
-#[derive(Default)]
-pub struct Terminal {
+#[derive(Debug, Default)]
+pub struct Terminal<T: IoProvider = StdioProvider> {
     buffer: VecDeque<u8>,
+    io: T,
 }
 
-impl Terminal {
+impl<T: IoProvider> Terminal<T> {
     /// Create new terminal.
-    pub fn new() -> Self {
+    pub fn new(io: T) -> Self {
         Terminal {
             buffer: VecDeque::new(),
+            io,
         }
     }
 
@@ -48,7 +50,7 @@ impl Terminal {
     /// Checks whether the next input is available immidietely.
     pub fn has_input(&self) -> bool {
         self.has_buffered_input()
-            || wait_for_stdin(Duration::ZERO).unwrap_or_default()
+            || self.io.wait_for_in(Duration::ZERO).unwrap_or_default()
     }
 
     /// Wait for input on the terminal. Block for at most the given duration.
@@ -56,7 +58,7 @@ impl Terminal {
         if self.has_buffered_input() {
             Ok(true)
         } else {
-            wait_for_stdin(timeout)
+            self.io.wait_for_in(timeout)
         }
     }
 
@@ -64,9 +66,9 @@ impl Terminal {
     /// bytes. Returns [`Error::StdInEof`] when reaches eof. May block.
     pub fn read_raw(&mut self, res: &mut [u8]) -> Result<usize> {
         let mut read = self.read_buffered(res)?;
-        let mut stdin = io::stdin().lock();
+        let mut stdin = self.io.get_in();
         while read < res.len() {
-            read += read_stdin_once(&mut stdin, &mut res[read..])?;
+            read += read_stdin_once(&mut *stdin, &mut res[read..])?;
         }
         Ok(read)
     }
@@ -81,9 +83,11 @@ impl Terminal {
         timeout: Duration,
     ) -> Result<usize> {
         let mut read = self.read_buffered(res)?;
-        let mut stdin = io::stdin().lock();
-        while read < res.len() && wait_for_stdin(timeout).unwrap_or_default() {
-            read += read_stdin_once(&mut stdin, &mut res[read..])?;
+        let mut stdin = self.io.get_in();
+        while read < res.len()
+            && stdin.wait_for_in(timeout).unwrap_or_default()
+        {
+            read += read_stdin_once(&mut *stdin, &mut res[read..])?;
         }
         Ok(read)
     }
@@ -97,15 +101,15 @@ impl Terminal {
         mut timeout: Duration,
     ) -> Result<usize> {
         let mut read = self.read_buffered(res)?;
-        let mut stdin = io::stdin().lock();
+        let mut stdin = self.io.get_in();
         while read < res.len() && timeout >= Duration::ZERO {
             let now = Instant::now();
-            let ready = wait_for_stdin(timeout);
+            let ready = stdin.wait_for_in(timeout);
             timeout -= Instant::now() - now;
             if !ready.unwrap_or_default() {
                 break;
             }
-            read += read_stdin_once(&mut stdin, &mut res[read..])?;
+            read += read_stdin_once(&mut *stdin, &mut res[read..])?;
         }
         Ok(read)
     }
@@ -148,7 +152,7 @@ impl Terminal {
     }
 
     fn fill_buffer(&mut self) -> Result<()> {
-        let mut stdin = io::stdin().lock();
+        let mut stdin = self.io.get_in();
         let buf = stdin.fill_buf()?;
         self.buffer.extend(buf);
         let len = buf.len();
@@ -209,7 +213,7 @@ impl Terminal {
 }
 
 #[cfg(feature = "events")]
-impl Terminal {
+impl<T: IoProvider> Terminal<T> {
     /// Read the next known event on stdin. May block.
     pub fn read(&mut self) -> Result<Event> {
         loop {
@@ -251,6 +255,30 @@ impl Terminal {
         } else {
             Ok(None)
         }
+    }
+
+    /// Checks if the output stream is terminal
+    pub fn is_out_terminal(&self) -> bool {
+        self.io.is_out_terminal()
+    }
+
+    /// Checks if the input stream is termainl
+    pub fn is_in_terminal(&self) -> bool {
+        self.io.is_in_terminal()
+    }
+
+    /// Prints to the output. Properly handles newlines if output is raw
+    /// terminal.
+    pub fn print(&mut self, s: impl AsRef<str>) -> Result<()> {
+        if !self.io.is_out_raw() || !self.is_out_terminal() {
+            self.write_all(s.as_ref().as_bytes())?;
+        } else {
+            let mut out = self.io.get_out();
+            for s in s.as_ref().split('\n') {
+                write!(out, "{s}\n\r")?;
+            }
+        }
+        Ok(())
     }
 
     fn read_escape(&mut self) -> Result<AmbigousEvent> {
@@ -401,10 +429,23 @@ impl Terminal {
     }
 }
 
-fn read_stdin_once(
-    stdin: &mut StdinLock<'static>,
-    res: &mut [u8],
-) -> Result<usize> {
+impl<T: IoProvider> Read for Terminal<T> {
+    fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+        self.io.get_in().read(buf)
+    }
+}
+
+impl<T: IoProvider> Write for Terminal<T> {
+    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+        self.io.get_out().write(buf)
+    }
+
+    fn flush(&mut self) -> std::io::Result<()> {
+        self.io.get_out().flush()
+    }
+}
+
+fn read_stdin_once(stdin: &mut impl BufRead, res: &mut [u8]) -> Result<usize> {
     let buf = stdin.fill_buf()?;
     if buf.is_empty() {
         return Err(Error::StdInEof);

@@ -23,10 +23,17 @@
   `read_line`.
 - Add new codes: `DONT_LIMIT_PRINT_TO_SCROLL_REGION` and
   `LIMIT_PRINT_TO_SCROLL_REGION`.
+- Add new methods to `Terminal` to make it work as generic.
+- Add `WaitForIn` trait.
+- Add `IoProvider` trait.
+- Add `StdioProvider` trait.
+- Add `ValueOrMut` to make `IoProvider` possible.
 + Move around some logic around sixels.
 + Refactor readers.
 + Split into features.
-+ Windows support (untested)
++ Windows support (untested).
++ Make `Terminal` generic.
++ Make `TermRead` more generic.
 - Fix publicity of macro `codes::move_up`.
 - Macros in `codes` now evaluate their arguments only once. (also fixes
   affected codes in color macros)
