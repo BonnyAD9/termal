@@ -283,6 +283,7 @@ where
         else {
             return;
         };
+        self.size.map(|a| if a == 0 { usize::MAX } else { a });
         if self.size == size {
             return;
         }

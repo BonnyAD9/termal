@@ -14,6 +14,12 @@ impl Vec2 {
     pub fn pos_of_idx(&self, idx: usize) -> Self {
         (idx % self.x, idx / self.x).into()
     }
+
+    pub fn map(mut self, mut f: impl FnMut(usize) -> usize) -> Self {
+        self.x = f(self.x);
+        self.y = f(self.y);
+        self
+    }
 }
 
 impl Sub<Vec2> for Vec2 {
