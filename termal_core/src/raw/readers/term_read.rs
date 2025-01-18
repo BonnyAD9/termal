@@ -15,6 +15,10 @@ use crate::{
 use super::{Predicate, ReadConf, Vec2};
 
 /// Terminal reader. Supports only single line. Newlines are skipped.
+///
+/// ## Unstable API
+/// 
+/// API of [`TermRead`] will likely change in the future.
 pub struct TermRead<'t, 'p, P, T: IoProvider = StdioProvider>
 where
     P: Predicate<Event>,
