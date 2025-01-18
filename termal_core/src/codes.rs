@@ -325,6 +325,12 @@ pub const ENABLE_LINE_WRAP: &str = "\x1b[=7h";
 /// Disables line wrapping
 pub const DISABLE_LINE_WRAP: &str = "\x1b[=7l";
 
+/// Enables reverse color for the whole terminal display.
+pub const ENABLE_REVERSE_COLOR: &str = "\x1b[?5h";
+/// Disables reverse color for the whole terminal display. (This actually often
+/// doesn't work)
+pub const DISABLE_REVERSE_COLOR: &str = "\x1b[?5l";
+
 // Private modes
 
 /// Makes the cursor invisible
@@ -424,6 +430,8 @@ pub const RESET_SCROLL_REGION: &str = "\x1b[0;0r";
 pub const DONT_LIMIT_PRINT_TO_SCROLL_REGION: &str = "\x1b[19h";
 /// Limit printing area only to scroll region.
 pub const LIMIT_PRINT_TO_SCROLL_REGION: &str = "\x1b[19l";
+
+/// TODO: see wikipedia 
 
 #[derive(Clone, Debug, Copy, Eq, PartialEq)]
 pub enum CursorStyle {

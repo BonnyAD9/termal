@@ -85,6 +85,7 @@ pub fn reset_terminal() {
         codes::RESET_SCROLL_REGION,
         codes::CUR_LOAD,
         codes::DISABLE_ALTERNATIVE_BUFFER,
+        codes::DISABLE_REVERSE_COLOR,
     ]
     .concat();
     print!("{}", s);
