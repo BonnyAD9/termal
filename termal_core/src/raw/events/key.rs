@@ -1,5 +1,5 @@
 /// Key press event.
-#[derive(Debug, Clone, Copy, Hash)]
+#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq)]
 pub struct Key {
     /// Char that should be displayed with this key press.
     pub key_char: Option<char>,

@@ -1,7 +1,7 @@
 use super::TermAttr;
 
 /// Status event.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Status {
     /// Terminal attributes.
     Attributes(TermAttr),

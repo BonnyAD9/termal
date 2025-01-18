@@ -41,7 +41,7 @@ pub enum Event {
 }
 
 /// Mouse event.
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct Mouse {
     /// Button which interacted.
     pub button: Button,

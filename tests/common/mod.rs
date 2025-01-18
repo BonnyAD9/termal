@@ -1,6 +1,12 @@
-use std::{io::{BufRead, Read, Write}, thread};
+use std::{
+    io::{BufRead, Read, Write},
+    thread,
+};
 
-use termal::{error::Result, raw::{IoProvider, ValueOrMut, WaitForIn}};
+use termal::{
+    error::Result,
+    raw::{IoProvider, ValueOrMut, WaitForIn},
+};
 
 pub struct BufProvider {
     buf: &'static [&'static [u8]],

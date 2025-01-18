@@ -3,7 +3,7 @@ use bitflags::bitflags;
 use super::csi::Csi;
 
 /// Information about terminal.
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct TermAttr {
     /// Type of the terminal. (Which terminal this terminal emulates.)
     pub typ: TermType,
@@ -12,7 +12,7 @@ pub struct TermAttr {
 }
 
 /// Type of simulated terminal.
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum TermType {
     Vt100,
     Vt101,
@@ -30,7 +30,7 @@ pub enum TermType {
 
 bitflags! {
     #[doc = "Terminal features."]
-    #[derive(Debug, Clone, Copy)]
+    #[derive(Debug, Clone, Copy, PartialEq, Eq)]
     pub struct TermFeatures: u32 {
         /// No extra features.
         const NONE = 0x0;

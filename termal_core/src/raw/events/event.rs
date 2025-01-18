@@ -6,7 +6,7 @@ use super::{mouse::Mouse, Key, KeyCode, Modifiers, Status, TermAttr};
 ///
 /// Some terminal events are amiguous. This will contain all sensible
 /// possibilities.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct AmbigousEvent {
     /// The main (most propable) event.
     pub event: AnyEvent,
@@ -15,7 +15,7 @@ pub struct AmbigousEvent {
 }
 
 /// Either known or unknown event.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum AnyEvent {
     /// Known parsed event.
     Known(Event),
@@ -23,7 +23,7 @@ pub enum AnyEvent {
     Unknown(Vec<u8>),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Event {
     /// Key was pressed.
     KeyPress(Key),
@@ -126,6 +126,7 @@ impl AmbigousEvent {
         // ALT code
         if cnt == Some(2) && code.starts_with('\x1b') {
             let chr = code.chars().last().unwrap();
+
             let mut res = Self::from_char_code(chr);
             if let AnyEvent::Known(Event::KeyPress(ref mut k)) = res.event {
                 k.modifiers |= Modifiers::ALT;
@@ -138,6 +139,13 @@ impl AmbigousEvent {
                 };
                 k.modifiers |= Modifiers::ALT;
                 k.key_char = None;
+            }
+
+            if chr == 'd' {
+                res.other.push(Event::KeyPress(Key::mcode(
+                    KeyCode::Delete,
+                    Modifiers::CONTROL,
+                )));
             }
 
             return Some(res);
@@ -245,12 +253,10 @@ impl AmbigousEvent {
             .map(|name| Self::status(Status::TerminalName(name.into())))
     }
 
+    /// # Prerequisities
+    /// - `csi.postfix.chars().count() == 1`
     fn csi_xterm(csi: Csi) -> Option<Self> {
-        if csi.postfix.is_empty() {
-            return None;
-        }
-
-        let pchr = csi.postfix.chars().next().unwrap();
+        let pchr = csi.postfix.chars().next()?;
         match csi.args.as_slice() {
             [] | [1] => {
                 KeyCode::from_xterm_id(pchr).map(Key::code).map(Self::key)

@@ -34,11 +34,13 @@
 + Windows support (untested).
 + Make `Terminal` generic.
 + Make `TermRead` more generic.
++ Implement `Eq` for `AmbigousEvent` and all sub structs.
 - Fix publicity of macro `codes::move_up`.
 - Macros in `codes` now evaluate their arguments only once. (also fixes
   affected codes in color macros)
 - Fix `move_to` and `mt` in color marcros.
 - Fix `delete_lines`, `insert_columns`, `set_down` and `set_up` codes.
+- Recognize amiguity with `Ctrl+Delete` and `Alt+d`.
 
 ## v1.2.2
 - Fix `writemcln` macro.
