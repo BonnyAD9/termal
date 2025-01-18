@@ -157,7 +157,7 @@ impl AmbigousEvent {
         } else if let Some(code) = code.strip_prefix(codes::DCS) {
             Self::dcs(code)
         } else {
-            code.strip_prefix("\x1bO").and_then(|cscode| {
+            code.strip_prefix(codes::SS3).and_then(|cscode| {
                 let csi = Csi::parse(cscode);
                 matches!(csi.postfix.as_str(), "P" | "Q" | "R" | "S")
                     .then(|| Self::csi_xterm(csi))

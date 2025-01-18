@@ -28,6 +28,7 @@
 - Add `IoProvider` trait.
 - Add `StdioProvider` trait.
 - Add `ValueOrMut` to make `IoProvider` possible.
+- Add `SS3` code.
 + Move around some logic around sixels.
 + Refactor readers.
 + Split into features.

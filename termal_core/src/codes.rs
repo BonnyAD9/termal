@@ -49,6 +49,8 @@ pub const DCS: &str = "\x1bP";
 pub const OCS: &str = "\x1b]";
 /// String terminator. Terminates for example DCS.
 pub const ST: &str = "\x1b\\";
+/// Single shift three
+pub const SS3: &str = "\x1bO";
 
 /// Creates escape sequence, the first literal is the end of the sequence,
 /// the other arguments are the values in the sequence
