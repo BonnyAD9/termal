@@ -117,6 +117,8 @@ fn test_formatc_codes() {
     assert_eq!(formatc!("{'double_underline}"), codes::DOUBLE_UNDERLINE);
     assert_eq!(formatc!("{'dunderline}"), codes::DOUBLE_UNDERLINE);
     assert_eq!(formatc!("{'dun}"), codes::DOUBLE_UNDERLINE);
+    assert_eq!(formatc!("{'overline}"), codes::OVERLINE);
+    assert_eq!(formatc!("{'ol}"), codes::OVERLINE);
 
     assert_eq!(formatc!("{'_bold}"), codes::RESET_BOLD);
     assert_eq!(formatc!("{'_italic}"), codes::RESET_ITALIC);

@@ -206,6 +206,8 @@ pub const INVISIBLE: &str = "\x1b[8m";
 pub const STRIKETROUGH: &str = "\x1b[9m";
 /// Set double underline mode
 pub const DOUBLE_UNDERLINE: &str = "\x1b[21";
+/// Set ouverline mode
+pub const OVERLINE: &str = "\x1b[53";
 
 /// Reset [`BOLD`] and [`FAINT`] mode
 pub const RESET_BOLD: &str = "\x1b[22m";

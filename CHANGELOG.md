@@ -29,6 +29,7 @@
 - Add `StdioProvider` trait.
 - Add `ValueOrMut` to make `IoProvider` possible.
 - Add `SS3` code.
+- Add code `OVERLINE`, also add to print macros as `overline`/`ol`.
 + Move around some logic around sixels.
 + Refactor readers.
 + Split into features.

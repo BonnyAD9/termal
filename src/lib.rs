@@ -102,6 +102,7 @@
 //! - `striketrough`, `strike`: sets the style to striketrough
 //! - `double_underline`, `dunderline`, `dun`: sets the style to double
 //!   underline
+//! - `overline`, `ol`: sets the style to overline
 //! + `_bold`: resets bold and faint
 //! + `_italic`, `_i`: resets italic
 //! + `_underline`, `_u`: resets underline and double underline

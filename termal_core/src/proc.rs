@@ -365,6 +365,7 @@ where
         "invisible" | "invis" => codes::INVISIBLE,
         "striketrough" | "strike" => codes::STRIKETROUGH,
         "double_underline" | "dunderline" | "dun" => codes::DOUBLE_UNDERLINE,
+        "overline" | "ol" => codes::OVERLINE,
 
         "_bold" => codes::RESET_BOLD,
         "_italic" | "_i" => codes::RESET_ITALIC,
