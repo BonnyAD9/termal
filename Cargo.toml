@@ -8,17 +8,21 @@ homepage = "https://github.com/BonnyAD9/termal"
 repository = "https://github.com/BonnyAD9/termal"
 readme = "README.md"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [workspace]
 members = [
     "termal_core",
     "termal_proc"
 ]
 
-[dependencies]
-termal_core = { path = "termal_core", version = "1.1.0", default-features = false }
-termal_proc = { path = "termal_proc", version = "1.1.0", default-features = false }
+[dependencies.termal_core]
+path = "termal_core"
+version = "1.1.0"
+default-features = false
+
+[dependencies.termal_proc]
+path = "termal_proc"
+version = "1.1.0"
+default-features = false
 
 [features]
 default = []
