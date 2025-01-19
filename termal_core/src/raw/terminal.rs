@@ -241,6 +241,7 @@ impl<T: IoProvider> Terminal<T> {
         if self.cur()? == 0x1b && self.buffer.len() != 1 {
             self.read_escape()
         } else {
+            // TODO should \r\n be single event?
             self.read_char()
         }
     }
