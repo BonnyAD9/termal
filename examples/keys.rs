@@ -1,6 +1,7 @@
 use std::io::{self, Write};
 
 use termal::{
+    codes,
     error::Result,
     raw::{
         disable_raw_mode, enable_raw_mode,
@@ -10,14 +11,14 @@ use termal::{
 };
 
 fn main() -> Result<()> {
-    print!("");
+    print!("{}", codes::ENABLE_BRACKETED_PASTE_MODE);
     _ = io::stdout().flush();
     enable_raw_mode()?;
 
     start()?;
 
     disable_raw_mode()?;
-    print!("");
+    print!("{}", codes::DISABLE_BRACKETED_PASTE_MODE);
     _ = io::stdout().flush();
 
     Ok(())

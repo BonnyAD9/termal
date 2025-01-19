@@ -431,7 +431,10 @@ pub const DONT_LIMIT_PRINT_TO_SCROLL_REGION: &str = "\x1b[19h";
 /// Limit printing area only to scroll region.
 pub const LIMIT_PRINT_TO_SCROLL_REGION: &str = "\x1b[19l";
 
-// TODO: see wikipedia
+/// Enables bracketed paste mode. In this mode, pasted text is treated
+/// verbatim.
+pub const ENABLE_BRACKETED_PASTE_MODE: &str = "\x1b[?2004h";
+pub const DISABLE_BRACKETED_PASTE_MODE: &str = "\x1b[?2004l";
 
 #[derive(Clone, Debug, Copy, Eq, PartialEq)]
 pub enum CursorStyle {
@@ -461,6 +464,13 @@ pub fn set_cursor(style: CursorStyle) -> &'static str {
         CursorStyle::Bar(false) => "\x1b[6 q",
     }
 }
+
+// Internal
+
+/// Input code for bracketed paste start. Used internally.
+pub const BRACKETED_PASTE_START: &str = "\x1b[200~";
+/// Input code for bracketed paste end. Used internally.
+pub const BRACKETED_PASTE_END: &str = "\x1b[201~";
 
 /*#[macro_export]
 macro_rules! resize_window {

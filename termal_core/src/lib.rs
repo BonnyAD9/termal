@@ -86,6 +86,7 @@ pub fn reset_terminal() {
         codes::CUR_LOAD,
         codes::DISABLE_ALTERNATIVE_BUFFER,
         codes::DISABLE_REVERSE_COLOR,
+        codes::DISABLE_BRACKETED_PASTE_MODE,
     ]
     .concat();
     print!("{}", s);

@@ -4,17 +4,17 @@ use std::{
     time::{Duration, Instant},
 };
 
-use crate::{
-    error::{Error, Result},
-    term_text::TermText,
-};
+use crate::error::{Error, Result};
 
 use super::{IoProvider, StdioProvider, WaitForIn};
 
 #[cfg(feature = "events")]
-use super::events::{AmbigousEvent, AnyEvent, Event};
+use crate::{
+    codes,
+    raw::events::{AmbigousEvent, AnyEvent, Event, StateChange},
+};
 #[cfg(feature = "readers")]
-use super::readers::TermRead;
+use crate::{raw::readers::TermRead, term_text::TermText};
 
 /// Terminal reader. Abstracts reading from terminal and parsing inputs. Works
 /// properly only if raw mode is enabled.
@@ -22,6 +22,8 @@ use super::readers::TermRead;
 pub struct Terminal<T: IoProvider = StdioProvider> {
     buffer: VecDeque<u8>,
     io: T,
+    #[cfg(feature = "events")]
+    bracketed_paste_open: bool,
 }
 
 impl Terminal<StdioProvider> {
@@ -36,6 +38,8 @@ impl<T: IoProvider> Terminal<T> {
         Terminal {
             buffer: VecDeque::new(),
             io,
+            #[cfg(feature = "events")]
+            bracketed_paste_open: false,
         }
     }
 
@@ -244,7 +248,9 @@ impl<T: IoProvider> Terminal<T> {
 
     /// Read the next event on stdin. May block.
     pub fn read_ambigous(&mut self) -> Result<AmbigousEvent> {
-        if self.cur()? == 0x1b && self.buffer.len() != 1 {
+        if self.bracketed_paste_open {
+            self.read_bracketed()
+        } else if self.cur()? == 0x1b && self.buffer.len() != 1 {
             self.read_escape()
         } else {
             // TODO should \r\n be single event?
@@ -286,6 +292,26 @@ impl<T: IoProvider> Terminal<T> {
             }
         }
         Ok(())
+    }
+
+    /// Opens bracketed paste mode. It will start automatically with
+    /// start of paste text and end with end of paste text if bracketed paste
+    /// mode is enabled (with [`codes::ENABLE_BRACKETED_PASTE_MODE`]).
+    ///
+    /// When bracketed paste is opened, it will read all input verbatim as text
+    /// instead of control sequences.
+    pub fn open_bracketed_paste(&mut self, v: bool) {
+        self.bracketed_paste_open = v;
+    }
+
+    /// Checks if bracketed paste is open. It will start automatically with
+    /// start of paste text and end with end of paste text if bracketed paste
+    /// mode is enabled (with [`codes::ENABLE_BRACKETED_PASTE_MODE`]).
+    ///
+    /// When bracketed paste is opened, it will read all input verbatim as text
+    /// instead of control sequences.
+    pub fn is_bracketed_paste_open(&mut self) -> bool {
+        self.bracketed_paste_open
     }
 
     fn read_escape(&mut self) -> Result<AmbigousEvent> {
@@ -348,7 +374,14 @@ impl<T: IoProvider> Terminal<T> {
         }
 
         code.push(cur);
-        Ok(AmbigousEvent::from_code(&code))
+        if code == codes::BRACKETED_PASTE_START.as_bytes() {
+            self.bracketed_paste_open = true;
+            Ok(AmbigousEvent::state_change(
+                StateChange::BracketedPasteStart,
+            ))
+        } else {
+            Ok(AmbigousEvent::from_code(&code))
+        }
     }
 
     fn read_ss3(&mut self) -> Result<AmbigousEvent> {
@@ -395,6 +428,38 @@ impl<T: IoProvider> Terminal<T> {
         } else {
             let chr = self.read_byte()? as char;
             Ok(AmbigousEvent::from_char_code(chr))
+        }
+    }
+
+    fn read_bracketed(&mut self) -> Result<AmbigousEvent> {
+        let c = self.cur()?;
+        if self.buffer_starts_with(codes::BRACKETED_PASTE_END.as_bytes()) {
+            self.buffer.consume(codes::BRACKETED_PASTE_END.len());
+            self.bracketed_paste_open = false;
+            Ok(AmbigousEvent::state_change(StateChange::BracketedPasteEnd))
+        } else if c.is_ascii() {
+            self.buffer.consume(1);
+            if c == 0xD {
+                Ok(AmbigousEvent::verbatim('\n'))
+            } else {
+                Ok(AmbigousEvent::verbatim(c as char))
+            }
+        } else {
+            let mut buf: [u8; 4] = [0; 4];
+            Ok(AmbigousEvent::verbatim(self.read_utf8(&mut buf)?))
+        }
+    }
+
+    fn buffer_starts_with(&self, b: &[u8]) -> bool {
+        if self.buffer.len() < b.len() {
+            return false;
+        }
+
+        let s = self.buffer.as_slices();
+        if s.0.len() >= b.len() {
+            s.0.starts_with(b)
+        } else {
+            b.starts_with(s.0) && s.1.starts_with(&b[s.0.len()..])
         }
     }
 

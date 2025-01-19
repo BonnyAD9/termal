@@ -1,6 +1,7 @@
 use termal::raw::events::{
     mouse::{self, Mouse},
-    AmbigousEvent, AnyEvent, Event, Key, KeyCode, Modifiers, Status,
+    AmbigousEvent, AnyEvent, Event, Key, KeyCode, Modifiers, StateChange,
+    Status,
 };
 
 #[test]
@@ -26,6 +27,11 @@ fn test_constructors() {
     assert_eq!(
         Key::code(KeyCode::Enter),
         Key::mcode(KeyCode::Enter, Modifiers::NONE)
+    );
+
+    assert_eq!(
+        Key::verbatim('\x1b'),
+        Key::new(KeyCode::Char('\x1b'), Modifiers::NONE, '\x1b')
     );
 
     assert_eq!(
@@ -69,6 +75,18 @@ fn test_constructors() {
     assert_eq!(
         AmbigousEvent::status(Status::Ok),
         AmbigousEvent::event(Event::Status(Status::Ok)),
+    );
+
+    assert_eq!(
+        AmbigousEvent::verbatim('\x1b'),
+        AmbigousEvent::key(Key::verbatim('\x1b')),
+    );
+
+    assert_eq!(
+        AmbigousEvent::state_change(StateChange::BracketedPasteStart),
+        AmbigousEvent::event(Event::StateChange(
+            StateChange::BracketedPasteStart
+        )),
     );
 }
 

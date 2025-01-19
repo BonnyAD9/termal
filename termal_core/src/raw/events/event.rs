@@ -1,6 +1,9 @@
 use crate::{codes, raw::events::csi::Csi};
 
-use super::{mouse::Mouse, Key, KeyCode, Modifiers, Status, TermAttr};
+use super::{
+    mouse::Mouse, state_change::StateChange, Key, KeyCode, Modifiers, Status,
+    TermAttr,
+};
 
 /// Possibly ambiguous terminal event.
 ///
@@ -35,6 +38,8 @@ pub enum Event {
     Focus,
     /// The terminal has lost focus.
     FocusLost,
+    /// The input state has changed.
+    StateChange(StateChange),
 }
 
 impl AmbigousEvent {
@@ -72,6 +77,10 @@ impl AmbigousEvent {
         Self::event(Event::Status(status))
     }
 
+    pub fn state_change(state: StateChange) -> Self {
+        Self::event(Event::StateChange(state))
+    }
+
     /// Parse single char event.
     pub fn from_char_code(code: char) -> Self {
         Self::char_key(code)
@@ -87,6 +96,11 @@ impl AmbigousEvent {
             .ok()
             .and_then(Self::from_code_str)
             .unwrap_or_else(|| Self::unknown(code))
+    }
+
+    /// Create verbatim key code.
+    pub fn verbatim(c: char) -> Self {
+        Self::key(Key::verbatim(c))
     }
 
     fn mouse_code(code: &[u8]) -> Self {
@@ -237,6 +251,12 @@ impl AmbigousEvent {
                     w: *w as usize,
                     h: *h as usize,
                 }))
+            }
+            ("", [200], "~") => {
+                Some(Self::state_change(StateChange::BracketedPasteStart))
+            }
+            ("", [201], "~") => {
+                Some(Self::state_change(StateChange::BracketedPasteEnd))
             }
             // Possibly VT key press
             ("", _, "~") => Self::csi_vt(csi),

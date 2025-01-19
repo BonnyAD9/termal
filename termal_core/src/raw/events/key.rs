@@ -101,6 +101,11 @@ impl Key {
             key_char: None,
         }
     }
+
+    /// Create verbatim char code.
+    pub fn verbatim(c: char) -> Self {
+        Self::new(KeyCode::Char(c), Modifiers::NONE, c)
+    }
 }
 
 impl KeyCode {

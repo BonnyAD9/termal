@@ -6,14 +6,14 @@ use termal::{
 };
 
 fn main() -> Result<()> {
-    print!("");
+    print!("\x1b[?2004h");
     _ = stdout().flush();
     enable_raw_mode()?;
 
     start()?;
 
     disable_raw_mode()?;
-    print!("");
+    print!("\x1b[?2004l");
     _ = stdout().flush();
 
     Ok(())
