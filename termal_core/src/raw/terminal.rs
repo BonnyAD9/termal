@@ -24,6 +24,12 @@ pub struct Terminal<T: IoProvider = StdioProvider> {
     io: T,
 }
 
+impl Terminal<StdioProvider> {
+    pub fn stdio() -> Self {
+        Self::default()
+    }
+}
+
 impl<T: IoProvider> Terminal<T> {
     /// Create new terminal.
     pub fn new(io: T) -> Self {

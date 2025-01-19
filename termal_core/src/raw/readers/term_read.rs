@@ -108,8 +108,6 @@ where
         pos: Option<usize>,
     ) -> Result<()> {
         mem::swap(&mut self.buf, s);
-        // TODO: change when lines are supported
-        self.buf.retain(|c| !c.is_ascii_control());
         self.set_pos(pos);
         self.reshow()?;
         self.get_all()?;
@@ -160,13 +158,7 @@ where
     /// Set string to edit.
     pub fn set_edit(&mut self, s: impl AsRef<str>, pos: Option<usize>) {
         self.buf.clear();
-        // TODO: change when newlines supported
-        self.buf.extend(
-            TermText::new(s.as_ref())
-                .spans()
-                .filter(|s| !s.is_control())
-                .flat_map(|s| s.text().chars()),
-        );
+        self.buf.extend(s.as_ref().chars());
         self.set_pos(pos);
     }
 
@@ -342,22 +334,13 @@ where
         self.last_event = Some(evt);
 
         if let Some(chr) = key.key_char {
-            // TODO: change when newlines are supported.
-            if chr == '\n' {
-                return Ok(false);
-            }
-
             self.buf.insert(self.pos, chr);
 
             if self.pos + 1 < self.buf.len() {
                 self.reprint_pos();
                 self.move_right();
             } else {
-                if chr == '\n' {
-                    self.pbuf += "\r\n";
-                } else {
-                    self.pbuf.push(chr);
-                }
+                self.print_from_dont_move(self.pos);
                 self.pos += 1;
                 if self.cur_pos().x == 0 {
                     self.pbuf += "\r\n";
@@ -547,14 +530,8 @@ where
     }
 
     fn print_from_dont_move(&mut self, pos: usize) {
-        // TODO: map control characters
-        self.pbuf.extend(self.buf[pos..].iter().flat_map(|c| {
-            Some(c).into_iter().chain(if *c == '\n' {
-                Some(&'\r')
-            } else {
-                None
-            })
-        }));
+        self.pbuf
+            .extend(self.buf[pos..].iter().copied().map(get_printable));
     }
 
     fn commit(&mut self) -> Result<()> {
@@ -562,6 +539,24 @@ where
             self.term.write_all(self.pbuf.as_bytes())?;
             self.term.flush()?;
         }
+        self.pbuf.clear();
         Ok(())
+    }
+}
+
+/// Get printable `non-control` character.
+pub fn get_printable(c: char) -> char {
+    if !c.is_ascii_control() {
+        if c.is_control() {
+            '␦'
+        } else {
+            c
+        }
+    } else {
+        match c as u32 {
+            c if c < 32 => char::from_u32(c + 0x2400).unwrap(),
+            127 => '␡',
+            _ => c,
+        }
     }
 }

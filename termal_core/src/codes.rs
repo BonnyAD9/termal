@@ -431,7 +431,7 @@ pub const DONT_LIMIT_PRINT_TO_SCROLL_REGION: &str = "\x1b[19h";
 /// Limit printing area only to scroll region.
 pub const LIMIT_PRINT_TO_SCROLL_REGION: &str = "\x1b[19l";
 
-/// TODO: see wikipedia 
+// TODO: see wikipedia
 
 #[derive(Clone, Debug, Copy, Eq, PartialEq)]
 pub enum CursorStyle {
