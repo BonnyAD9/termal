@@ -547,6 +547,7 @@ where
     }
 
     fn print_from_dont_move(&mut self, pos: usize) {
+        // TODO: map control characters
         self.pbuf.extend(self.buf[pos..].iter().flat_map(|c| {
             Some(c).into_iter().chain(if *c == '\n' {
                 Some(&'\r')
