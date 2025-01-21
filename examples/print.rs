@@ -1,5 +1,3 @@
-use std::io::stdin;
-
 use termal::reset_terminal;
 
 fn main() {
