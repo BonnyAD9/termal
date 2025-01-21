@@ -46,6 +46,9 @@
 //! background color, you can append `_` to the color (e.g. `#FF0000_` will set
 //! the background color to pure red).
 //!
+//! If you want to set the underline color, just type the same as background
+//! color, but use `u` instead of the `_`.
+//!
 //! ### Ascii commands
 //! - `bell`: console bell (create sound)
 //! - `backspace`: move left by one
@@ -110,6 +113,7 @@
 //! + `_inverse`: resets inverse
 //! + `_invisible`, `_invis`: resets invisible
 //! + `_striketrough`, `_strike`: resets striketrough
+//! + `_overline`, `_ol`: resets overline
 //!
 //! ### Color commands
 //! - `black_fg`, `black`, `bl`: sets the foreground to black
@@ -143,10 +147,13 @@
 //!   magenta
 //! - `dark_cyan_bg`, `dcyanb`, `dcb`: sets the background to dark cyan
 //! + `_bg`: resets the background
+//! + `_ucolor`, `_uc`: resets the underline color
 //! - `fg`: sets the foreground color to one of the 256 colors, has one
 //!   argument
 //! - `bg`: sets the background color to one of the 256 colors, has one
 //!   argument
+//! - `ucolor`, `uc`: sets the underline color to one of the 256 colors, has
+//!   one argument.
 //!
 //! ### Other
 //! - `line_wrap`, `wrap`: enable line wrapping

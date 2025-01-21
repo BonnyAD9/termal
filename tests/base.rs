@@ -43,6 +43,14 @@ fn test_formatc_codes() {
     assert_eq!(formatc!("{'#12_}"), formatc!("{'#121212_}"));
     assert_eq!(formatc!("{'#1_}"), formatc!("{'#111111_}"));
 
+    assert_eq!(
+        formatc!("{'#123456u}"),
+        codes::underline_rgb!(0x12, 0x34, 0x56)
+    );
+    assert_eq!(formatc!("{'#123u}"), formatc!("{'#112233u}"));
+    assert_eq!(formatc!("{'#12u}"), formatc!("{'#121212u}"));
+    assert_eq!(formatc!("{'#1u}"), formatc!("{'#111111u}"));
+
     // Ascii
     assert_eq!(formatc!("{'bell}"), codes::BELL.to_string());
     assert_eq!(formatc!("{'backspace}"), codes::BACKSPACE.to_string());
@@ -132,6 +140,8 @@ fn test_formatc_codes() {
     assert_eq!(formatc!("{'_invis}"), codes::RESET_INVISIBLE);
     assert_eq!(formatc!("{'_striketrough}"), codes::RESET_STRIKETROUGH);
     assert_eq!(formatc!("{'_strike}"), codes::RESET_STRIKETROUGH);
+    assert_eq!(formatc!("{'_overline}"), codes::RESET_OVERLINE);
+    assert_eq!(formatc!("{'_ol}"), codes::RESET_OVERLINE);
 
     assert_eq!(formatc!("{'black_fg}"), codes::BLACK_FG);
     assert_eq!(formatc!("{'black}"), codes::BLACK_FG);
@@ -213,9 +223,13 @@ fn test_formatc_codes() {
     assert_eq!(formatc!("{'dcb}"), codes::CYAN_DARK_BG);
 
     assert_eq!(formatc!("{'_bg}"), codes::RESET_BG);
+    assert_eq!(formatc!("{'_uc}"), codes::RESET_UNDERLINE_COLOR);
+    assert_eq!(formatc!("{'_ucolor}"), codes::RESET_UNDERLINE_COLOR);
 
     assert_eq!(formatc!("{'fg56}"), codes::fg256!(56));
     assert_eq!(formatc!("{'bg56}"), codes::bg256!(56));
+    assert_eq!(formatc!("{'ucolor56}"), codes::underline256!(56));
+    assert_eq!(formatc!("{'uc56}"), codes::underline256!(56));
 
     // Other
     assert_eq!(formatc!("{'line_wrap}"), codes::ENABLE_LINE_WRAP);

@@ -29,10 +29,16 @@
 - Add `StdioProvider` trait.
 - Add `ValueOrMut` to make `IoProvider` possible.
 - Add `SS3` code.
-- Add code `OVERLINE`, also add to print macros as `overline`/`ol`.
+- Add code `OVERLINE`, also add to print macros as `overline`/`ol`. (also add
+  reset codes)
 - Add codes to enable and disable inverse color in whole terminal.
 - Add option to enable bracketed paste mode (pasted text is verbatim).
 - Support bracketed paste mode in terminal.
+- Add codes to set and reset the underline color (rgb an 256) and their codes
+  to format macros (`uc`/`ucolor`, `#RGBu`, `_uc`/`_ucolor`).
+- Add codes to change the character size for current line (
+  `DUBLE_CHAR_HEIGHT_DOWN`, `DOUBLE_CHAR_HEIGHT_UP`, `DOUBLE_CHAR_WIDTH`,
+  `RESET_CHAR_SIZE`)
 + Move around some logic around sixels.
 + Refactor readers.
 + Split into features.

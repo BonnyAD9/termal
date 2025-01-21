@@ -39,9 +39,11 @@ fn test_macros() {
     assert_eq!(codes::fg256!(56), "\x1b[38;5;56m");
     assert_eq!(codes::fg256!(six), "\x1b[38;5;6m");
     assert_eq!(codes::bg256!(56), "\x1b[48;5;56m");
+    assert_eq!(codes::underline256!(56), "\x1b[58;5;56m");
     assert_eq!(codes::fg!(12, 34, 56), "\x1b[38;2;12;34;56m");
     assert_eq!(codes::fg!(12, 34, six), "\x1b[38;2;12;34;6m");
     assert_eq!(codes::bg!(12, 34, 56), "\x1b[48;2;12;34;56m");
+    assert_eq!(codes::underline_rgb!(12, 34, 56), "\x1b[58;2;12;34;56m");
 
     assert_eq!(codes::scroll_region!(12, 34), "\x1b[12;34r");
     assert_eq!(codes::scroll_region!(12, six), "\x1b[12;6r");

@@ -223,6 +223,8 @@ pub const RESET_INVERSE: &str = "\x1b[27m";
 pub const RESET_INVISIBLE: &str = "\x1b[28m";
 /// Reset [`STRIKETROUGH`] mode
 pub const RESET_STRIKETROUGH: &str = "\x1b[29m";
+/// Reset [`OVERLINE`] mode.
+pub const RESET_OVERLINE: &str = "\x1b[55m";
 
 /// Set the foreground color to black (dark black)
 pub const BLACK_FG: &str = "\x1b[30m";
@@ -307,6 +309,9 @@ csi_macro! {
     bg256, 48, 5, c; 'm'
         ? "creates a background color, color is value in range 0..256",
 
+    underline256, 58, 5, c; 'm'
+        ? "Set underline color as 256 color.",
+
     fg, 38, 2, r, g, b; 'm'
         ? "creates a true rgb foreground color. R, G and B must be values in
            range 0..256",
@@ -314,9 +319,26 @@ csi_macro! {
     bg, 48, 2, r, g, b; 'm'
         ? "creates a true rgb background color. R, G and B must be values in
            range 0..256",
+
+    underline_rgb, 58, 2, r, g, b; 'm'
+        ? "Set underline color as rgb.",
+
     repeat_char, n; 'b'
         ? "Repeat the previous char n times."
 }
+
+/// Reset the underline color.
+pub const RESET_UNDERLINE_COLOR: &str = "\x1b[59m";
+
+// Line modes
+/// Makes this line characters twice as large overlapping with the line below.
+pub const DOUBLE_CHAR_HEIGHT_DOWN: &str = "\x1b#3";
+/// Makes this line characters twice as large overlapping with the line above.
+pub const DOUBLE_CHAR_HEIGHT_UP: &str = "\x1b#4";
+/// Makes this line character twice as wide (but not twice as tall).
+pub const DOUBLE_CHAR_WIDTH: &str = "\x1b#6";
+/// Resets this line character size.
+pub const RESET_CHAR_SIZE: &str = "\x1b#5";
 
 // Screen modes
 

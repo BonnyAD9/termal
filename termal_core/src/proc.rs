@@ -374,6 +374,7 @@ where
         "_inverse" => codes::RESET_INVERSE,
         "_invisible" | "_invis" => codes::RESET_INVISIBLE,
         "_striketrough" | "_strike" => codes::RESET_STRIKETROUGH,
+        "_overline" | "_ol" => codes::RESET_OVERLINE,
 
         "black_fg" | "black" | "bl" => codes::BLACK_FG,
         "white_fg" | "white" | "w" => codes::WHITE_FG,
@@ -443,6 +444,21 @@ where
             owner = codes::bg256!(c);
             &owner
         }
+        "ucolor" | "uc" => {
+            let c = match maybe_read_num(i) {
+                Some(c) if (0..256).contains(&c) => c,
+                _ => {
+                    return Err(ProcError::msg(format!(
+                    "The '{}' in color format expects value in range 0..256",
+                    s,
+                )))
+                }
+            };
+            owner = codes::underline256!(c);
+            &owner
+        }
+
+        "_ucolor" | "_uc" => codes::RESET_UNDERLINE_COLOR,
 
         "line_wrap" | "wrap" => codes::ENABLE_LINE_WRAP,
         "_line_wrap" | "_wrap" => codes::DISABLE_LINE_WRAP,
@@ -499,7 +515,7 @@ where
                 s.push(*c);
                 i.next();
             }
-            '}' | ' ' | '_' => break,
+            '}' | ' ' | '_' | 'u' => break,
             _ => {
                 return Err(ProcError::msg(format!(
                     "Invalid hex color, didn't expect character '{}'",
@@ -543,6 +559,11 @@ where
         }
         Some(' ' | '}') => {
             res.push_str(codes::fg!(r, g, b).as_str());
+            Ok(())
+        }
+        Some('u') => {
+            i.next();
+            res.push_str(codes::underline_rgb!(r, g, b).as_str());
             Ok(())
         }
         Some(c) => Err(ProcError::msg(format!(
