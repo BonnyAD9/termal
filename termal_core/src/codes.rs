@@ -501,6 +501,9 @@ macro_rules! resize_window {
     };
 }*/
 
+// TODO: OSC commands
+// TODO: Kitty extensions
+
 /// Trait for getting string from &str and String
 pub trait GetString {
     /// If [`self`] is `&str` uses `.to_owned()`, if [`self`] is [`String`] returns

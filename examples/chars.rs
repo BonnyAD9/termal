@@ -6,7 +6,7 @@ use termal::{
 };
 
 fn main() -> Result<()> {
-    print!("\x1b[?2004h");
+    print!("\x1b]22;cross\x07");
     _ = stdout().flush();
     enable_raw_mode()?;
 
