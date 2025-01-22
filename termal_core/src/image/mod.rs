@@ -2,12 +2,13 @@ mod img_nearest;
 mod mat;
 mod raw_img;
 mod rect;
-mod rgb;
 mod sixel;
 mod texel;
 
+use crate::Rgb;
+
 pub use self::{
-    img_nearest::*, mat::*, raw_img::*, rect::*, rgb::*, sixel::*, texel::*,
+    img_nearest::*, mat::*, raw_img::*, rect::*, sixel::*, texel::*,
 };
 
 /// Image data that can be interpreted when generating sixel data.

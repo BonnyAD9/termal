@@ -1,4 +1,6 @@
-use super::{Image, Rect, Rgb};
+use crate::Rgb;
+
+use super::{Image, Rect};
 
 /// Image wrapper that will use the nearest pixel for scaling. This is much
 /// faster than the default implementation, but much less precise.

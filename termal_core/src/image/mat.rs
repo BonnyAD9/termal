@@ -1,6 +1,8 @@
 use std::ops::{Index, IndexMut};
 
-use super::{Image, Rgb};
+use crate::Rgb;
+
+use super::Image;
 
 /// Fixed size matrix. Wrapper around [`Vec`]
 pub struct Mat<T> {

@@ -47,6 +47,7 @@
 + Make `TermRead` more generic.
 + Implement `Eq` for `AmbigousEvent` and all sub structs.
 + Support control characters in `TermRead`.
++ Use the rgb type for gradient.
 - Fix publicity of macro `codes::move_up`.
 - Macros in `codes` now evaluate their arguments only once. (also fixes
   affected codes in color macros)

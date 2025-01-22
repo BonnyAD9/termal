@@ -1,9 +1,12 @@
 //! Core library of termal, contains the implementation.
+mod rgb;
 
 use std::{
     io::{self, Write},
     panic,
 };
+
+pub use rgb::*;
 
 pub mod codes;
 pub mod error;
@@ -21,27 +24,21 @@ pub fn write_gradient(
     res: &mut String,
     s: impl AsRef<str>,
     s_len: usize,
-    start: (u8, u8, u8),
-    end: (u8, u8, u8),
+    start: impl Into<Rgb>,
+    end: impl Into<Rgb>,
 ) {
     let len = s_len as f32 - 1.;
+    let start = start.into().as_f32();
+    let end = end.into().as_f32();
 
     let step = if s_len == 1 {
-        (0., 0., 0.)
+        Rgb::<f32>::BLACK
     } else {
-        (
-            (end.0 as f32 - start.0 as f32) / len,
-            (end.1 as f32 - start.1 as f32) / len,
-            (end.2 as f32 - start.2 as f32) / len,
-        )
+        (end - start) / len
     };
 
     for (i, c) in s.as_ref().chars().take(s_len).enumerate() {
-        res.push_str(&fg!(
-            start.0 as f32 + step.0 * i as f32,
-            start.1 as f32 + step.1 * i as f32,
-            start.2 as f32 + step.2 * i as f32,
-        ));
+        res.push_str(&(start + step * i as f32).as_u8().fg());
         res.push(c);
     }
 }
@@ -49,8 +46,8 @@ pub fn write_gradient(
 /// Generates linear color gradient with the given text
 pub fn gradient(
     s: impl AsRef<str>,
-    start: (u8, u8, u8),
-    end: (u8, u8, u8),
+    start: impl Into<Rgb>,
+    end: impl Into<Rgb>,
 ) -> String {
     let mut res = String::new();
     let len = s.as_ref().chars().count();

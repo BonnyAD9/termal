@@ -1,8 +1,11 @@
 use texel_state::TexelState;
 
-use crate::codes::{bg, fg};
+use crate::{
+    codes::{bg, fg},
+    Rgb,
+};
 
-use super::{Image, Rgb};
+use super::Image;
 
 mod texel_state;
 

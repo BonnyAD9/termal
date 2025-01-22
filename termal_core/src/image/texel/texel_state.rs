@@ -1,6 +1,7 @@
 use crate::{
     codes,
-    image::{Image, Rect, Rgb},
+    image::{Image, Rect},
+    Rgb,
 };
 
 use super::Texel;

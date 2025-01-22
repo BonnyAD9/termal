@@ -2,6 +2,8 @@ use std::ops::{
     Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign,
 };
 
+use crate::codes::fg;
+
 /// Single RGB pixel.
 #[derive(Default, Debug, Copy, Clone, PartialEq, Eq)]
 pub struct Rgb<T = u8> {
@@ -15,12 +17,15 @@ pub struct Rgb<T = u8> {
 
 impl<T> Rgb<T> {
     /// Create new rgb pixel.
-    pub fn new(r: T, g: T, b: T) -> Self {
+    pub const fn new(r: T, g: T, b: T) -> Self {
         Self { r, g, b }
     }
 }
 
 impl Rgb {
+    /// Black color.
+    pub const BLACK: Self = Self::new(0, 0, 0);
+
     /// Create new rgb pixel from single byte rgb pixel.
     ///
     /// The single byte has the components (from high bits to low bits):
@@ -65,6 +70,11 @@ impl Rgb {
     pub fn as_f32(self) -> Rgb<f32> {
         Rgb::new(self.r as f32, self.g as f32, self.b as f32)
     }
+
+    /// Get the foreground code of the rgb.
+    pub fn fg(&self) -> String {
+        fg!(self.r, self.g, self.b)
+    }
 }
 
 impl Rgb<usize> {
@@ -80,6 +90,9 @@ impl Rgb<usize> {
 }
 
 impl Rgb<f32> {
+    /// Black color.
+    pub const BLACK: Self = Self::new(0., 0., 0.);
+
     /// Converts the components to [`u8`].
     pub fn as_u8(self) -> Rgb<u8> {
         Rgb::new(
@@ -102,6 +115,12 @@ impl Rgb<f32> {
 
 impl From<(u8, u8, u8)> for Rgb {
     fn from((r, g, b): (u8, u8, u8)) -> Self {
+        Self::new(r, g, b)
+    }
+}
+
+impl From<(f32, f32, f32)> for Rgb<f32> {
+    fn from((r, g, b): (f32, f32, f32)) -> Self {
         Self::new(r, g, b)
     }
 }
@@ -164,6 +183,7 @@ impl_assign!(DivAssign, div_assign, /=, f32, usize);
 impl_assign!(MulAssign, mul_assign, *=, f32);
 
 impl_op_rgb!(Sub, sub, -=, f32);
+impl_op_rgb!(Add, add, +=, f32);
 
 impl_op!(Div, div, /=, f32);
 impl_op!(Mul, mul, *=, f32);
