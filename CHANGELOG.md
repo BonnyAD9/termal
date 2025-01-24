@@ -47,6 +47,7 @@
   `REQUEST_DEFAULT_BG_COLOR`, `REQUEST_CURSOR_COLOR`, `REQUEST_SELECTION`,
   `request_selection` and `set_selection`. Also parse their respective
   responses.
+- Reader now supports paste with `Ctrl+v`.
 + Move around some logic around sixels.
 + Refactor readers.
 + Split into features.

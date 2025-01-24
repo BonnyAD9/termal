@@ -6,7 +6,7 @@ use crate::{
     codes,
     error::{Error, Result},
     raw::{
-        events::{Event, KeyCode, Modifiers},
+        events::{Event, Key, KeyCode, Modifiers, Status},
         term_size, IoProvider, StdioProvider, Terminal,
     },
     term_text::TermText,
@@ -30,7 +30,10 @@ where
     term: &'t mut Terminal<T>,
     exit: P,
     size: Vec2,
+    // TODO: use bitflags
+    // TODO: option to exit on ctrl+c
     finished: bool,
+    paste: bool,
     last_event: Option<Event>,
     queue: VecDeque<Event>,
 }
@@ -72,6 +75,7 @@ where
             prompt: conf.prompt,
             size: (usize::MAX, usize::MAX).into(),
             finished: false,
+            paste: false,
             last_event: None,
             queue: VecDeque::new(),
         }
@@ -326,13 +330,29 @@ where
             return Ok(true);
         }
 
-        let Event::KeyPress(key) = evt else {
-            self.last_event = Some(evt);
-            return Ok(false);
-        };
+        match evt {
+            Event::KeyPress(key) => {
+                self.last_event = Some(evt);
+                self.handle_key_press(key)
+            }
+            Event::Status(Status::SelectionData(data)) => {
+                if !self.paste {
+                    return Ok(false);
+                }
+                self.paste = false;
+                if let Ok(s) = std::str::from_utf8(&data) {
+                    self.insert(s);
+                }
+                Ok(false)
+            }
+            _ => {
+                self.last_event = Some(evt);
+                Ok(false)
+            }
+        }
+    }
 
-        self.last_event = Some(evt);
-
+    fn handle_key_press(&mut self, key: Key) -> Result<bool> {
         if let Some(chr) = key.key_char {
             self.buf.insert(self.pos, chr);
 
@@ -370,12 +390,24 @@ where
             KeyCode::Delete => self.delete(),
             KeyCode::Home => self.home(),
             KeyCode::End => self.end(),
+            KeyCode::Char('v') => {
+                if key.modifiers.contains(Modifiers::CONTROL) {
+                    self.paste = true;
+                    self.pbuf += codes::REQUEST_SELECTION;
+                }
+            }
             _ => {}
         }
 
         self.commit()?;
 
         Ok(false)
+    }
+
+    fn insert(&mut self, s: &str) {
+        let len = self.buf.len();
+        self.buf.splice(self.pos..self.pos, s.chars());
+        self.reprint_from_move_to(self.pos, self.pos + self.buf.len() - len);
     }
 
     fn move_word_right(&mut self) {
@@ -501,11 +533,14 @@ where
     }
 
     fn reprint_from(&mut self, pos: usize) {
-        let save = self.pos;
-        self.move_to_pos(pos);
+        self.reprint_from_move_to(pos, self.pos);
+    }
 
-        self.reprint_dont_move(pos);
-        self.move_to_pos(save);
+    fn reprint_from_move_to(&mut self, from: usize, to: usize) {
+        self.move_to_pos(from);
+
+        self.reprint_dont_move(from);
+        self.move_to_pos(to);
     }
 
     fn reprint_with_prompt_dont_move(&mut self) {
