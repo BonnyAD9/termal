@@ -426,6 +426,7 @@ impl<T: IoProvider> Terminal<T> {
     fn read_osc(&mut self) -> Result<AmbigousEvent> {
         self.read_byte()?;
         let mut code: Vec<_> = b"\x1b]".into();
+        // TODO: don't hang if no further data.
         let r = self.read_until_st(&mut code);
         if matches!(r, Err(Error::StdInEof)) {
             Ok(AmbigousEvent::from_code(&code))
