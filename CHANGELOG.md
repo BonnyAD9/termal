@@ -64,6 +64,7 @@
 - Fix `delete_lines`, `insert_columns`, `set_down` and `set_up` codes.
 - Recognize amiguity with `Ctrl+Delete` and `Alt+d`.
 - Fix name of `codes::OSC`.
+- Fix codes `ENABLE_MOUSE_XY_ALL_TRACKING` and `DISABLE_MOUSE_XY_ALL_TRACKING`.
 
 ## v1.2.2
 - Fix `writemcln` macro.
