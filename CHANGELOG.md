@@ -39,6 +39,14 @@
 - Add codes to change the character size for current line (
   `DUBLE_CHAR_HEIGHT_DOWN`, `DOUBLE_CHAR_HEIGHT_UP`, `DOUBLE_CHAR_WIDTH`,
   `RESET_CHAR_SIZE`)
+- Add generic code macros: `graphic`, `osc`, `enable` and `disable`.
+- Add osc codes: `request_color_code!`, `reset_color_code!`,
+  `define_color_code`, `set_default_fg_color`, `set_default_bg_color`,
+  `set_cursor_color`, `RESET_ALL_COLOR_CODES`, `RESET_DEFAULT_FG_COLOR`,
+  `RESET_DEFAULT_BG_COLOR`, `RESET_CURSOR_COLOR`, `REQUEST_DEFAULT_FG_COLOR`,
+  `REQUEST_DEFAULT_BG_COLOR`, `REQUEST_CURSOR_COLOR`, `REQUEST_SELECTION`,
+  `request_selection` and `set_selection`. Also parse their respective
+  responses.
 + Move around some logic around sixels.
 + Refactor readers.
 + Split into features.
@@ -48,12 +56,14 @@
 + Implement `Eq` for `AmbigousEvent` and all sub structs.
 + Support control characters in `TermRead`.
 + Use the rgb type for gradient.
++ Implement new methods for rgb.
 - Fix publicity of macro `codes::move_up`.
 - Macros in `codes` now evaluate their arguments only once. (also fixes
   affected codes in color macros)
 - Fix `move_to` and `mt` in color marcros.
 - Fix `delete_lines`, `insert_columns`, `set_down` and `set_up` codes.
 - Recognize amiguity with `Ctrl+Delete` and `Alt+d`.
+- Fix name of `codes::OSC`.
 
 ## v1.2.2
 - Fix `writemcln` macro.

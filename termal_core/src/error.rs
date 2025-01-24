@@ -14,7 +14,11 @@ pub enum Error {
     /// Failed to wait for stdin (on windows).
     #[error("Failed to wait for stdin.")]
     WaitAbandoned,
+    #[error("Failed to parse rgb.")]
+    InvalidRgbFormat,
     /// Any IO error.
     #[error(transparent)]
     Io(#[from] std::io::Error),
+    #[error(transparent)]
+    ParseInt(#[from] std::num::ParseIntError),
 }

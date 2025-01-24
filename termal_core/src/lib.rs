@@ -84,6 +84,10 @@ pub fn reset_terminal() {
         codes::DISABLE_ALTERNATIVE_BUFFER,
         codes::DISABLE_REVERSE_COLOR,
         codes::DISABLE_BRACKETED_PASTE_MODE,
+        codes::RESET_ALL_COLOR_CODES,
+        codes::RESET_DEFAULT_FG_COLOR,
+        codes::RESET_DEFAULT_BG_COLOR,
+        codes::RESET_CURSOR_COLOR,
     ]
     .concat();
     print!("{}", s);

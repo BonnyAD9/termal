@@ -2,6 +2,7 @@ mod csi;
 mod event;
 mod key;
 pub mod mouse;
+mod osc;
 mod state_change;
 mod status;
 mod term_attr;

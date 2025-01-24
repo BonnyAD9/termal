@@ -1,8 +1,10 @@
+use base64::Engine;
+
 use crate::{codes, raw::events::csi::Csi};
 
 use super::{
-    mouse::Mouse, state_change::StateChange, Key, KeyCode, Modifiers, Status,
-    TermAttr,
+    mouse::Mouse, osc::Osc, state_change::StateChange, Key, KeyCode,
+    Modifiers, Status, TermAttr,
 };
 
 /// Possibly ambiguous terminal event.
@@ -165,11 +167,13 @@ impl AmbigousEvent {
             return Some(res);
         }
 
-        // check if it is CSI
+        // check for code type
         if let Some(code) = code.strip_prefix(codes::CSI) {
             Self::csi(code)
         } else if let Some(code) = code.strip_prefix(codes::DCS) {
             Self::dcs(code)
+        } else if let Some(code) = code.strip_prefix(codes::OSC) {
+            Self::osc(code)
         } else {
             code.strip_prefix(codes::SS3).and_then(|cscode| {
                 let csi = Csi::parse(cscode);
@@ -271,6 +275,38 @@ impl AmbigousEvent {
 
         code.strip_prefix(">|")
             .map(|name| Self::status(Status::TerminalName(name.into())))
+    }
+
+    fn osc(code: &str) -> Option<Self> {
+        let code = code
+            .strip_suffix(codes::ST)
+            .or_else(|| code.strip_suffix(codes::BELL))?;
+        let osc = Osc::parse(code);
+
+        match (&osc.args[..], osc.data) {
+            ([4, code], color) => Some(Self::status(Status::ColorCodeColor {
+                code: *code as u8,
+                color: color.parse().ok()?,
+            })),
+            ([10], color) => {
+                Some(Self::status(Status::DefaultFgColor(color.parse().ok()?)))
+            }
+            ([11], color) => {
+                Some(Self::status(Status::DefaultBgColor(color.parse().ok()?)))
+            }
+            ([12], color) => {
+                Some(Self::status(Status::CursorColor(color.parse().ok()?)))
+            }
+            ([52], selection) => Some(Self::status(Status::SelectionData(
+                base64::prelude::BASE64_STANDARD
+                    .decode(selection.split_once(';')?.1)
+                    .ok()?,
+            ))),
+            ([52, _], selection) => Some(Self::status(Status::SelectionData(
+                base64::prelude::BASE64_STANDARD.decode(selection).ok()?,
+            ))),
+            _ => None,
+        }
     }
 
     /// # Prerequisities

@@ -1,5 +1,6 @@
 /// Basic CSI ANSI code.
 pub(crate) struct Csi {
+    // TODO: make it &str
     pub prefix: String,
     pub args: Vec<u32>,
     pub postfix: String,

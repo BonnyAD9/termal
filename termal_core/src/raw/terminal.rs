@@ -321,6 +321,7 @@ impl<T: IoProvider> Terminal<T> {
             b'[' => self.read_csi(),
             b'O' if self.buffer.len() > 1 => self.read_ss3(),
             b'P' => self.read_dcs(),
+            b']' => self.read_osc(),
             _ => self.read_alt(),
         }
     }
@@ -415,10 +416,29 @@ impl<T: IoProvider> Terminal<T> {
     fn read_dcs(&mut self) -> Result<AmbigousEvent> {
         self.read_byte()?;
         let mut code: Vec<_> = b"\x1bP".into();
-        while !self.buffer.is_empty() && !code.ends_with(b"\x1b\\") {
+        while !self.buffer.is_empty() && !code.ends_with(codes::ST.as_bytes())
+        {
             code.push(self.read_byte()?);
         }
         Ok(AmbigousEvent::from_code(&code))
+    }
+
+    fn read_osc(&mut self) -> Result<AmbigousEvent> {
+        self.read_byte()?;
+        let mut code: Vec<_> = b"\x1b]".into();
+        let r = self.read_until_st(&mut code);
+        if matches!(r, Err(Error::StdInEof)) {
+            Ok(AmbigousEvent::from_code(&code))
+        } else {
+            r.map(|_| AmbigousEvent::from_code(&code))
+        }
+    }
+
+    fn read_until_st(&mut self, res: &mut Vec<u8>) -> Result<()> {
+        while !res.ends_with(codes::ST.as_bytes()) && !res.ends_with(b"\x07") {
+            res.push(self.read_byte()?);
+        }
+        Ok(())
     }
 
     fn read_char(&mut self) -> Result<AmbigousEvent> {

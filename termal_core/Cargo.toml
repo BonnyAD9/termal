@@ -26,6 +26,7 @@ place_macro = "1.0.0"
 proc-macro2 = { version = "1.0.78", optional = true }
 thiserror = "1.0.56"
 bitflags = { version = "2.4.2", optional = true }
+base64 = "0.22.1"
 
 [target.'cfg(unix)'.dependencies]
 libc = { version = "0.2.153", optional = true }

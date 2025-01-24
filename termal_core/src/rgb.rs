@@ -1,8 +1,10 @@
-use std::ops::{
-    Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign,
+use std::{
+    fmt::Display,
+    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign},
+    str::FromStr,
 };
 
-use crate::codes::fg;
+use crate::{codes::fg, error::Error};
 
 /// Single RGB pixel.
 #[derive(Default, Debug, Copy, Clone, PartialEq, Eq)]
@@ -19,6 +21,16 @@ impl<T> Rgb<T> {
     /// Create new rgb pixel.
     pub const fn new(r: T, g: T, b: T) -> Self {
         Self { r, g, b }
+    }
+
+    /// Checks if all the components match the given condition.
+    pub fn all(&self, mut f: impl FnMut(&T) -> bool) -> bool {
+        f(&self.r) && f(&self.g) && f(&self.b)
+    }
+
+    /// Create new RGB pixel by transforming its components with `f`.
+    pub fn map<R>(self, mut f: impl FnMut(T) -> R) -> Rgb<R> {
+        Rgb::new(f(self.r), f(self.g), f(self.b))
     }
 }
 
@@ -59,11 +71,6 @@ impl Rgb {
     /// Get new pixel with the given range of values. (from 0 to `max`).
     pub fn to_range(&self, max: u8) -> Self {
         self.map(|n| (n as usize * max as usize / 255) as u8)
-    }
-
-    /// Create new RGB pixel by transforming its components with `f`.
-    pub fn map(&self, f: impl Fn(u8) -> u8) -> Self {
-        Self::new(f(self.r), f(self.g), f(self.b))
     }
 
     /// Converts the components to [`f32`]. This doesn't scale them in any way.
@@ -110,6 +117,12 @@ impl Rgb<f32> {
     /// Sums all the components.
     pub fn sum(self) -> f32 {
         self.r + self.g + self.b
+    }
+}
+
+impl Rgb<u16> {
+    pub fn as_u8(&self) -> Rgb {
+        self.map(|a| a as u8)
     }
 }
 
@@ -210,5 +223,83 @@ impl<T> From<image::Rgb<T>> for Rgb<T> {
     fn from(value: image::Rgb<T>) -> Self {
         let [r, g, b] = value.0;
         Self::new(r, g, b)
+    }
+}
+
+impl Display for Rgb {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let Self { r, g, b } = self;
+        if self.all(|c| c.overflowing_shr(4).0 == (c & 0xf)) {
+            write!(
+                f,
+                "rgb:{:x}/{:x}/{:x}",
+                r.overflowing_shr(4).0,
+                g.overflowing_shr(4).0,
+                b.overflowing_shr(4).0
+            )
+        } else {
+            write!(f, "rgb:{r:02x}/{g:02x}/{b:02x}")
+        }
+    }
+}
+
+impl Display for Rgb<u16> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let Self { r, g, b } = self;
+        if self.all(|c| c.overflowing_shr(8).0 == (c & 0xff)) {
+            self.as_u8().fmt(f)
+        } else if self.all(|c| c.overflowing_shr(12).0 == (c & 0xf)) {
+            write!(
+                f,
+                "rgb:{:03x}/{:03x}/{:03x}",
+                r.overflowing_shr(4).0,
+                g.overflowing_shr(4).0,
+                b.overflowing_shr(4).0
+            )
+        } else {
+            write!(f, "rgb:{r:04x}/{g:04x}/{b:04x}")
+        }
+    }
+}
+
+impl FromStr for Rgb<u16> {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        fn interpolate(col: &str) -> Result<u16, Error> {
+            let c = u16::from_str_radix(col, 16)?;
+            match col.len() {
+                1 => {
+                    let c = c | (c << 4);
+                    Ok(c | (c << 8))
+                }
+                2 => Ok(c | (c << 8)),
+                3 => Ok((c << 4) | (c & 0xF)),
+                4 => Ok(c),
+                _ => Err(Error::InvalidRgbFormat),
+            }
+        }
+
+        if let Some(hex) = s.strip_prefix('#') {
+            let clen = hex.len() / 3;
+            if clen > 4 || clen * 3 != hex.len() {
+                return Err(Error::InvalidRgbFormat);
+            }
+            let r = u16::from_str_radix(&hex[..clen], 16)?;
+            let g = u16::from_str_radix(&hex[clen..clen * 2], 16)?;
+            let b = u16::from_str_radix(&hex[clen * 2..], 16)?;
+            let shift = (4 - clen) * 4;
+            Ok(Self::new(r, g, b).map(|a| a << shift))
+        } else if let Some(phex) = s.strip_prefix("rgb:") {
+            let [r, g, b] = &phex.split('/').collect::<Vec<_>>()[..] else {
+                return Err(Error::InvalidRgbFormat);
+            };
+            let r = interpolate(r)?;
+            let g = interpolate(g)?;
+            let b = interpolate(b)?;
+            Ok(Self::new(r, g, b))
+        } else {
+            Err(Error::InvalidRgbFormat)
+        }
     }
 }

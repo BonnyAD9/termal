@@ -11,14 +11,14 @@ use termal::{
 };
 
 fn main() -> Result<()> {
-    print!("{}", codes::ENABLE_BRACKETED_PASTE_MODE);
-    _ = io::stdout().flush();
     enable_raw_mode()?;
+    print!("{}", codes::REQUEST_SELECTION);
+    _ = io::stdout().flush();
 
     start()?;
 
+    print!("");
     disable_raw_mode()?;
-    print!("{}", codes::DISABLE_BRACKETED_PASTE_MODE);
     _ = io::stdout().flush();
 
     Ok(())

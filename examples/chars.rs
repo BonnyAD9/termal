@@ -1,19 +1,20 @@
 use std::io::{self, stdout, Read, Write};
 
 use termal::{
+    codes,
     error::Result,
     raw::{disable_raw_mode, enable_raw_mode},
 };
 
 fn main() -> Result<()> {
-    print!("\x1b]22;cross\x07");
-    _ = stdout().flush();
     enable_raw_mode()?;
+    print!("{}", codes::REQUEST_SELECTION);
+    _ = stdout().flush();
 
     start()?;
 
-    disable_raw_mode()?;
     print!("\x1b[?2004l");
+    disable_raw_mode()?;
     _ = stdout().flush();
 
     Ok(())

@@ -1,3 +1,5 @@
+use crate::Rgb;
+
 use super::TermAttr;
 
 /// Status event.
@@ -21,4 +23,14 @@ pub enum Status {
     SixelColors(usize),
     /// Maximum size of sixel image.
     SixelSize { w: usize, h: usize },
+    /// Color of the given color code.
+    ColorCodeColor { code: u8, color: Rgb<u16> },
+    /// Default foreground color.
+    DefaultFgColor(Rgb<u16>),
+    /// Default background color.
+    DefaultBgColor(Rgb<u16>),
+    /// Cursor color.
+    CursorColor(Rgb<u16>),
+    /// Data from selection.
+    SelectionData(Vec<u8>),
 }
