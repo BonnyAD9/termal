@@ -1,11 +1,6 @@
 use std::io::{self, stdout, Read, Write};
 
-use termal::{
-    codes,
-    error::Result,
-    raw::{disable_raw_mode, enable_raw_mode},
-    reset_terminal,
-};
+use termal::{codes, error::Result, raw::enable_raw_mode, reset_terminal};
 
 fn main() -> Result<()> {
     enable_raw_mode()?;

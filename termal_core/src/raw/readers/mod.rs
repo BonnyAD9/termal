@@ -66,7 +66,7 @@ fn prompt_to_inner(res: &mut String, prompt: impl AsRef<str>) -> Result<()> {
         println!("{s}\r");
     }
 
-    let r = Terminal::default().prompt_to(res, prompt);
+    let r = Terminal::stdio().prompt_to(res, prompt);
 
     if !raw {
         _ = disable_raw_mode();

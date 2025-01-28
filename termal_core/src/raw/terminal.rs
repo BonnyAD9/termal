@@ -78,9 +78,17 @@ impl<T: IoProvider> Terminal<T> {
         let mut read = self.read_buffered(res)?;
         let mut stdin = self.io.get_in();
         while read < res.len() {
-            read += read_stdin_once(&mut *stdin, &mut res[read..])?;
+            match read_stdin_once(&mut *stdin, &mut res[read..]) {
+                Ok(v) => read += v,
+                Err(Error::StdInEof) => break,
+                e => return e,
+            }
         }
-        Ok(read)
+        if read == 0 {
+            Err(Error::StdInEof)
+        } else {
+            Ok(read)
+        }
     }
 
     /// Read raw bytes from the terminal to `res`. Returns the number of readed
@@ -97,9 +105,17 @@ impl<T: IoProvider> Terminal<T> {
         while read < res.len()
             && stdin.wait_for_in(timeout).unwrap_or_default()
         {
-            read += read_stdin_once(&mut *stdin, &mut res[read..])?;
+            match read_stdin_once(&mut *stdin, &mut res[read..]) {
+                Ok(v) => read += v,
+                Err(Error::StdInEof) => break,
+                e => return e,
+            }
         }
-        Ok(read)
+        if read == 0 {
+            Err(Error::StdInEof)
+        } else {
+            Ok(read)
+        }
     }
 
     /// Read raw bytes from the terminal to `res`. Returns the number of readed
@@ -112,16 +128,24 @@ impl<T: IoProvider> Terminal<T> {
     ) -> Result<usize> {
         let mut read = self.read_buffered(res)?;
         let mut stdin = self.io.get_in();
-        while read < res.len() && timeout >= Duration::ZERO {
+        while read < res.len() {
             let now = Instant::now();
             let ready = stdin.wait_for_in(timeout);
-            timeout -= Instant::now() - now;
+            timeout = timeout.saturating_sub(Instant::now() - now);
             if !ready.unwrap_or_default() {
                 break;
             }
-            read += read_stdin_once(&mut *stdin, &mut res[read..])?;
+            match read_stdin_once(&mut *stdin, &mut res[read..]) {
+                Ok(v) => read += v,
+                Err(Error::StdInEof) => break,
+                e => return e,
+            }
         }
-        Ok(read)
+        if read == 0 {
+            Err(Error::StdInEof)
+        } else {
+            Ok(read)
+        }
     }
 
     /// Read one byte from stdin. Block for at most the given timeout.
@@ -172,7 +196,7 @@ impl<T: IoProvider> Terminal<T> {
 }
 
 #[cfg(feature = "readers")]
-impl Terminal {
+impl<T: IoProvider> Terminal<T> {
     /// Appends next line of input from stdin to `s`. May block.
     pub fn read_line_to(&mut self, s: &mut String) -> Result<()> {
         let mut reader = TermRead::lines(self);
