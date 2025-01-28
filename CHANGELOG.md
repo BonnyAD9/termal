@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Future
+## v2.0.0
 - New methods for `Terminal`: `has_input`, `wait_for_input`,
   `read_ambiguous_timeout`, `read_timeout`, `read_raw`, `read_raw_timeout`,
   `read_raw_single_timeout` and `read_byte_timeout`.
