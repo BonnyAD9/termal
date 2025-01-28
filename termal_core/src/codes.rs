@@ -431,7 +431,7 @@ pub const REQUEST_CHAR_SIZE: &str = csi!('t', 16);
 /// Request size of the text area in characters.
 pub const REQUEST_TEXT_AREA_SIZE: &str = csi!('t', 18);
 /// Request the number of sixel color registers.
-pub const REQUEST_SIXEL_COLORS: &str = csi!('S', 1, 1, 1);
+pub const REQUEST_SIXEL_COLORS: &str = "\x1b[?1;1;1S";
 
 /// Enables mouse tracking for X and Y coordinate on press.
 pub const ENABLE_MOUSE_XY_TRACKING: &str = enable!(9);

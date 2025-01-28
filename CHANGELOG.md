@@ -66,6 +66,7 @@
 - Recognize amiguity with `Ctrl+Delete` and `Alt+d`.
 - Fix name of `codes::OSC`.
 - Fix codes `ENABLE_MOUSE_XY_ALL_TRACKING` and `DISABLE_MOUSE_XY_ALL_TRACKING`.
+- Fix panic when terminal would send some invalid URXVT sequences.
 
 ## v1.2.2
 - Fix `writemcln` macro.

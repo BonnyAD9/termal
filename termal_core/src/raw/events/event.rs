@@ -216,7 +216,7 @@ impl AmbigousEvent {
             )),
             // Mouse event with the URXVT extension
             ("", [s, x, y], "M") => Some(Self::mouse(Mouse::from_data(
-                *s - 32,
+                s.checked_sub(32)?,
                 *x as usize,
                 *y as usize,
                 None,

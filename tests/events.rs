@@ -1,7 +1,10 @@
-use termal::raw::events::{
-    mouse::{self, Mouse},
-    AmbigousEvent, AnyEvent, Event, Key, KeyCode, Modifiers, StateChange,
-    Status,
+use termal::{
+    raw::events::{
+        mouse::{self, Mouse},
+        AmbigousEvent, AnyEvent, Event, Key, KeyCode, Modifiers, StateChange,
+        Status, TermAttr, TermFeatures, TermType,
+    },
+    Rgb,
 };
 
 #[test]
@@ -219,5 +222,260 @@ fn test_ambiguous() {
 
 #[test]
 fn test_mouse() {
-    // TODO
+    // Normal mode
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b[M\x20\x28\x2F"),
+        AmbigousEvent::mouse(Mouse {
+            button: mouse::Button::Left,
+            modifiers: Modifiers::NONE,
+            event: mouse::Event::Down,
+            x: 8,
+            y: 15,
+        })
+    );
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b[M\x36\x28\x2F"),
+        AmbigousEvent::mouse(Mouse {
+            button: mouse::Button::Right,
+            modifiers: Modifiers::CONTROL | Modifiers::SHIFT,
+            event: mouse::Event::Down,
+            x: 8,
+            y: 15,
+        })
+    );
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b[M\x71\x28\x2F"),
+        AmbigousEvent::mouse(Mouse {
+            button: mouse::Button::None,
+            modifiers: Modifiers::CONTROL,
+            event: mouse::Event::ScrollDown,
+            x: 8,
+            y: 15,
+        })
+    );
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b[M\x45\x28\x2F"),
+        AmbigousEvent::mouse(Mouse {
+            button: mouse::Button::Middle,
+            modifiers: Modifiers::SHIFT,
+            event: mouse::Event::Move,
+            x: 8,
+            y: 15,
+        })
+    );
+
+    // UTF-8
+
+    assert_eq!(
+        AmbigousEvent::from_code("\x1b[M\x47\u{5fc}\x2F".as_bytes()),
+        AmbigousEvent::mouse(Mouse {
+            button: mouse::Button::None,
+            modifiers: Modifiers::SHIFT,
+            event: mouse::Event::Move,
+            x: 1500,
+            y: 15,
+        })
+    );
+
+    // SGR
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b[<0;8;15m"),
+        AmbigousEvent::mouse(Mouse {
+            button: mouse::Button::Left,
+            modifiers: Modifiers::NONE,
+            event: mouse::Event::Up,
+            x: 8,
+            y: 15,
+        })
+    );
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b[<22;8;15M"),
+        AmbigousEvent::mouse(Mouse {
+            button: mouse::Button::Right,
+            modifiers: Modifiers::CONTROL | Modifiers::SHIFT,
+            event: mouse::Event::Down,
+            x: 8,
+            y: 15,
+        })
+    );
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b[<81;8;15M"),
+        AmbigousEvent::mouse(Mouse {
+            button: mouse::Button::None,
+            modifiers: Modifiers::CONTROL,
+            event: mouse::Event::ScrollDown,
+            x: 8,
+            y: 15,
+        })
+    );
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b[<37;8;15M"),
+        AmbigousEvent::mouse(Mouse {
+            button: mouse::Button::Middle,
+            modifiers: Modifiers::SHIFT,
+            event: mouse::Event::Move,
+            x: 8,
+            y: 15,
+        })
+    );
+
+    // URXVT
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b[32;8;15M"),
+        AmbigousEvent::mouse(Mouse {
+            button: mouse::Button::Left,
+            modifiers: Modifiers::NONE,
+            event: mouse::Event::Down,
+            x: 8,
+            y: 15,
+        })
+    );
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b[54;8;15M"),
+        AmbigousEvent::mouse(Mouse {
+            button: mouse::Button::Right,
+            modifiers: Modifiers::CONTROL | Modifiers::SHIFT,
+            event: mouse::Event::Down,
+            x: 8,
+            y: 15,
+        })
+    );
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b[113;8;15M"),
+        AmbigousEvent::mouse(Mouse {
+            button: mouse::Button::None,
+            modifiers: Modifiers::CONTROL,
+            event: mouse::Event::ScrollDown,
+            x: 8,
+            y: 15,
+        })
+    );
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b[69;8;15M"),
+        AmbigousEvent::mouse(Mouse {
+            button: mouse::Button::Middle,
+            modifiers: Modifiers::SHIFT,
+            event: mouse::Event::Move,
+            x: 8,
+            y: 15,
+        })
+    );
+}
+
+#[test]
+fn test_status() {
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b[?62;1;4;21;22c"),
+        AmbigousEvent::status(Status::Attributes(TermAttr {
+            typ: TermType::Vt220,
+            features: TermFeatures::COLUMNS132
+                | TermFeatures::SIXEL_GRAPHICS
+                | TermFeatures::HORIZONTAL_SCROLLING
+                | TermFeatures::ANSI_COLOR,
+        }))
+    );
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b[0n"),
+        AmbigousEvent::status(Status::Ok),
+    );
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b[?10;17R"),
+        AmbigousEvent::status(Status::CursorPosition { x: 17, y: 10 }),
+    );
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1bP>|My Terminal\x1b\\"),
+        AmbigousEvent::status(Status::TerminalName("My Terminal".to_string())),
+    );
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b[4;17;10t"),
+        AmbigousEvent::status(Status::TextAreaSizePx { w: 10, h: 17 }),
+    );
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b[8;17;10t"),
+        AmbigousEvent::status(Status::TextAreaSize { w: 10, h: 17 }),
+    );
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b[6;17;10t"),
+        AmbigousEvent::status(Status::CharSize { w: 10, h: 17 }),
+    );
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b[?1;0;256S"),
+        AmbigousEvent::status(Status::SixelColors(256)),
+    );
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b[?1;0;256S"),
+        AmbigousEvent::status(Status::SixelColors(256)),
+    );
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b]10;rgb:12/34/56\x1b\\"),
+        AmbigousEvent::status(Status::DefaultFgColor(Rgb::<u16>::new(
+            0x1212, 0x3434, 0x5656
+        ))),
+    );
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b]11;rgb:12/34/56\x1b\\"),
+        AmbigousEvent::status(Status::DefaultBgColor(Rgb::<u16>::new(
+            0x1212, 0x3434, 0x5656
+        ))),
+    );
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b]12;rgb:12/34/56\x1b\\"),
+        AmbigousEvent::status(Status::CursorColor(Rgb::<u16>::new(
+            0x1212, 0x3434, 0x5656
+        ))),
+    );
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b]52;;aGVsbG8gdGhlcmU=\x1b\\"),
+        AmbigousEvent::status(Status::SelectionData(b"hello there".into())),
+    );
+}
+
+#[test]
+fn test_state_change() {
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b[200~"),
+        AmbigousEvent::state_change(StateChange::BracketedPasteStart),
+    );
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b[201~"),
+        AmbigousEvent::state_change(StateChange::BracketedPasteEnd),
+    );
+}
+
+#[test]
+fn test_other() {
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b[I"),
+        AmbigousEvent::event(Event::Focus),
+    );
+
+    assert_eq!(
+        AmbigousEvent::from_code(b"\x1b[O"),
+        AmbigousEvent::event(Event::FocusLost),
+    );
 }

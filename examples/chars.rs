@@ -4,18 +4,17 @@ use termal::{
     codes,
     error::Result,
     raw::{disable_raw_mode, enable_raw_mode},
+    reset_terminal,
 };
 
 fn main() -> Result<()> {
     enable_raw_mode()?;
-    print!("{}", codes::REQUEST_SELECTION);
+    print!("{}", codes::REQUEST_DEVICE_ATTRIBUTES);
     _ = stdout().flush();
 
     start()?;
 
-    print!("\x1b[?2004l");
-    disable_raw_mode()?;
-    _ = stdout().flush();
+    reset_terminal();
 
     Ok(())
 }
