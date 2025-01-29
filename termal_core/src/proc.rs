@@ -470,10 +470,7 @@ where
         "alt_buf" | "abuf" => codes::ENABLE_ALTERNATIVE_BUFFER,
         "_alt_buf" | "_abuf" => codes::DISABLE_ALTERNATIVE_BUFFER,
 
-        "clear" | "cls" => {
-            owner = format!("{}\x1b[H", codes::ERASE_ALL);
-            &owner
-        }
+        "clear" | "cls" => codes::CLEAR,
         _ => {
             return Err(ProcError::msg(format!(
                 "Unknown color format variable {}",

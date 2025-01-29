@@ -216,14 +216,19 @@ pub const ERASE_TO_END: &str = csi!('J');
 pub const ERASE_FROM_START: &str = csi!('J', 1);
 /// Erases the entire screen
 pub const ERASE_SCREEN: &str = csi!('J', 2);
-/// Erases the whole screen and the scrollback buffer
-pub const ERASE_ALL: &str = csi!('J', 3);
+/// Erase the scrollback buffer,
+pub const ERASE_BUFFER: &str = csi!('J', 3);
 /// Erases from cursor to the end of the line
 pub const ERASE_TO_LN_END: &str = csi!('K');
 /// Erases from the start of the line to the cursor
 pub const ERASE_FROM_LN_START: &str = csi!('K', 1);
 /// Erases the entire line
 pub const ERASE_LINE: &str = csi!('K', 2);
+/// Erases the whole screen and the scrollback buffer
+pub const ERASE_ALL: &str = "\x1b[2J\x1b[3J";
+/// Erases the whole screen and the scrollback buffer and moves cursor to the
+/// top left.
+pub const CLEAR: &str = "\x1b[2J\x1b[3J\x1b[H";
 
 // Text modes
 
