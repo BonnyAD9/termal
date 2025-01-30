@@ -3,6 +3,7 @@
 ## future
 ### New features
 - Add codes `ERASE_BUFFER` and `CLEAR`.
+
 ### Fixes
 + Fix `ERASE_ALL`.
 

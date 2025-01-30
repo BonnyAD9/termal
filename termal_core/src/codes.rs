@@ -104,7 +104,19 @@ macro_rules! disable {
 
 /// Produces terminal bell
 pub const BELL: char = '\x07';
-/// Moves the cursor left by one positoin
+/// Moves the cursor left by one positoin.
+///
+/// # Example
+/// ```rust
+/// let mut buf = String::new();
+///
+/// buf += "Some test";
+/// buf.push(codes::BACKSPACE);
+/// buf.push(codes::BACKSPACE);
+/// buf += "x";
+///
+/// println!("{buf}");
+/// ```
 pub const BACKSPACE: char = '\x08';
 /// Horizontal tabulator, moves cursor to the next stop
 pub const HTAB: char = '\t';
