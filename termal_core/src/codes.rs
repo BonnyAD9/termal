@@ -154,7 +154,21 @@ pub const HTAB: char = '\t';
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/newline.png)
 pub const NEWLINE: char = '\n';
-/// Vertical tabulator, moves the cursor to the next vertical stop
+/// Vertical tabulator, moves the cursor to the next vertical stop.
+///
+/// # Example
+/// ```no_run
+/// let mut buf = String::new();
+///
+/// buf += "hello";
+/// buf.push(codes::VTAB);
+/// buf += "there";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/vtab.png)
 pub const VTAB: char = '\x0b';
 /// Indicates new page, usualy has no use in terminal
 pub const FORMFEED: char = '\x0c';

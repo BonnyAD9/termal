@@ -31,3 +31,15 @@ pub fn show_newline() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_vtab() -> Result<()> {
+    let mut buf = String::new();
+
+    buf += "hello";
+    buf.push(codes::VTAB);
+    buf += "there";
+
+    println!("{buf}");
+
+    Ok(())
+}
