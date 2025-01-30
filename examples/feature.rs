@@ -19,6 +19,9 @@ fn single(name: &str) -> Result<()> {
         "codes::HTAB" => codes::show_htab(),
         "codes::NEWLINE" => codes::show_newline(),
         "codes::VTAB" => codes::show_vtab(),
+        "codes::FORMFEED" => codes::show_formfeed(),
+        "codes::CARRIAGE_RETURN" => codes::show_carriage_return(),
+        "codes::DELETE" => codes::show_delete(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -31,6 +34,9 @@ fn all() -> Result<()> {
     codes::show_htab()?;
     codes::show_newline()?;
     codes::show_vtab()?;
+    codes::show_formfeed()?;
+    codes::show_carriage_return()?;
+    codes::show_delete()?;
     Ok(())
 }
 

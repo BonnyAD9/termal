@@ -43,3 +43,32 @@ pub fn show_vtab() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_formfeed() -> Result<()> {
+    let mut buf = String::new();
+
+    buf += "hello";
+    buf.push(codes::FORMFEED);
+    buf += "there";
+
+    println!("{buf}");
+
+    Ok(())
+}
+
+pub fn show_carriage_return() -> Result<()> {
+    println!("hello me\rgreet");
+    Ok(())
+}
+
+pub fn show_delete() -> Result<()> {
+    let mut buf = String::new();
+
+    buf += "hello";
+    buf.push(codes::BACKSPACE);
+    buf.push(codes::DELETE);
+
+    println!("{buf}");
+
+    Ok(())
+}

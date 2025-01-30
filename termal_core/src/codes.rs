@@ -141,6 +141,8 @@ pub const HTAB: char = '\t';
 ///
 /// # Example
 /// ```no_run
+/// use termal_core::{raw::enable_raw_mode, reset_terminal};
+///
 /// println!("normal:");
 /// println!("one\ntwo");
 ///
@@ -149,6 +151,8 @@ pub const HTAB: char = '\t';
 /// println!("one\ntwo\r");
 ///
 /// reset_terminal();
+///
+/// Ok::<_, termal_core::error::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -158,6 +162,8 @@ pub const NEWLINE: char = '\n';
 ///
 /// # Example
 /// ```no_run
+/// use termal_core::codes;
+///
 /// let mut buf = String::new();
 ///
 /// buf += "hello";
@@ -170,11 +176,35 @@ pub const NEWLINE: char = '\n';
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/vtab.png)
 pub const VTAB: char = '\x0b';
-/// Indicates new page, usualy has no use in terminal
+/// Indicates new page, usualy has no use in terminal.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = String::new();
+///
+/// buf += "hello";
+/// buf.push(codes::FORMFEED);
+/// buf += "there";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/vtab.png)
 pub const FORMFEED: char = '\x0c';
-/// Moves cursor to the start of the line
+/// Moves cursor to the start of the line. Same as `\r`.
+///
+/// # Example
+/// ```no_run
+/// println!("hello me\rgreet");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/carriage_return.png)
 pub const CARRIAGE_RETURN: char = '\r';
-/// Does nothing
+/// Does nothing.
 pub const DELETE: char = '\x7f';
 
 // Cursor controls
