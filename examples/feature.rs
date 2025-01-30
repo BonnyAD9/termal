@@ -16,6 +16,7 @@ pub fn main() -> Result<()> {
 fn single(name: &str) -> Result<()> {
     match name {
         "codes::BACKSPACE" => codes::show_backspace(),
+        "codes::HTAB" => codes::show_htab(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())

@@ -107,7 +107,9 @@ pub const BELL: char = '\x07';
 /// Moves the cursor left by one positoin.
 ///
 /// # Example
-/// ```rust
+/// ```no_run
+/// use termal_core::codes;
+///
 /// let mut buf = String::new();
 ///
 /// buf += "Some test";
@@ -117,8 +119,31 @@ pub const BELL: char = '\x07';
 ///
 /// println!("{buf}");
 /// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/backspace.png)
 pub const BACKSPACE: char = '\x08';
-/// Horizontal tabulator, moves cursor to the next stop
+/// Horizontal tabulator, moves cursor to the next stop.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = String::new();
+///
+/// buf += "1";
+/// buf.push(codes::HTAB);
+/// buf += ": number\n";
+///
+/// buf += "hello";
+/// buf.push(codes::HTAB);
+/// buf += ": greeting";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/htab.png)
 pub const HTAB: char = '\t';
 /// Moves the cursor to the start of the next line
 pub const NEWLINE: char = '\n';
