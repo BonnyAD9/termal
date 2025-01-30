@@ -17,6 +17,7 @@ fn single(name: &str) -> Result<()> {
     match name {
         "codes::BACKSPACE" => codes::show_backspace(),
         "codes::HTAB" => codes::show_htab(),
+        "codes::NEWLINE" => codes::show_newline(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -26,6 +27,8 @@ fn single(name: &str) -> Result<()> {
 
 fn all() -> Result<()> {
     codes::show_backspace()?;
+    codes::show_htab()?;
+    codes::show_newline()?;
     Ok(())
 }
 

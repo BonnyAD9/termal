@@ -1,4 +1,4 @@
-use termal::{codes, error::Result};
+use termal::{codes, error::Result, raw::enable_raw_mode, reset_terminal};
 
 pub fn show_backspace() -> Result<()> {
     let mut buf = String::new();
@@ -14,17 +14,20 @@ pub fn show_backspace() -> Result<()> {
 }
 
 pub fn show_htab() -> Result<()> {
-    let mut buf = String::new();
+    println!("1\t: number");
+    println!("hello\t: greeting");
+    Ok(())
+}
 
-    buf += "1";
-    buf.push(codes::HTAB);
-    buf += ": number\n";
+pub fn show_newline() -> Result<()> {
+    println!("normal:");
+    println!("one\ntwo");
 
-    buf += "hello";
-    buf.push(codes::HTAB);
-    buf += ": greeting";
+    println!("raw:");
+    enable_raw_mode()?;
+    println!("one\ntwo\r");
 
-    println!("{buf}");
+    reset_terminal();
 
     Ok(())
 }

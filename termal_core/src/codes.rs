@@ -123,29 +123,36 @@ pub const BELL: char = '\x07';
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/backspace.png)
 pub const BACKSPACE: char = '\x08';
-/// Horizontal tabulator, moves cursor to the next stop.
+/// Horizontal tabulator, moves cursor to the next stop. Same as `\t`
 ///
 /// # Example
 /// ```no_run
-/// use termal_core::codes;
-///
-/// let mut buf = String::new();
-///
-/// buf += "1";
-/// buf.push(codes::HTAB);
-/// buf += ": number\n";
-///
-/// buf += "hello";
-/// buf.push(codes::HTAB);
-/// buf += ": greeting";
-///
-/// println!("{buf}");
+/// println!("1\t: number");
+/// println!("hello\t: greeting");
 /// ```
 ///
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/htab.png)
 pub const HTAB: char = '\t';
-/// Moves the cursor to the start of the next line
+/// Moves the cursor to the start of the next line. Same as `\n`.
+///
+/// Nothe that in raw terminal, this will move cursor down and not to the start
+/// of the line.
+///
+/// # Example
+/// ```no_run
+/// println!("normal:");
+/// println!("one\ntwo");
+///
+/// println!("raw:");
+/// enable_raw_mode()?;
+/// println!("one\ntwo\r");
+///
+/// reset_terminal();
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/newline.png)
 pub const NEWLINE: char = '\n';
 /// Vertical tabulator, moves the cursor to the next vertical stop
 pub const VTAB: char = '\x0b';
