@@ -1,5 +1,12 @@
 use termal::{codes, error::Result, raw::enable_raw_mode, reset_terminal};
 
+pub fn show_bell() -> Result<()> {
+    enable_raw_mode()?;
+    println!("{}", codes::BELL);
+    reset_terminal();
+    Ok(())
+}
+
 pub fn show_backspace() -> Result<()> {
     let mut buf = String::new();
 

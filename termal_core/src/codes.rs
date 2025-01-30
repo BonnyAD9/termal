@@ -102,7 +102,7 @@ macro_rules! disable {
 
 // General ASCII codes
 
-/// Produces terminal bell
+/// Produces terminal bell (audio or visual).
 pub const BELL: char = '\x07';
 /// Moves the cursor left by one positoin.
 ///

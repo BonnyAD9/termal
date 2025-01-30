@@ -15,6 +15,7 @@ pub fn main() -> Result<()> {
 
 fn single(name: &str) -> Result<()> {
     match name {
+        "codes::BELL" => codes::show_bell(),
         "codes::BACKSPACE" => codes::show_backspace(),
         "codes::HTAB" => codes::show_htab(),
         "codes::NEWLINE" => codes::show_newline(),
@@ -30,6 +31,7 @@ fn single(name: &str) -> Result<()> {
 }
 
 fn all() -> Result<()> {
+    codes::show_bell()?;
     codes::show_backspace()?;
     codes::show_htab()?;
     codes::show_newline()?;
