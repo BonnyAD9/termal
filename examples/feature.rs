@@ -23,10 +23,11 @@ fn single(name: &str) -> Result<()> {
         "codes::FORMFEED" => codes::show_formfeed(),
         "codes::CARRIAGE_RETURN" => codes::show_carriage_return(),
         "codes::DELETE" => codes::show_delete(),
+        "codes::move_to!" => codes::show_move_to(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
-        },
+        }
     }
 }
 
@@ -39,7 +40,6 @@ fn all() -> Result<()> {
     codes::show_formfeed()?;
     codes::show_carriage_return()?;
     codes::show_delete()?;
+    codes::show_move_to()?;
     Ok(())
 }
-
-

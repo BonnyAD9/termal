@@ -255,7 +255,43 @@ macro_rules! code_macro {
     };
 }
 
-/// Moves cursor to the given position.
+/// Moves cursor to the given position. Position of the top left conrner is
+/// [1, 1].
+///
+/// If used with literals, produces `&'static str`, otherwise produces
+/// [`String`].
+///
+/// # Example
+/// ```no_run
+/// use termal_core::{raw::term_size, codes};
+///
+/// let mut buf = String::new();
+/// buf += codes::ERASE_ALL;
+///
+/// let txt = "centered";
+/// let size = term_size()?;
+/// let x = (size.char_width - txt.len() + 1) / 2;
+/// let y = size.char_height / 2;
+/// // If one of arguments is not literal, produces string.
+/// let center: String = codes::move_to!(x, y);
+/// buf += &center;
+/// buf += txt;
+///
+/// // With literals, it constructs static slice.
+/// let home: &'static str = codes::move_to!(1, 1);
+/// buf += home;
+/// buf += "top left";
+///
+/// // Move to the second to last line from bottom.
+/// buf += &codes::move_to!(0, size.char_height - 1);
+///
+/// println!("{}", buf);
+///
+/// Ok::<_, termal_core::error::Error>(())
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/move_to.png)
 #[macro_export]
 macro_rules! move_to {
     ($x:expr, $y:expr) => {
