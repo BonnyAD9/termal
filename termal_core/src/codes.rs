@@ -256,7 +256,7 @@ macro_rules! code_macro {
 }
 
 /// Moves cursor to the given position. Position of the top left conrner is
-/// [1, 1].
+/// (1, 1).
 ///
 /// If used with literals, produces `&'static str`, otherwise produces
 /// [`String`].
