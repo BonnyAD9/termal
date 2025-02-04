@@ -4,6 +4,9 @@
 ### New features
 - Add codes `ERASE_BUFFER` and `CLEAR`.
 
+### Changes
+- Fix name type of `codes::request_selectoin` to `codes::request_selection`.
+
 ### Fixes
 + Fix `ERASE_ALL`.
 

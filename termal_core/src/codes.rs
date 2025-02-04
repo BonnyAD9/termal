@@ -764,7 +764,7 @@ fn prepare_selection(sel: impl IntoIterator<Item = Selection>) -> String {
 
 /// Requests selection for the first available of the given selection buffers.
 /// If empty requests the default buffer selection.
-pub fn request_selectoin(sel: impl IntoIterator<Item = Selection>) -> String {
+pub fn request_selection(sel: impl IntoIterator<Item = Selection>) -> String {
     prepare_selection(sel) + "?\x1b\\"
 }
 

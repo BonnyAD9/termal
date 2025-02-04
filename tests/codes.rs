@@ -142,9 +142,9 @@ fn functions() {
         "\x1b]12;rgb:12/34/56\x1b\\"
     );
 
-    assert_eq!(codes::request_selectoin([]), codes::REQUEST_SELECTION);
+    assert_eq!(codes::request_selection([]), codes::REQUEST_SELECTION);
     assert_eq!(
-        codes::request_selectoin([Selection::Select, Selection::Cut0]),
+        codes::request_selection([Selection::Select, Selection::Cut0]),
         "\x1b]52;s0;?\x1b\\"
     );
     assert_eq!(
