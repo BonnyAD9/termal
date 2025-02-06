@@ -349,7 +349,7 @@ printcln!(\"{'clear}{'mr7}there{'ml11}hello\");
 ```
 
 ## Result in terminal
-![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/move_up_right_left.png)
+![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/move_right_left.png)
         ",
 
     move_left, n; 'D'
@@ -364,7 +364,7 @@ printcln!(\"{'clear}{'mr7}there{'ml11}hello\");
 ```
 
 ## Result in terminal
-![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/move_up_right_left.png)
+![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/move_right_left.png)
         ",
     insert_lines, n; 'L' ? "Insert n lines at the cursor moving them down.",
     delete_lines, n; 'M'
