@@ -1,8 +1,5 @@
 use termal::{
-    codes,
-    error::Result,
-    raw::{enable_raw_mode, term_size},
-    reset_terminal,
+    codes, error::Result, formatc, printcln, raw::{enable_raw_mode, term_size}, reset_terminal
 };
 
 pub fn show_bell() -> Result<()> {
@@ -108,5 +105,23 @@ pub fn show_move_to() -> Result<()> {
 
     println!("{}", buf);
 
+    Ok(())
+}
+
+pub fn show_move_up_down() -> Result<()> {
+    assert_eq!(formatc!("{'mu5}"), codes::move_up!(5));
+    assert_eq!(formatc!("{'md5}"), codes::move_down!(5));
+    assert_eq!(formatc!("{'mu}"), codes::move_up!(1));
+    assert_eq!(formatc!("{'md}"), codes::move_down!(1));
+
+    printcln!("{'clear}\n\nhello{'mu2}up{'md}down{'md}");
+    Ok(())
+}
+
+pub fn show_move_right_left() -> Result<()> {
+    assert_eq!(formatc!("{'mr5}"), codes::move_right!(5));
+    assert_eq!(formatc!("{'ml5}"), codes::move_left!(5));
+
+    printcln!("{'clear}{'mr7}there{'ml11}hello");
     Ok(())
 }

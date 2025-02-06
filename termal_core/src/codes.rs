@@ -25,8 +25,7 @@ use std::fmt::Display;
 use base64::Engine;
 use place_macro::place;
 
-/// Creates the given sequence, this is used internally, you should use
-/// the macro [`csi`]
+/// Creates the given sequence, this is used internally.
 #[macro_export]
 macro_rules! seq {
     ($sq:literal, $i:literal) => {
@@ -152,7 +151,7 @@ pub const HTAB: char = '\t';
 ///
 /// reset_terminal();
 ///
-/// Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::error::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -222,7 +221,7 @@ macro_rules! code_macro {
         $($i:literal)? $(?$doc:literal)?),+ $(,)?
     ) => {
         place! {$(
-            $(#[doc = __repnl__($doc, " ")])?
+            $(#[doc = $doc])?
             #[macro_export]
             macro_rules! $name {
                 (__start__($($(__s__ $nam:expr,)?)+) __s__ (,)?) => {
@@ -238,7 +237,7 @@ macro_rules! code_macro {
         $($i:literal)? $(?$doc:literal)?),+ $(,)?
     ) => {
         place! {$(
-            $(#[doc = __repnl__($doc, " ")])?
+            $(#[doc = $doc])?
             #[macro_export]
             macro_rules! $name {
                 (__start__(__s__ $nam:expr,)) => {{
@@ -287,7 +286,7 @@ macro_rules! code_macro {
 ///
 /// println!("{}", buf);
 ///
-/// Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::error::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -304,10 +303,69 @@ pub use move_to;
 use crate::Rgb;
 
 code_macro!(csi != 0 =>
-    move_up, n; 'A' ? "Moves cursor up by N positions",
-    move_down, n; 'B' ? "Moves cursor down by N positions",
-    move_right, n; 'C' ? "Moves cursor right by N positions",
-    move_left, n; 'D' ? "Moves cursor left by N positions",
+    move_up, n; 'A'
+        ? "Moves cursor up by N positions.
+
+# Example
+```no_run
+assert_eq!(formatc!(\"{'mu5}\"), codes::move_up!(5));
+assert_eq!(formatc!(\"{'md5}\"), codes::move_down!(5));
+assert_eq!(formatc!(\"{'mu}\"), codes::move_up!(1));
+assert_eq!(formatc!(\"{'md}\"), codes::move_down!(1));
+
+printcln!(\"{'clear}\\n\\nhello{'mu2}up{'md}down{'md}\");
+```
+
+## Result in terminal
+![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/move_up_down.png)
+        ",
+
+    move_down, n; 'B'
+        ? "Moves cursor down by N positions.
+
+# Example
+```no_run
+assert_eq!(formatc!(\"{'mu5}\"), codes::move_up!(5));
+assert_eq!(formatc!(\"{'md5}\"), codes::move_down!(5));
+assert_eq!(formatc!(\"{'mu}\"), codes::move_up!(1));
+assert_eq!(formatc!(\"{'md}\"), codes::move_down!(1));
+
+printcln!(\"{'clear}\\n\\nhello{'mu2}up{'md}down{'md}\");
+```
+
+## Result in terminal
+![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/move_up_down.png)
+        ",
+
+    move_right, n; 'C'
+        ? "Moves cursor right by N positions.
+
+# Example
+```no_run
+assert_eq!(formatc!(\"{'mr5}\"), codes::move_right!(5));
+assert_eq!(formatc!(\"{'ml5}\"), codes::move_left!(5));
+
+printcln!(\"{'clear}{'mr7}there{'ml11}hello\");
+```
+
+## Result in terminal
+![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/move_up_right_left.png)
+        ",
+
+    move_left, n; 'D'
+        ? "Moves cursor left by N positions.
+
+# Example
+```no_run
+assert_eq!(formatc!(\"{'mr5}\"), codes::move_right!(5));
+assert_eq!(formatc!(\"{'ml5}\"), codes::move_left!(5));
+
+printcln!(\"{'clear}{'mr7}there{'ml11}hello\");
+```
+
+## Result in terminal
+![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/move_up_right_left.png)
+        ",
     insert_lines, n; 'L' ? "Insert n lines at the cursor moving them down.",
     delete_lines, n; 'M'
         ? "Delete n lines at the cursor, moving the remaining from bottom.",

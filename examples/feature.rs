@@ -24,6 +24,10 @@ fn single(name: &str) -> Result<()> {
         "codes::CARRIAGE_RETURN" => codes::show_carriage_return(),
         "codes::DELETE" => codes::show_delete(),
         "codes::move_to!" => codes::show_move_to(),
+        "codes::move_up!" => codes::show_move_up_down(),
+        "codes::move_down!" => codes::show_move_up_down(),
+        "codes::move_right!" => codes::show_move_right_left(),
+        "codes::move_left!" => codes::show_move_right_left(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -41,5 +45,7 @@ fn all() -> Result<()> {
     codes::show_carriage_return()?;
     codes::show_delete()?;
     codes::show_move_to()?;
+    codes::show_move_up_down()?;
+    codes::show_move_right_left()?;
     Ok(())
 }
