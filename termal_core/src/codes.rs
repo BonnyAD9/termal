@@ -240,6 +240,13 @@ macro_rules! code_macro {
             $(#[doc = $doc])?
             #[macro_export]
             macro_rules! $name {
+                (__start__(__s__ $nam:literal,)) => {{
+                    if __s__ $nam == $ex {
+                        "".into()
+                    } else {
+                        __s__ crate::$code!($($i,)? __s__ $nam)
+                    }
+                }};
                 (__start__(__s__ $nam:expr,)) => {{
                     let v = __s__ $nam;
                     if v == $ex {
@@ -366,7 +373,27 @@ printcln!(\"{'clear}{'mr7}there{'ml11}hello\");
 ## Result in terminal
 ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/move_right_left.png)
         ",
-    insert_lines, n; 'L' ? "Insert n lines at the cursor moving them down.",
+
+    insert_lines, n; 'L'
+        ? "Insert n lines at the cursor moving them down.
+
+# Example
+```no_run
+let mut buf = formatc!(\"{'clear}\");
+
+buf += \"line 1\\n\";
+buf += \"line 2\\n\";
+buf += codes::move_up!(1);
+buf += codes::insert_lines!(2);
+buf += \"inserted 1\\n\";
+buf += \"inserted 2\\n\";
+
+println!(\"{buf}\");
+```
+
+## Result in terminal
+![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/insert_lines.png)
+        ",
     delete_lines, n; 'M'
         ? "Delete n lines at the cursor, moving the remaining from bottom.",
     insert_chars, n; '@' ? "Insert n characters, moving them to the right.",

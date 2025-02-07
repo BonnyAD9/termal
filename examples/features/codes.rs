@@ -125,3 +125,18 @@ pub fn show_move_right_left() -> Result<()> {
     printcln!("{'clear}{'mr7}there{'ml11}hello");
     Ok(())
 }
+
+pub fn show_insert_lines() -> Result<()> {
+    let mut buf = formatc!("{'clear}");
+
+    buf += "line 1\n";
+    buf += "line 2\n";
+    buf += codes::move_up!(1);
+    buf += codes::insert_lines!(2);
+    buf += "inserted 1\n";
+    buf += "inserted 2\n";
+
+    println!("{buf}");
+
+    Ok(())
+}
