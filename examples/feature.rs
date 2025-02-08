@@ -29,6 +29,7 @@ fn single(name: &str) -> Result<()> {
         "codes::move_right!" => codes::show_move_right_left(),
         "codes::move_left!" => codes::show_move_right_left(),
         "codes::insert_lines!" => codes::show_insert_lines(),
+        "codes::delete_lines!" => codes::show_delete_lines(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -49,5 +50,6 @@ fn all() -> Result<()> {
     codes::show_move_up_down()?;
     codes::show_move_right_left()?;
     codes::show_insert_lines()?;
+    codes::show_delete_lines()?;
     Ok(())
 }

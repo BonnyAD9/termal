@@ -313,6 +313,8 @@ code_macro!(csi != 0 =>
     move_up, n; 'A'
         ? "Moves cursor up by N positions.
 
+If used with literal, produces `&'static str`, otherwise produces [`String`].
+
 # Example
 ```no_run
 assert_eq!(formatc!(\"{'mu5}\"), codes::move_up!(5));
@@ -329,6 +331,8 @@ printcln!(\"{'clear}\\n\\nhello{'mu2}up{'md}down{'md}\");
 
     move_down, n; 'B'
         ? "Moves cursor down by N positions.
+
+If used with literal, produces `&'static str`, otherwise produces [`String`].
 
 # Example
 ```no_run
@@ -347,6 +351,8 @@ printcln!(\"{'clear}\\n\\nhello{'mu2}up{'md}down{'md}\");
     move_right, n; 'C'
         ? "Moves cursor right by N positions.
 
+If used with literal, produces `&'static str`, otherwise produces [`String`].
+
 # Example
 ```no_run
 assert_eq!(formatc!(\"{'mr5}\"), codes::move_right!(5));
@@ -362,6 +368,8 @@ printcln!(\"{'clear}{'mr7}there{'ml11}hello\");
     move_left, n; 'D'
         ? "Moves cursor left by N positions.
 
+If used with literal, produces `&'static str`, otherwise produces [`String`].
+
 # Example
 ```no_run
 assert_eq!(formatc!(\"{'mr5}\"), codes::move_right!(5));
@@ -376,6 +384,8 @@ printcln!(\"{'clear}{'mr7}there{'ml11}hello\");
 
     insert_lines, n; 'L'
         ? "Insert n lines at the cursor moving them down.
+
+If used with literal, produces `&'static str`, otherwise produces [`String`].
 
 # Example
 ```no_run
@@ -394,8 +404,29 @@ println!(\"{buf}\");
 ## Result in terminal
 ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/insert_lines.png)
         ",
+
     delete_lines, n; 'M'
-        ? "Delete n lines at the cursor, moving the remaining from bottom.",
+        ? "Delete n lines at the cursor, moving the remaining from bottom.
+
+If used with literal, produces `&'static str`, otherwise produces [`String`].
+
+# Example
+```no_run
+let mut buf = formatc!(\"{'clear}\");
+
+buf += \"line 1\\n\";
+buf += \"line 2\\n\";
+buf += \"line 3\\n\";
+buf += \"line 4\";
+buf += codes::move_up!(2);
+buf += codes::delete_lines!(2);
+
+println!(\"{buf}\");
+```
+
+## Result in terminal
+![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/delete_lines.png)
+        ",
     insert_chars, n; '@' ? "Insert n characters, moving them to the right.",
     delete_chars, n; 'P' ? "Delete n characters, moving the chars from right.",
     insert_columns, n; "'}}" ? "Insert n columns, moving them to the right.",

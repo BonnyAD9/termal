@@ -140,3 +140,18 @@ pub fn show_insert_lines() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_delete_lines() -> Result<()> {
+    let mut buf = formatc!("{'clear}");
+
+    buf += "line 1\n";
+    buf += "line 2\n";
+    buf += "line 3\n";
+    buf += "line 4";
+    buf += codes::move_up!(2);
+    buf += codes::delete_lines!(2);
+
+    println!("{buf}");
+
+    Ok(())
+}
