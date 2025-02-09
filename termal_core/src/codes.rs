@@ -427,7 +427,27 @@ println!(\"{buf}\");
 ## Result in terminal
 ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/delete_lines.png)
         ",
-    insert_chars, n; '@' ? "Insert n characters, moving them to the right.",
+
+    insert_chars, n; '@'
+        ? "Insert n characters, moving them to the right.
+
+If used with literal, produces `&'static str`, otherwise produces [`String`].
+
+# Example
+```no_run
+let mut buf = formatc!(\"{'clear}\");
+
+buf += \"say there\";
+buf += codes::move_left!(5);
+buf += codes::insert_chars!(6);
+buf += \"hello\";
+
+println!(\"{buf}\");
+```
+
+## Result in terminal
+![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/insert_chars.png)
+        ",
     delete_chars, n; 'P' ? "Delete n characters, moving the chars from right.",
     insert_columns, n; "'}}" ? "Insert n columns, moving them to the right.",
     delete_columns, n; "'~" ? "Delete n columns, moving them from the right",

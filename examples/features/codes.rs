@@ -155,3 +155,16 @@ pub fn show_delete_lines() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_insert_chars() -> Result<()> {
+    let mut buf = formatc!("{'clear}");
+
+    buf += "say there";
+    buf += codes::move_left!(5);
+    buf += codes::insert_chars!(6);
+    buf += "hello";
+
+    println!("{buf}");
+
+    Ok(())
+}

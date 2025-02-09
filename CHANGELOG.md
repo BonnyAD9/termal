@@ -9,6 +9,7 @@
 
 ### Fixes
 + Fix `ERASE_ALL`.
++ Some codes macros would return `String` even if all arguments were literals.
 
 ## v2.0.0
 - New methods for `Terminal`: `has_input`, `wait_for_input`,
