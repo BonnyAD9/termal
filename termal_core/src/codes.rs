@@ -38,7 +38,7 @@ macro_rules! seq {
         $crate::seq!($sq, $i, $f, $(";{}"; $a),*)
     };
     ($sq:literal, $i:literal, $f:expr, $($l:literal; $e:expr),*) => {
-        format!(concat!($sq, "{}" $(,$l)*, $i), $f $(,$e)*)
+        format!(concat!($sq, "{}" $(,$l)*, "{}"), $f $(,$e)*, $i)
     }
 }
 
@@ -316,7 +316,7 @@ code_macro!(csi != 0 =>
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
 # Example
-```no_run
+```ignore
 assert_eq!(formatc!(\"{'mu5}\"), codes::move_up!(5));
 assert_eq!(formatc!(\"{'md5}\"), codes::move_down!(5));
 assert_eq!(formatc!(\"{'mu}\"), codes::move_up!(1));
@@ -335,7 +335,7 @@ printcln!(\"{'clear}\\n\\nhello{'mu2}up{'md}down{'md}\");
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
 # Example
-```no_run
+```ignore
 assert_eq!(formatc!(\"{'mu5}\"), codes::move_up!(5));
 assert_eq!(formatc!(\"{'md5}\"), codes::move_down!(5));
 assert_eq!(formatc!(\"{'mu}\"), codes::move_up!(1));
@@ -354,7 +354,7 @@ printcln!(\"{'clear}\\n\\nhello{'mu2}up{'md}down{'md}\");
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
 # Example
-```no_run
+```ignore
 assert_eq!(formatc!(\"{'mr5}\"), codes::move_right!(5));
 assert_eq!(formatc!(\"{'ml5}\"), codes::move_left!(5));
 
@@ -371,7 +371,7 @@ printcln!(\"{'clear}{'mr7}there{'ml11}hello\");
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
 # Example
-```no_run
+```ignore
 assert_eq!(formatc!(\"{'mr5}\"), codes::move_right!(5));
 assert_eq!(formatc!(\"{'ml5}\"), codes::move_left!(5));
 
@@ -388,7 +388,7 @@ printcln!(\"{'clear}{'mr7}there{'ml11}hello\");
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
 # Example
-```no_run
+```ignore
 let mut buf = formatc!(\"{'clear}\");
 
 buf += \"line 1\\n\";
@@ -411,7 +411,7 @@ println!(\"{buf}\");
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
 # Example
-```no_run
+```ignore
 let mut buf = formatc!(\"{'clear}\");
 
 buf += \"line 1\\n\";
@@ -434,7 +434,7 @@ println!(\"{buf}\");
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
 # Example
-```no_run
+```ignore
 let mut buf = formatc!(\"{'clear}\");
 
 buf += \"say there\";
@@ -449,7 +449,7 @@ println!(\"{buf}\");
 ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/insert_chars.png)
         ",
     delete_chars, n; 'P' ? "Delete n characters, moving the chars from right.",
-    insert_columns, n; "'}}" ? "Insert n columns, moving them to the right.",
+    insert_columns, n; "'}" ? "Insert n columns, moving them to the right.",
     delete_columns, n; "'~" ? "Delete n columns, moving them from the right",
     set_down, n; 'E' ? "Moves cursor to the start of line N lines down",
     set_up, n; 'F' ? "Moves cursor to the start of line N lines up",

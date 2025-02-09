@@ -1,4 +1,7 @@
 //! Core library of termal, contains the implementation.
+
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
+
 mod rgb;
 
 use std::{

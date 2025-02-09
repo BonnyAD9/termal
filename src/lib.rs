@@ -259,6 +259,8 @@
 //! printcln!("{}{'_}",gradient("BonnyAD9", (250, 50, 170), (180, 50, 240)));
 //! ```
 
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
+
 pub use termal_core::*;
 pub use termal_proc as proc;
 

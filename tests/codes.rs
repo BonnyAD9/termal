@@ -59,6 +59,7 @@ fn macros() {
     assert_eq!(codes::delete_chars!(5), "\x1b[5P");
     assert_eq!(codes::delete_chars!(0), "");
     assert_eq!(codes::insert_columns!(5), "\x1b[5'}");
+    assert_eq!(codes::insert_columns!(six), "\x1b[6'}");
     assert_eq!(codes::insert_columns!(0), "");
     assert_eq!(codes::delete_columns!(5), "\x1b[5'~");
     assert_eq!(codes::delete_columns!(0), "");

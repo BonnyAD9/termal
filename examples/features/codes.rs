@@ -1,5 +1,9 @@
 use termal::{
-    codes, error::Result, formatc, printcln, raw::{enable_raw_mode, term_size}, reset_terminal
+    codes,
+    error::Result,
+    formatc, printcln,
+    raw::{enable_raw_mode, term_size},
+    reset_terminal,
 };
 
 pub fn show_bell() -> Result<()> {
