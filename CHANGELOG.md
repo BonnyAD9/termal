@@ -2,7 +2,7 @@
 
 ## future
 ### New features
-- Add codes `ERASE_BUFFER` and `CLEAR`.
+- Add codes `ERASE_BUFFER`, `CLEAR` and `MOVE_HOME`.
 
 ### Changes
 - Fix name type of `codes::request_selectoin` to `codes::request_selection`.

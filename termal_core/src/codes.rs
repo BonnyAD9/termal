@@ -481,6 +481,9 @@ code_macro!(csi
     column, n; 'G' ? "Moves cursor to the given column",
 );
 
+/// Moves cursor to the top left of the screen.
+pub const MOVE_HOME: &str = "\x1b[H";
+
 /// Moves cursor one line up, scrolling if needed
 pub const UP_SCRL: &str = "\x1bM";
 /// Saves the cursor position (this is single save slot, not stack)
