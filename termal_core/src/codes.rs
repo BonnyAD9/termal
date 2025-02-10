@@ -448,7 +448,28 @@ println!(\"{buf}\");
 ## Result in terminal
 ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/insert_chars.png)
         ",
-    delete_chars, n; 'P' ? "Delete n characters, moving the chars from right.",
+
+    delete_chars, n; 'P'
+        ? "Delete n characters, moving the chars from right.
+
+If used with literal, produces `&'static str`, otherwise produces [`String`].
+
+# Example
+```no_run
+use termal_core::codes;
+
+let mut buf = codes::CLEAR.to_string();
+
+buf += \"say hello there\";
+buf += codes::move_left!(11);
+buf += codes::delete_chars!(6);
+
+println!(\"{buf}\");
+```
+
+## Result in terminal
+![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/delete_chars.png)
+        ",
     insert_columns, n; "'}" ? "Insert n columns, moving them to the right.",
     delete_columns, n; "'~" ? "Delete n columns, moving them from the right",
     set_down, n; 'E' ? "Moves cursor to the start of line N lines down",

@@ -172,3 +172,15 @@ pub fn show_insert_chars() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_delete_chars() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += "say hello there";
+    buf += codes::move_left!(11);
+    buf += codes::delete_chars!(6);
+
+    println!("{buf}");
+
+    Ok(())
+}

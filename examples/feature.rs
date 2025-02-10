@@ -31,6 +31,7 @@ fn single(name: &str) -> Result<()> {
         "codes::insert_lines!" => codes::show_insert_lines(),
         "codes::delete_lines!" => codes::show_delete_lines(),
         "codes::insert_chars!" => codes::show_insert_chars(),
+        "codes::delete_chars!" => codes::show_delete_chars(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -53,5 +54,6 @@ fn all() -> Result<()> {
     codes::show_insert_lines()?;
     codes::show_delete_lines()?;
     codes::show_insert_chars()?;
+    codes::show_delete_chars()?;
     Ok(())
 }
