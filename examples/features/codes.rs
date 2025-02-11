@@ -184,3 +184,18 @@ pub fn show_delete_chars() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_insert_columns() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += "say line 1\n";
+    buf += "say line 2\n";
+    buf += "say line 3";
+    buf += codes::move_left!(6);
+    buf += codes::insert_columns!(9);
+    buf += "hello to ";
+
+    println!("{buf}");
+
+    Ok(())
+}
