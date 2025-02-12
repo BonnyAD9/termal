@@ -199,3 +199,17 @@ pub fn show_insert_columns() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_delete_columns() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += "say hello to line 1\n";
+    buf += "say greeting line 2\n";
+    buf += "say no words line 3";
+    buf += codes::move_left!(15);
+    buf += codes::delete_columns!(9);
+
+    println!("{buf}");
+
+    Ok(())
+}

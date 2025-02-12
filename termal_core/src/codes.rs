@@ -495,7 +495,30 @@ println!(\"{buf}\");
 ## Result in terminal
 ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/insert_columns.png)
         ",
-    delete_columns, n; "'~" ? "Delete n columns, moving them from the right",
+
+    delete_columns, n; "'~"
+        ? "Delete n columns, moving them from the right
+
+If used with literal, produces `&'static str`, otherwise produces [`String`].
+
+# Example
+```no_run
+use termal_core::codes;
+
+let mut buf = codes::CLEAR.to_string();
+
+buf += \"say hello to line 1\\n\";
+buf += \"say greeting line 2\\n\";
+buf += \"say no words line 3\";
+buf += codes::move_left!(15);
+buf += codes::delete_columns!(9);
+
+println!(\"{buf}\");
+```
+
+## Result in terminal
+![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/delete_columns.png)
+        ",
     set_down, n; 'E' ? "Moves cursor to the start of line N lines down",
     set_up, n; 'F' ? "Moves cursor to the start of line N lines up",
     repeat_char, n; 'b' ? "Repeat the previous char n times."
