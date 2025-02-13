@@ -17,10 +17,8 @@ impl<'a> Osc<'a> {
             if !code.starts_with(|c: char| c.is_ascii_digit()) {
                 return Self { args, data: code };
             }
-            let Some((i, c)) = code
-                .char_indices()
-                .skip_while(|(_, c)| c.is_ascii_digit())
-                .next()
+            let Some((i, c)) =
+                code.char_indices().find(|(_, c)| !c.is_ascii_digit())
             else {
                 args.push(code.parse::<u32>().ok().unwrap_or_default());
                 continue;

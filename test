@@ -1,3 +1,3 @@
 #!/usr/bin/sh
 
-cargo test --workspace --features all -- --nocapture
+cargo test --workspace --features all

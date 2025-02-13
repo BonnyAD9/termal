@@ -213,3 +213,15 @@ pub fn show_delete_columns() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_set_down() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += "line one";
+    buf += codes::set_down!(2);
+    buf += "line two";
+
+    println!("{buf}");
+
+    Ok(())
+}
