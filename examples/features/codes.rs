@@ -225,3 +225,16 @@ pub fn show_set_down() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_set_up() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += "\n\n";
+    buf += "line one";
+    buf += codes::set_up!(2);
+    buf += "line two";
+    buf += "\n\n";
+
+    println!("{buf}");
+    Ok(())
+}
