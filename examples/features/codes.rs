@@ -238,3 +238,15 @@ pub fn show_set_up() -> Result<()> {
     println!("{buf}");
     Ok(())
 }
+
+pub fn show_repeat_char() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += "lo";
+    buf += codes::repeat_char!(69);
+    buf += "ng word";
+
+    println!("{buf}");
+
+    Ok(())
+}

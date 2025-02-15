@@ -527,6 +527,8 @@ If used with literal, produces `&'static str`, otherwise produces [`String`].
 
 # Example
 ```no_run
+use termal_core::codes;
+
 let mut buf = codes::CLEAR.to_string();
 
 buf += \"line one\";
@@ -547,6 +549,8 @@ If used with literal, produces `&'static str`, otherwise produces [`String`].
 
 # Example
 ```no_run
+use termal_core::codes;
+
 let mut buf = codes::CLEAR.to_string();
 
 buf += \"\\n\\n\";
@@ -561,7 +565,28 @@ println!(\"{buf}\");
 ## Result in terminal
 ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/set_up.png)
         ",
-    repeat_char, n; 'b' ? "Repeat the previous char n times."
+
+    repeat_char, n; 'b'
+        ? "Repeat the previous char n times.
+
+If used with literal, produces `&'static str`, otherwise produces [`String`].
+
+# Example
+```no_run
+use termal_core::codes;
+
+let mut buf = codes::CLEAR.to_string();
+
+buf += \"lo\";
+buf += codes::repeat_char!(69);
+buf += \"ng word\";
+
+println!(\"{buf}\");
+```
+
+## Result in terminal
+![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/repeat_char.png)
+        "
 );
 
 code_macro!(csi
