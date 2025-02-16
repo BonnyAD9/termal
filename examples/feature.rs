@@ -37,6 +37,7 @@ fn single(name: &str) -> Result<()> {
         "codes::set_down!" => codes::show_set_down(),
         "codes::set_up!" => codes::show_set_up(),
         "codes::repeat_char!" => codes::show_repeat_char(),
+        "codes::column!" => codes::show_column(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -65,5 +66,6 @@ fn all() -> Result<()> {
     codes::show_set_down()?;
     codes::show_set_up()?;
     codes::show_repeat_char()?;
+    codes::show_column()?;
     Ok(())
 }

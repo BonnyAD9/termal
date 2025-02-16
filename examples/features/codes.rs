@@ -250,3 +250,15 @@ pub fn show_repeat_char() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_column() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += "hello";
+    buf += codes::column!(20);
+    buf += "there";
+
+    println!("{buf}");
+
+    Ok(())
+}

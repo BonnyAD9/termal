@@ -590,7 +590,27 @@ println!(\"{buf}\");
 );
 
 code_macro!(csi
-    column, n; 'G' ? "Moves cursor to the given column",
+    column, n; 'G'
+        ? "Moves cursor to the given column.
+
+If used with literal, produces `&'static str`, otherwise produces [`String`].
+
+# Example
+```no_run
+use termal_core::codes;
+
+let mut buf = codes::CLEAR.to_string();
+
+buf += \"hello\";
+buf += codes::column!(20);
+buf += \"there\";
+
+println!(\"{buf}\");
+```
+
+## Result in terminal
+![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/column.png)
+        ",
 );
 
 /// Moves cursor to the top left of the screen.
