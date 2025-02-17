@@ -262,3 +262,15 @@ pub fn show_column() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_move_home() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += "\n\nhello below";
+    buf += codes::MOVE_HOME;
+    buf += "home sweet home\n\n";
+
+    println!("{buf}");
+
+    Ok(())
+}

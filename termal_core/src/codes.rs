@@ -614,6 +614,20 @@ println!(\"{buf}\");
 );
 
 /// Moves cursor to the top left of the screen.
+///
+/// # Example
+/// ```no_run
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += "\n\nhello below";
+/// buf += codes::MOVE_HOME;
+/// buf += "home sweet home\n\n";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/move_home.png)
 pub const MOVE_HOME: &str = "\x1b[H";
 
 /// Moves cursor one line up, scrolling if needed
