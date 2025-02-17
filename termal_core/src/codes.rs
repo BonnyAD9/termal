@@ -617,6 +617,8 @@ println!(\"{buf}\");
 ///
 /// # Example
 /// ```no_run
+/// use termal_core::codes;
+/// 
 /// let mut buf = codes::CLEAR.to_string();
 ///
 /// buf += "\n\nhello below";
