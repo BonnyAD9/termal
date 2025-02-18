@@ -1,8 +1,10 @@
+use std::io::Write;
+
 use termal::{
     codes,
     error::Result,
     formatc, printcln,
-    raw::{enable_raw_mode, term_size},
+    raw::{enable_raw_mode, term_size, Terminal},
     reset_terminal,
 };
 
@@ -271,6 +273,32 @@ pub fn show_move_home() -> Result<()> {
     buf += "home sweet home\n\n";
 
     println!("{buf}");
+
+    Ok(())
+}
+
+pub fn show_up_scrl() -> Result<()> {
+    println!("{}", codes::CLEAR);
+
+    for i in 0..100 {
+        print!("\n{i}");
+    }
+
+    // Move to the second line on screen.
+    let mut buf = codes::MOVE_HOME.to_string();
+    buf += codes::move_down!(1);
+    // Move up, scrolling is not necesary so it is just move up
+    buf += codes::UP_SCRL;
+    // Move up, cursor is already on top of the screen, so empty line is
+    // inserted. Line at the bottom of the screen is discarded.
+    buf += codes::UP_SCRL;
+
+    print!("{buf}");
+
+    _ = Terminal::stdio().flush();
+
+    // Wait for enter. Screenshot is taken before enter is pressed.
+    _ = Terminal::stdio().read();
 
     Ok(())
 }

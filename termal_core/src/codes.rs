@@ -618,7 +618,7 @@ println!(\"{buf}\");
 /// # Example
 /// ```no_run
 /// use termal_core::codes;
-/// 
+///
 /// let mut buf = codes::CLEAR.to_string();
 ///
 /// buf += "\n\nhello below";
@@ -632,7 +632,43 @@ println!(\"{buf}\");
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/move_home.png)
 pub const MOVE_HOME: &str = "\x1b[H";
 
-/// Moves cursor one line up, scrolling if needed
+/// Moves cursor one line up, 'scrolling' if needed.
+///
+/// **THIS MAY NOT DO WHAT YOU EXPECT** read precise description below:
+///
+/// Moves cursor one line up. If the cursor is already on top of the screen,
+/// insert one line at the top of the screen. The line at the bottom of the
+/// screen is discarded.
+///
+/// ```no_run
+/// use std::io::Write;
+/// use termal_core::{codes, raw::Terminal};
+///
+/// println!("{}", codes::CLEAR);
+///
+/// for i in 0..100 {
+///     print!("\n{i}");
+/// }
+///
+/// // Move to the second line on screen.
+/// let mut buf = codes::MOVE_HOME.to_string();
+/// buf += codes::move_down!(1);
+/// // Move up, scrolling is not necesary so it is just move up
+/// buf += codes::UP_SCRL;
+/// // Move up, cursor is already on top of the screen, so empty line is
+/// // inserted. Line at the bottom of the screen is discarded.
+/// buf += codes::UP_SCRL;
+///
+/// print!("{buf}");
+///
+/// _ = Terminal::stdio().flush();
+///
+/// // Wait for enter. Screenshot is taken before enter is pressed.
+/// _ = Terminal::stdio().read();
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/up_scrl.png)
 pub const UP_SCRL: &str = "\x1bM";
 /// Saves the cursor position (this is single save slot, not stack)
 pub const CUR_SAVE: &str = "\x1b7";
