@@ -302,3 +302,17 @@ pub fn show_up_scrl() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_cur_save_load() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += "start";
+    buf += codes::CUR_SAVE;
+    buf += "\ncontinue here";
+    buf += codes::CUR_LOAD;
+    buf += " and end here\n";
+
+    println!("{buf}");
+
+    Ok(())
+}

@@ -670,10 +670,47 @@ pub const MOVE_HOME: &str = "\x1b[H";
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/up_scrl.png)
 pub const UP_SCRL: &str = "\x1bM";
-/// Saves the cursor position (this is single save slot, not stack)
+/// Saves the cursor position (this is single save slot, not stack). Position
+/// can be later restored by [`CUR_LOAD`].
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += "start";
+/// buf += codes::CUR_SAVE;
+/// buf += "\ncontinue here";
+/// buf += codes::CUR_LOAD;
+/// buf += " and end here\n";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/cur_save_load.png)
 pub const CUR_SAVE: &str = "\x1b7";
 /// Restores the cursor position to the last saved position (this is single
-/// save slot, not stack)
+/// save slot, not stack). The position can be saved by [`CUR_SAVE`].
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += "start";
+/// buf += codes::CUR_SAVE;
+/// buf += "\ncontinue here";
+/// buf += codes::CUR_LOAD;
+/// buf += " and end here\n";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/cur_save_load.png)
 pub const CUR_LOAD: &str = "\x1b8";
 
 // Erase codes
