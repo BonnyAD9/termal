@@ -715,7 +715,32 @@ pub const CUR_LOAD: &str = "\x1b8";
 
 // Erase codes
 
-/// Erases from the cursor to the end of the screen
+/// Erases from the cursor to the end of the screen.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::{codes, error::Error, raw::{
+///     TermSize, Terminal, term_size
+/// }};
+///
+/// // Fill the terminal with `#` and move to the center.
+/// let TermSize { char_width: w, char_height: h, .. } = term_size()?;
+/// let mut buf = "#".to_string() + &codes::repeat_char!(w * h - 1);
+/// buf += &codes::move_to!(w / 2, h / 2);
+///
+/// // Erase to the end of the screen.
+/// buf += codes::ERASE_TO_END;
+///
+/// // Print to the output and wait for enter. Screenshot is taken before enter
+/// // is pressed.
+/// Terminal::stdio().flushed(buf)?;
+/// Terminal::stdio().read()?;
+///
+/// Ok::<_, Error>(())
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/erase_to_end.png)
 pub const ERASE_TO_END: &str = csi!('J');
 /// Erases from the start of the screen to the cursor
 pub const ERASE_FROM_START: &str = csi!('J', 1);

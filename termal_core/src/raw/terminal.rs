@@ -318,6 +318,14 @@ impl<T: IoProvider> Terminal<T> {
         Ok(())
     }
 
+    /// Prints to the output and flushes. Properly handles newlines if output
+    /// is raw terminal.
+    pub fn flushed(&mut self, s: impl AsRef<str>) -> Result<()> {
+        self.print(s)?;
+        self.flush()?;
+        Ok(())
+    }
+
     /// Opens bracketed paste mode. It will start automatically with
     /// start of paste text and end with end of paste text if bracketed paste
     /// mode is enabled (with [`codes::ENABLE_BRACKETED_PASTE_MODE`]).

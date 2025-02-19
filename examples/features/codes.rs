@@ -4,7 +4,7 @@ use termal::{
     codes,
     error::Result,
     formatc, printcln,
-    raw::{enable_raw_mode, term_size, Terminal},
+    raw::{enable_raw_mode, term_size, TermSize, Terminal},
     reset_terminal,
 };
 
@@ -313,6 +313,27 @@ pub fn show_cur_save_load() -> Result<()> {
     buf += " and end here\n";
 
     println!("{buf}");
+
+    Ok(())
+}
+
+pub fn show_erase_to_end() -> Result<()> {
+    // Fill the terminal with `#` and move to the center.
+    let TermSize {
+        char_width: w,
+        char_height: h,
+        ..
+    } = term_size()?;
+    let mut buf = "#".to_string() + &codes::repeat_char!(w * h - 1);
+    buf += &codes::move_to!(w / 2, h / 2);
+
+    // Erase to the end of the screen.
+    buf += codes::ERASE_TO_END;
+
+    // Print to the output and wait for enter. Screenshot is taken before enter
+    // is pressed.
+    Terminal::stdio().flushed(buf)?;
+    Terminal::stdio().read()?;
 
     Ok(())
 }

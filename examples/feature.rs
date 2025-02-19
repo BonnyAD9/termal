@@ -38,10 +38,11 @@ fn single(name: &str) -> Result<()> {
         "codes::set_up!" => codes::show_set_up(),
         "codes::repeat_char!" => codes::show_repeat_char(),
         "codes::column!" => codes::show_column(),
-        "codes::MOVE_HOME!" => codes::show_move_home(),
-        "codes::UP_SCRL!" => codes::show_up_scrl(),
-        "codes::CUR_SAVE!" => codes::show_cur_save_load(),
-        "codes::CUR_LOAD!" => codes::show_cur_save_load(),
+        "codes::MOVE_HOME" => codes::show_move_home(),
+        "codes::UP_SCRL" => codes::show_up_scrl(),
+        "codes::CUR_SAVE" => codes::show_cur_save_load(),
+        "codes::CUR_LOAD" => codes::show_cur_save_load(),
+        "codes::ERASE_TO_END" => codes::show_erase_to_end(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -74,5 +75,6 @@ fn all() -> Result<()> {
     codes::show_move_home()?;
     codes::show_up_scrl()?;
     codes::show_cur_save_load()?;
+    codes::show_erase_to_end()?;
     Ok(())
 }
