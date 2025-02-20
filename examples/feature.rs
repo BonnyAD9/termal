@@ -43,6 +43,7 @@ fn single(name: &str) -> Result<()> {
         "codes::CUR_SAVE" => codes::show_cur_save_load(),
         "codes::CUR_LOAD" => codes::show_cur_save_load(),
         "codes::ERASE_TO_END" => codes::show_erase_to_end(),
+        "codes::ERASE_FROM_START" => codes::show_erase_from_start(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -76,5 +77,6 @@ fn all() -> Result<()> {
     codes::show_up_scrl()?;
     codes::show_cur_save_load()?;
     codes::show_erase_to_end()?;
+    codes::show_erase_from_start()?;
     Ok(())
 }

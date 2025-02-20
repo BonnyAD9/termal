@@ -318,6 +318,14 @@ pub fn show_cur_save_load() -> Result<()> {
 }
 
 pub fn show_erase_to_end() -> Result<()> {
+    show_erase(codes::ERASE_TO_END)
+}
+
+pub fn show_erase_from_start() -> Result<()> {
+    show_erase(codes::ERASE_FROM_START)
+}
+
+fn show_erase(code: &str) -> Result<()> {
     // Fill the terminal with `#` and move to the center.
     let TermSize {
         char_width: w,
@@ -327,8 +335,8 @@ pub fn show_erase_to_end() -> Result<()> {
     let mut buf = "#".to_string() + &codes::repeat_char!(w * h - 1);
     buf += &codes::move_to!(w / 2, h / 2);
 
-    // Erase to the end of the screen.
-    buf += codes::ERASE_TO_END;
+    // Use the erase command
+    buf += code;
 
     // Print to the output and wait for enter. Screenshot is taken before enter
     // is pressed.
