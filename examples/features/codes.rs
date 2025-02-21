@@ -325,6 +325,10 @@ pub fn show_erase_from_start() -> Result<()> {
     show_erase(codes::ERASE_FROM_START)
 }
 
+pub fn show_erase_screen() -> Result<()> {
+    show_erase(codes::ERASE_SCREEN)
+}
+
 fn show_erase(code: &str) -> Result<()> {
     // Fill the terminal with `#` and move to the center.
     let TermSize {
