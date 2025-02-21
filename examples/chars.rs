@@ -1,4 +1,4 @@
-use std::io::{self, stdout, Read, Write};
+use std::io::{self, Read, Write, stdout};
 
 use termal::{codes, error::Result, raw::enable_raw_mode, reset_terminal};
 

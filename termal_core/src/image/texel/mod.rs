@@ -1,8 +1,8 @@
 use texel_state::TexelState;
 
 use crate::{
-    codes::{bg, fg},
     Rgb,
+    codes::{bg, fg},
 };
 
 use super::Image;

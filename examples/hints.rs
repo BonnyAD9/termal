@@ -1,14 +1,13 @@
-use std::io::{stdout, Write};
+use std::io::{Write, stdout};
 
 use termal::{
     codes,
     error::Result,
     formatc,
     raw::{
-        disable_raw_mode, enable_raw_mode,
+        StdioProvider, Terminal, disable_raw_mode, enable_raw_mode,
         events::{Event, Key, KeyCode},
         readers::TermRead,
-        StdioProvider, Terminal,
     },
 };
 

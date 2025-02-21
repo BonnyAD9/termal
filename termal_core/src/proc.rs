@@ -168,13 +168,13 @@ fn get_first_string_iteral(
             (StringLit::try_from(l), span)
         }
         TokenTree::Group(g) => {
-            return get_first_string_iteral(&mut g.stream().into_iter())
+            return get_first_string_iteral(&mut g.stream().into_iter());
         }
         _ => {
             return Err(ProcError::spanned(
                 first.span(),
                 "The first argument must be string literal",
-            ))
+            ));
         }
     };
 
@@ -423,9 +423,9 @@ where
                 Some(c) if (0..256).contains(&c) => c,
                 _ => {
                     return Err(ProcError::msg(format!(
-                    "The '{}' in color format expects value in range 0..256",
-                    s,
-                )))
+                        "The '{}' in color format expects value in range 0..256",
+                        s,
+                    )));
                 }
             };
             owner = codes::fg256!(c);
@@ -436,9 +436,9 @@ where
                 Some(c) if (0..256).contains(&c) => c,
                 _ => {
                     return Err(ProcError::msg(format!(
-                    "The '{}' in color format expects value in range 0..256",
-                    s,
-                )))
+                        "The '{}' in color format expects value in range 0..256",
+                        s,
+                    )));
                 }
             };
             owner = codes::bg256!(c);
@@ -449,9 +449,9 @@ where
                 Some(c) if (0..256).contains(&c) => c,
                 _ => {
                     return Err(ProcError::msg(format!(
-                    "The '{}' in color format expects value in range 0..256",
-                    s,
-                )))
+                        "The '{}' in color format expects value in range 0..256",
+                        s,
+                    )));
                 }
             };
             owner = codes::underline256!(c);
@@ -475,7 +475,7 @@ where
             return Err(ProcError::msg(format!(
                 "Unknown color format variable {}",
                 s
-            )))
+            )));
         }
     };
 
@@ -485,12 +485,12 @@ where
             return Err(ProcError::msg(format!(
                 "Invalid character '{}', expected ' ' or '}}'",
                 c
-            )))
+            )));
         }
         None => {
             return Err(ProcError::msg(
                 "Unexpected end, expected ' ' or '}}'".to_owned(),
-            ))
+            ));
         }
     }
 
@@ -517,7 +517,7 @@ where
                 return Err(ProcError::msg(format!(
                     "Invalid hex color, didn't expect character '{}'",
                     c
-                )))
+                )));
             }
         }
     }
@@ -536,15 +536,15 @@ where
         }
         2 => (c, c, c),
         3 => (
-            (c & 0xF00) >> 4 | (c & 0xF00) >> 8,
-            (c & 0x0F0) | (c & 0x0F0) >> 4,
-            (c & 0x00F) << 4 | (c & 0x00F),
+            ((c & 0xF00) >> 4) | ((c & 0xF00) >> 8),
+            (c & 0x0F0) | ((c & 0x0F0) >> 4),
+            ((c & 0x00F) << 4) | (c & 0x00F),
         ),
         6 => ((c & 0xFF0000) >> 16, (c & 0x00FF00) >> 8, c & 0x0000FF),
         _ => {
             return Err(ProcError::msg(
                 "Invalid hex color length, must be 1, 2, 3 or 6".to_owned(),
-            ))
+            ));
         }
     };
 

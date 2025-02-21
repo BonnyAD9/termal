@@ -6,8 +6,8 @@ use std::{
 };
 
 use libc::{
-    cfmakeraw, ioctl, poll, pollfd, tcgetattr, tcsetattr, termios as Termios,
-    winsize, EINTR, POLLIN, TCSANOW, TIOCGWINSZ,
+    EINTR, POLLIN, TCSANOW, TIOCGWINSZ, cfmakeraw, ioctl, poll, pollfd,
+    tcgetattr, tcsetattr, termios as Termios, winsize,
 };
 
 use crate::{error::Result, raw::TermSize};

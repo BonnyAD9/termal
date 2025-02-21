@@ -15,15 +15,15 @@ use winapi::{
             WAIT_OBJECT_0,
         },
         wincon::{
-            GetConsoleScreenBufferInfo, CONSOLE_SCREEN_BUFFER_INFO,
-            ENABLE_ECHO_INPUT, ENABLE_LINE_INPUT, ENABLE_PROCESSED_INPUT,
+            CONSOLE_SCREEN_BUFFER_INFO, ENABLE_ECHO_INPUT, ENABLE_LINE_INPUT,
+            ENABLE_PROCESSED_INPUT, GetConsoleScreenBufferInfo,
         },
         winnt::{
             FILE_SHARE_READ, FILE_SHARE_WRITE, GENERIC_READ, GENERIC_WRITE,
             HANDLE,
         },
         winuser::{
-            MsgWaitForMultipleObjectsEx, MWMO_INPUTAVAILABLE, QS_ALLINPUT,
+            MWMO_INPUTAVAILABLE, MsgWaitForMultipleObjectsEx, QS_ALLINPUT,
         },
     },
 };
@@ -95,11 +95,7 @@ pub fn wait_for_stdin(timeout: Duration) -> Result<bool> {
 }
 
 fn result(val: BOOL) -> Result<()> {
-    if val == 0 {
-        Err(last_err())
-    } else {
-        Ok(())
-    }
+    if val == 0 { Err(last_err()) } else { Ok(()) }
 }
 
 fn handle_result(val: HANDLE) -> Result<HANDLE> {

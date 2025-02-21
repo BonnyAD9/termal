@@ -1,10 +1,10 @@
 use termal::{
+    Rgb,
     raw::events::{
-        mouse::{self, Mouse},
         AmbigousEvent, AnyEvent, Event, Key, KeyCode, Modifiers, StateChange,
         Status, TermAttr, TermFeatures, TermType,
+        mouse::{self, Mouse},
     },
-    Rgb,
 };
 
 #[test]

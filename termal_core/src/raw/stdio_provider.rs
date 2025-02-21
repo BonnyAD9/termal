@@ -1,9 +1,9 @@
-use std::io::{stdin, stdout, IsTerminal, StdinLock, StdoutLock};
+use std::io::{IsTerminal, StdinLock, StdoutLock, stdin, stdout};
 
 use crate::error::Result;
 
 use super::{
-    is_raw_mode_enabled, wait_for_stdin, IoProvider, ValueOrMut, WaitForIn,
+    IoProvider, ValueOrMut, WaitForIn, is_raw_mode_enabled, wait_for_stdin,
 };
 
 /// Zero size IoProvider with stdin and stdout.

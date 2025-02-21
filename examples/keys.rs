@@ -4,9 +4,8 @@ use termal::{
     codes,
     error::Result,
     raw::{
-        disable_raw_mode, enable_raw_mode,
+        StdioProvider, Terminal, disable_raw_mode, enable_raw_mode,
         events::{AmbigousEvent, AnyEvent, Event, Key, KeyCode, Modifiers},
-        StdioProvider, Terminal,
     },
 };
 

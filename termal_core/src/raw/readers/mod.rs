@@ -48,7 +48,7 @@ pub fn prompt_to(res: &mut String, prompt: impl AsRef<str>) -> Result<()> {
 #[cfg(any(windows, unix))]
 fn prompt_to_inner(res: &mut String, prompt: impl AsRef<str>) -> Result<()> {
     use super::{
-        disable_raw_mode, enable_raw_mode, is_raw_mode_enabled, Terminal,
+        Terminal, disable_raw_mode, enable_raw_mode, is_raw_mode_enabled,
     };
 
     let raw = is_raw_mode_enabled();

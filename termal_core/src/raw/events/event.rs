@@ -3,8 +3,8 @@ use base64::Engine;
 use crate::{codes, raw::events::csi::Csi};
 
 use super::{
-    mouse::Mouse, osc::Osc, state_change::StateChange, Key, KeyCode,
-    Modifiers, Status, TermAttr,
+    Key, KeyCode, Modifiers, Status, TermAttr, mouse::Mouse, osc::Osc,
+    state_change::StateChange,
 };
 
 /// Possibly ambiguous terminal event.

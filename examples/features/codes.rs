@@ -4,7 +4,7 @@ use termal::{
     codes,
     error::Result,
     formatc, printcln,
-    raw::{enable_raw_mode, term_size, TermSize, Terminal},
+    raw::{TermSize, Terminal, enable_raw_mode, term_size},
     reset_terminal,
 };
 

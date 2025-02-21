@@ -776,7 +776,7 @@ macro_rules! eprintac {
 mod tests {
     use std::{
         fmt::Display,
-        io::{stdout, Write},
+        io::{Write, stdout},
     };
 
     use super::*;

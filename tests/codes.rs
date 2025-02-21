@@ -1,6 +1,6 @@
 use termal::{
-    codes::{self, CursorStyle, Selection},
     Rgb,
+    codes::{self, CursorStyle, Selection},
 };
 
 #[test]

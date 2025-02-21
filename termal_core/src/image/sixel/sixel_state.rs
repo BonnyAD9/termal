@@ -1,6 +1,6 @@
 use std::collections::BTreeSet;
 
-use crate::{image::Image, Rgb};
+use crate::{Rgb, image::Image};
 
 use super::Sixel;
 

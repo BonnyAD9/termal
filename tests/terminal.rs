@@ -3,7 +3,7 @@ use std::time::Duration;
 use common::BufProvider;
 use termal::{
     error::Error,
-    raw::{events::AmbigousEvent, Terminal},
+    raw::{Terminal, events::AmbigousEvent},
 };
 
 mod common;

@@ -6,8 +6,9 @@ use crate::{
     codes,
     error::{Error, Result},
     raw::{
+        IoProvider, StdioProvider, Terminal,
         events::{Event, Key, KeyCode, Modifiers, Status},
-        term_size, IoProvider, StdioProvider, Terminal,
+        term_size,
     },
     term_text::TermText,
 };
@@ -582,11 +583,7 @@ where
 /// Get printable `non-control` character.
 pub fn get_printable(c: char) -> char {
     if !c.is_ascii_control() {
-        if c.is_control() {
-            '␦'
-        } else {
-            c
-        }
+        if c.is_control() { '␦' } else { c }
     } else {
         match c as u32 {
             c if c < 32 => char::from_u32(c + 0x2400).unwrap(),
