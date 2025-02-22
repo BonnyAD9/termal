@@ -806,7 +806,38 @@ pub const ERASE_FROM_START: &str = csi!('J', 1);
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/erase_screen.png)
 pub const ERASE_SCREEN: &str = csi!('J', 2);
-/// Erase the scrollback buffer,
+/// Erase the scrollback buffer.
+///
+/// Doesn't erase the screen, only what is not visible on the screen because it
+/// was scrolled. If you wan't to also erase the screen use [`ERASE_ALL`], if
+/// you only want to erase the screen use [`ERASE_SCREEN`].
+///
+/// # Example
+/// ```no_run
+/// use termal_core::{codes, error::Error, raw::{
+///     TermSize, Terminal, term_size
+/// }};
+///
+/// // Fill the terminal with `#` and move to the center.
+/// let TermSize { char_width: w, char_height: h, .. } = term_size()?;
+/// let mut buf = "#".to_string() + &codes::repeat_char!(w * h - 1);
+/// buf += &codes::move_to!(w / 2, h / 2);
+///
+/// // Erase the whole screen.
+/// buf += codes::ERASE_BUFFER;
+///
+/// // Print to the output and wait for enter. Screenshot is taken before enter
+/// // is pressed.
+/// Terminal::stdio().flushed(buf)?;
+/// Terminal::stdio().read()?;
+///
+/// Ok::<_, Error>(())
+/// ```
+///
+/// ## Result in terminal
+/// Note that the scrollbar is full - there is nowhere to scroll - even though
+/// there was the prompt and cargo compilation log before the program ran.
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/erase_buffer.png)
 pub const ERASE_BUFFER: &str = csi!('J', 3);
 /// Erases from cursor to the end of the line
 pub const ERASE_TO_LN_END: &str = csi!('K');

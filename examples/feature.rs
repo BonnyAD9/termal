@@ -45,6 +45,7 @@ fn single(name: &str) -> Result<()> {
         "codes::ERASE_TO_END" => codes::show_erase_to_end(),
         "codes::ERASE_FROM_START" => codes::show_erase_from_start(),
         "codes::ERASE_SCREEN" => codes::show_erase_screen(),
+        "codes::ERASE_BUFFER" => codes::show_erase_buffer(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -80,5 +81,6 @@ fn all() -> Result<()> {
     codes::show_erase_to_end()?;
     codes::show_erase_from_start()?;
     codes::show_erase_screen()?;
+    codes::show_erase_buffer()?;
     Ok(())
 }
