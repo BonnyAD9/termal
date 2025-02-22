@@ -837,6 +837,7 @@ pub const ERASE_SCREEN: &str = csi!('J', 2);
 /// ## Result in terminal
 /// Note that the scrollbar is full - there is nowhere to scroll - even though
 /// there was the prompt and cargo compilation log before the program ran.
+/// 
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/erase_buffer.png)
 pub const ERASE_BUFFER: &str = csi!('J', 3);
 /// Erases from cursor to the end of the line
