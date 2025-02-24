@@ -842,6 +842,9 @@ pub const ERASE_SCREEN: &str = csi!('J', 2);
 pub const ERASE_BUFFER: &str = csi!('J', 3);
 /// Erases from cursor to the end of the line.
 ///
+/// Note that [`ERASE_TO_LN_END`] and [`ERASE_FROM_LN_START`] are not opposite.
+/// Both will also erase character at the cursor position.
+///
 /// # Example
 /// ```no_run
 /// use termal_core::{codes, error::Error, raw::{
@@ -867,7 +870,35 @@ pub const ERASE_BUFFER: &str = csi!('J', 3);
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/erase_to_ln_end.png)
 pub const ERASE_TO_LN_END: &str = csi!('K');
-/// Erases from the start of the line to the cursor
+/// Erases from the start of the line to the cursor.
+///
+/// Note that [`ERASE_FROM_LN_START`] and [`ERASE_TO_LN_END`] are not opposite.
+/// Both will also erase character at the cursor position.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::{codes, error::Error, raw::{
+///     TermSize, Terminal, term_size
+/// }};
+///
+/// // Fill the terminal with `#` and move to the center.
+/// let TermSize { char_width: w, char_height: h, .. } = term_size()?;
+/// let mut buf = "#".to_string() + &codes::repeat_char!(w * h - 1);
+/// buf += &codes::move_to!(w / 2, h / 2);
+///
+/// // Erase from start of the line to the cursor.
+/// buf += codes::ERASE_FROM_LN_START;
+///
+/// // Print to the output and wait for enter. Screenshot is taken before enter
+/// // is pressed.
+/// Terminal::stdio().flushed(buf)?;
+/// Terminal::stdio().read()?;
+///
+/// Ok::<_, Error>(())
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/erase_from_ln_start.png)
 pub const ERASE_FROM_LN_START: &str = csi!('K', 1);
 /// Erases the entire line
 pub const ERASE_LINE: &str = csi!('K', 2);
