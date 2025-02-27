@@ -615,6 +615,8 @@ println!(\"{buf}\");
 
 /// Moves cursor to the top left of the screen.
 ///
+/// Has the same effect as `move_to!(1, 1)`, but it is a little shorter code.
+///
 /// # Example
 /// ```no_run
 /// use termal_core::codes;
@@ -929,6 +931,8 @@ pub const ERASE_FROM_LN_START: &str = csi!('K', 1);
 pub const ERASE_LINE: &str = csi!('K', 2);
 /// Erases the whole screen and the scrollback buffer.
 ///
+/// It is the same as combination of [`ERASE_SCREEN`] and [`ERASE_BUFFER`].
+///
 /// # Example
 /// ```no_run
 /// use termal_core::{codes, error::Error, raw::{
@@ -959,6 +963,39 @@ pub const ERASE_LINE: &str = csi!('K', 2);
 pub const ERASE_ALL: &str = "\x1b[2J\x1b[3J";
 /// Erases the whole screen and the scrollback buffer and moves cursor to the
 /// top left.
+///
+/// It is the same as combination of [`ERASE_SCREEN`], [`ERASE_BUFFER`] and
+/// [`MOVE_HOME`].
+///
+/// # Example
+/// ```no_run
+/// use termal_core::{codes, error::Error, raw::{
+///     TermSize, Terminal, term_size
+/// }};
+///
+/// // Fill the terminal with `#` and move to the center.
+/// let TermSize { char_width: w, char_height: h, .. } = term_size()?;
+/// let mut buf = "#".to_string() + &codes::repeat_char!(w * h - 1);
+/// buf += &codes::move_to!(w / 2, h / 2);
+///
+/// // Erase the whole screen and scrollback buffer.
+/// buf += codes::CLEAR;
+///
+/// // Print to the output and wait for enter. Screenshot is taken before enter
+/// // is pressed.
+/// Terminal::stdio().flushed(buf)?;
+/// Terminal::stdio().read()?;
+///
+/// Ok::<_, Error>(())
+/// ```
+///
+/// ## Result in terminal
+/// Note that the scrollbar is full - there is nowhere to scroll - even though
+/// there was the prompt and cargo compilation log before the program ran.
+///
+/// Also note that the cursor is in the top left corner and not in the center.
+///
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/clear.png)
 pub const CLEAR: &str = "\x1b[2J\x1b[3J\x1b[H";
 
 // Text modes

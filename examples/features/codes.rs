@@ -349,6 +349,10 @@ pub fn show_erase_all() -> Result<()> {
     show_erase(codes::ERASE_ALL)
 }
 
+pub fn show_clear() -> Result<()> {
+    show_erase(codes::CLEAR)
+}
+
 fn show_erase(code: &str) -> Result<()> {
     // Fill the terminal with `#` and move to the center.
     let TermSize {

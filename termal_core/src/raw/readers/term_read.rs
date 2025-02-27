@@ -205,8 +205,7 @@ where
 
     /// Read one next character or nothing. Doesn't block. Returns `true` if
     /// the input has ended and the result may be retrieved with
-    /// [`TermRead::get_readed`], [`TermRead::finish`] or
-    /// [`TermRead::finish_to_str`].
+    /// [`TermRead::finish`] or [`TermRead::finish_to_str`].
     ///
     /// # Safety
     /// This is unsafe because calls to `set_` functions may break the input if
