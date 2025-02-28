@@ -1000,7 +1000,36 @@ pub const CLEAR: &str = "\x1b[2J\x1b[3J\x1b[H";
 
 // Text modes
 
-/// Resets all the text modes (colors and styles)
+/// Resets all the text modes (colors and styles).
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// // Produce some crazy style for the text.
+/// buf += codes::BOLD;
+/// buf += codes::ITALIC;
+/// buf += codes::OVERLINE;
+/// buf += codes::DOUBLE_UNDERLINE;
+/// buf += codes::STRIKETROUGH;
+/// buf += codes::BLUE_FG;
+/// buf += codes::YELLOW_BG;
+/// buf += codes::underline256!(1);
+///
+/// // Text with crazy style
+/// buf += "crazy style";
+/// // Reset the text style
+/// buf += codes::RESET;
+/// // Write text with normal color
+/// buf += " normal style";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/reset.png)
 pub const RESET: &str = graphic!(0);
 
 /// Set bold text mode (on some terminals may be just brighter color)

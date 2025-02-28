@@ -373,3 +373,28 @@ fn show_erase(code: &str) -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_reset() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    // Produce some crazy style for the text.
+    buf += codes::BOLD;
+    buf += codes::ITALIC;
+    buf += codes::OVERLINE;
+    buf += codes::DOUBLE_UNDERLINE;
+    buf += codes::STRIKETROUGH;
+    buf += codes::BLUE_FG;
+    buf += codes::YELLOW_BG;
+    buf += codes::underline256!(1);
+
+    // Text with crazy style
+    buf += "crazy style";
+    // Reset the text style
+    buf += codes::RESET;
+    // Write text with normal color
+    buf += " normal style";
+
+    println!("{buf}");
+
+    Ok(())
+}
