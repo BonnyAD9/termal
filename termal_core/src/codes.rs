@@ -1032,7 +1032,29 @@ pub const CLEAR: &str = "\x1b[2J\x1b[3J\x1b[H";
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/reset.png)
 pub const RESET: &str = graphic!(0);
 
-/// Set bold text mode (on some terminals may be just brighter color)
+/// Set bold text mode (on some terminals may be just brighter color).
+///
+/// This mode can be reset with [`RESET_BOLD`] or [`RESET`]. Note that
+/// [`RESET_BOLD`] will also reset [`FAINT`] and [`RESET`] will reset all text
+/// modes.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::BOLD;
+/// buf += "bold text";
+///
+/// buf += codes::RESET_BOLD;
+/// buf += " normal text";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/bold.png)
 pub const BOLD: &str = graphic!(1);
 /// Set dim/faint text mode
 pub const FAINT: &str = graphic!(2);

@@ -57,6 +57,7 @@ fn single(name: &str) -> Result<()> {
         "codes::ERASE_ALL" => codes::show_erase_all(),
         "codes::CLEAR" => codes::show_clear(),
         "codes::RESET" => codes::show_reset(),
+        "codes::BOLD" => codes::show_bold(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -123,6 +124,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}ERASE_ALL{'_}
   {'c}codes{'y}::{'w bold}CLEAR{'_}
   {'c}codes{'y}::{'w bold}RESET{'_}
+  {'c}codes{'y}::{'w bold}BOLD{'_}
     "
     );
     Ok(())

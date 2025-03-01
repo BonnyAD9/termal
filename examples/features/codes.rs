@@ -398,3 +398,17 @@ pub fn show_reset() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_bold() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += codes::BOLD;
+    buf += "bold text";
+
+    buf += codes::RESET_BOLD;
+    buf += " normal text";
+
+    println!("{buf}");
+
+    Ok(())
+}
