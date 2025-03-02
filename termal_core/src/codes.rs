@@ -1056,7 +1056,53 @@ pub const RESET: &str = graphic!(0);
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/bold.png)
 pub const BOLD: &str = graphic!(1);
-/// Set dim/faint text mode
+/// Set dim/faint text mode.
+///
+/// Doesn't affect the background color.
+///
+/// This mode can be reset with [`RESET_BOLD`] or [`RESET`]. Note that
+/// [`RESET_BOLD`] will also reset [`BOLD`] and [`RESET`] will reset all text
+/// modes.
+///
+/// In some terminals, this triggers new set of colors (third color variant)
+/// and it doesn't work for 256 or true RGB colors (e.g. konsole). In other
+/// terminals, the dim color is calculated from the current color and so it
+/// also works for 256 and true RGB colors (e.g. vscode terminal).
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// let cols = [
+///     "", // default text color
+///     codes::GRAY_FG,
+///     codes::WHITE_FG,
+///     codes::RED_FG,
+///     codes::GREEN_FG,
+///     codes::YELLOW_FG,
+///     codes::BLUE_FG,
+///     codes::MAGENTA_FG,
+///     codes::CYAN_FG,
+/// ];
+///
+/// for c in cols {
+///     buf += c;
+///     buf += codes::FAINT;
+///     buf += "faint text";
+///     buf += codes::RESET_BOLD;
+///     buf += " normal text\n";
+/// }
+///
+/// buf.pop(); // remove the last newline
+/// buf += codes::RESET_FG;
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/faint.png)
 pub const FAINT: &str = graphic!(2);
 /// Set italic mode
 pub const ITALIC: &str = graphic!(3);

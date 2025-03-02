@@ -412,3 +412,34 @@ pub fn show_bold() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_faint() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    let cols = [
+        "", // default text color
+        codes::GRAY_FG,
+        codes::WHITE_FG,
+        codes::RED_FG,
+        codes::GREEN_FG,
+        codes::YELLOW_FG,
+        codes::BLUE_FG,
+        codes::MAGENTA_FG,
+        codes::CYAN_FG,
+    ];
+
+    for c in cols {
+        buf += c;
+        buf += codes::FAINT;
+        buf += "faint text";
+        buf += codes::RESET_BOLD;
+        buf += " normal text\n";
+    }
+
+    buf.pop(); // remove the last newline
+    buf += codes::RESET_FG;
+
+    println!("{buf}");
+
+    Ok(())
+}
