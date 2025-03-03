@@ -59,6 +59,8 @@ fn single(name: &str) -> Result<()> {
         "codes::RESET" => codes::show_reset(),
         "codes::BOLD" => codes::show_bold(),
         "codes::FAINT" => codes::show_faint(),
+        "codes::ITALIC" => codes::show_italic(),
+        "codes::RESET_ITALIC" => codes::show_italic(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -127,6 +129,8 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}RESET{'_}
   {'c}codes{'y}::{'w bold}BOLD{'_}
   {'c}codes{'y}::{'w bold}FAINT{'_}
+  {'c}codes{'y}::{'w bold}ITALIC{'_}
+  {'c}codes{'y}::{'w bold}RESET_ITALIC{'_}
     "
     );
     Ok(())

@@ -443,3 +443,17 @@ pub fn show_faint() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_italic() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += codes::ITALIC;
+    buf += "italic text";
+
+    buf += codes::RESET_ITALIC;
+    buf += " normal text";
+
+    println!("{buf}");
+
+    Ok(())
+}

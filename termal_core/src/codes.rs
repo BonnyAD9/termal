@@ -1104,7 +1104,28 @@ pub const BOLD: &str = graphic!(1);
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/faint.png)
 pub const FAINT: &str = graphic!(2);
-/// Set italic mode
+/// Set italic mode.
+///
+/// This mode can be reset with [`RESET_ITALIC`] or [`RESET`]. Note that
+/// [`RESET`] will reset all text modes.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::ITALIC;
+/// buf += "italic text";
+///
+/// buf += codes::RESET_ITALIC;
+/// buf += " normal text";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/italic.png)
 pub const ITALIC: &str = graphic!(3);
 /// Set underline mode
 pub const UNDERLINE: &str = graphic!(4);
@@ -1123,7 +1144,25 @@ pub const OVERLINE: &str = graphic!(53);
 
 /// Reset [`BOLD`] and [`FAINT`] mode
 pub const RESET_BOLD: &str = graphic!(22);
-/// Reset [`ITALIC`] mode
+/// Reset [`ITALIC`] mode.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::ITALIC;
+/// buf += "italic text";
+///
+/// buf += codes::RESET_ITALIC;
+/// buf += " normal text";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/italic.png)
 pub const RESET_ITALIC: &str = graphic!(23);
 /// Reset [`UNDERLINE`] and [`DOUBLE_UNDERLINE`] mode
 pub const RESET_UNDERLINE: &str = graphic!(24);
