@@ -1038,6 +1038,9 @@ pub const RESET: &str = graphic!(0);
 /// [`RESET_BOLD`] will also reset [`FAINT`] and [`RESET`] will reset all text
 /// modes.
 ///
+/// In some terminals, [`BOLD`] and [`FAINT`] are exclusive (e.g. konsole), in
+/// others they can be combined (e.g. vscode terminal).
+///
 /// # Example
 /// ```no_run
 /// use termal_core::codes;
@@ -1068,6 +1071,9 @@ pub const BOLD: &str = graphic!(1);
 /// and it doesn't work for 256 or true RGB colors (e.g. konsole). In other
 /// terminals, the dim color is calculated from the current color and so it
 /// also works for 256 and true RGB colors (e.g. vscode terminal).
+///
+/// In some terminals, [`FAINT`] and [`BOLD`] are exclusive (e.g. konsole), in
+/// others they can be combined (e.g. vscode terminal).
 ///
 /// # Example
 /// ```no_run
@@ -1127,7 +1133,29 @@ pub const FAINT: &str = graphic!(2);
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/italic.png)
 pub const ITALIC: &str = graphic!(3);
-/// Set underline mode
+/// Set underline mode.
+///
+/// This mode can be reset with [`RESET_UNDERLINE`] or [`RESET`]. Note that
+/// [`RESET_UNDERLINE`] will also reset [`DOUBLE_UNDERLINE`] and [`RESET`] will
+/// reset all text modes.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::UNDERLINE;
+/// buf += "underline text";
+///
+/// buf += codes::RESET_UNDERLINE;
+/// buf += " normal text";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/underline.png)
 pub const UNDERLINE: &str = graphic!(4);
 /// Set blinking mode
 pub const BLINKING: &str = graphic!(5);

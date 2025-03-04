@@ -457,3 +457,17 @@ pub fn show_italic() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_underline() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += codes::UNDERLINE;
+    buf += "underline text";
+
+    buf += codes::RESET_UNDERLINE;
+    buf += " normal text";
+
+    println!("{buf}");
+
+    Ok(())
+}

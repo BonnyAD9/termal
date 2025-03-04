@@ -60,6 +60,7 @@ fn single(name: &str) -> Result<()> {
         "codes::BOLD" => codes::show_bold(),
         "codes::FAINT" => codes::show_faint(),
         "codes::ITALIC" => codes::show_italic(),
+        "codes::UNDERLINE" => codes::show_underline(),
         "codes::RESET_ITALIC" => codes::show_italic(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
@@ -130,6 +131,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}BOLD{'_}
   {'c}codes{'y}::{'w bold}FAINT{'_}
   {'c}codes{'y}::{'w bold}ITALIC{'_}
+  {'c}codes{'y}::{'w bold}UNDERLINE{'_}
   {'c}codes{'y}::{'w bold}RESET_ITALIC{'_}
     "
     );
