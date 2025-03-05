@@ -1159,6 +1159,8 @@ pub const ITALIC: &str = graphic!(3);
 pub const UNDERLINE: &str = graphic!(4);
 /// Set blinking mode.
 ///
+/// Doesn't affect background color (only foreground).
+///
 /// This mode can be reset with [`RESET_BLINKING`] or [`RESET`]. Note that
 /// [`RESET`] will reset all text modes.
 ///
