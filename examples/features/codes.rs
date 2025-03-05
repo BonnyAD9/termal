@@ -471,3 +471,17 @@ pub fn show_underline() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_blinking() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += codes::BLINKING;
+    buf += "blinking text";
+
+    buf += codes::RESET_BLINKING;
+    buf += " normal text";
+
+    println!("{buf}");
+
+    Ok(())
+}

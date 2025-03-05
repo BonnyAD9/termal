@@ -1157,7 +1157,28 @@ pub const ITALIC: &str = graphic!(3);
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/underline.png)
 pub const UNDERLINE: &str = graphic!(4);
-/// Set blinking mode
+/// Set blinking mode.
+///
+/// This mode can be reset with [`RESET_BLINKING`] or [`RESET`]. Note that
+/// [`RESET`] will reset all text modes.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::BLINKING;
+/// buf += "blinking text";
+///
+/// buf += codes::RESET_BLINKING;
+/// buf += " normal text";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/blinking.gif)
 pub const BLINKING: &str = graphic!(5);
 /// Set inverse mode (inverse foreground and background)
 pub const INVERSE: &str = graphic!(7);
@@ -1194,7 +1215,25 @@ pub const RESET_BOLD: &str = graphic!(22);
 pub const RESET_ITALIC: &str = graphic!(23);
 /// Reset [`UNDERLINE`] and [`DOUBLE_UNDERLINE`] mode
 pub const RESET_UNDERLINE: &str = graphic!(24);
-/// Reset [`BLINKING`] mode
+/// Reset [`BLINKING`] mode.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::BLINKING;
+/// buf += "blinking text";
+///
+/// buf += codes::RESET_BLINKING;
+/// buf += " normal text";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/blinking.gif)
 pub const RESET_BLINKING: &str = graphic!(25);
 /// Reset [`INVERSE`] mode
 pub const RESET_INVERSE: &str = graphic!(27);
