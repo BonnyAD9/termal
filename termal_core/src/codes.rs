@@ -1182,7 +1182,28 @@ pub const UNDERLINE: &str = graphic!(4);
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/blinking.gif)
 pub const BLINKING: &str = graphic!(5);
-/// Set inverse mode (inverse foreground and background)
+/// Set inverse mode (inverse foreground and background).
+///
+/// This mode can be reset with [`RESET_INVERSE`] or [`RESET`]. Note that
+/// [`RESET`] will reset all text modes.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::INVERSE;
+/// buf += "inverse text";
+///
+/// buf += codes::RESET_INVERSE;
+/// buf += " normal text";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/inverse.png)
 pub const INVERSE: &str = graphic!(7);
 /// Set invisible mode (foreground is same as background)
 pub const INVISIBLE: &str = graphic!(8);
@@ -1237,7 +1258,25 @@ pub const RESET_UNDERLINE: &str = graphic!(24);
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/blinking.gif)
 pub const RESET_BLINKING: &str = graphic!(25);
-/// Reset [`INVERSE`] mode
+/// Reset [`INVERSE`] mode.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::INVERSE;
+/// buf += "inverse text";
+///
+/// buf += codes::RESET_INVERSE;
+/// buf += " normal text";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/inverse.png)
 pub const RESET_INVERSE: &str = graphic!(27);
 /// Reset [`INVISIBLE`] mode
 pub const RESET_INVISIBLE: &str = graphic!(28);

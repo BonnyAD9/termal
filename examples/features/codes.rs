@@ -485,3 +485,17 @@ pub fn show_blinking() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_inverse() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += codes::INVERSE;
+    buf += "inverse text";
+
+    buf += codes::RESET_INVERSE;
+    buf += " normal text";
+
+    println!("{buf}");
+
+    Ok(())
+}
