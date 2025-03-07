@@ -1205,7 +1205,32 @@ pub const BLINKING: &str = graphic!(5);
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/inverse.png)
 pub const INVERSE: &str = graphic!(7);
-/// Set invisible mode (foreground is same as background)
+/// Set invisible mode.
+///
+/// This mode can be reset with [`RESET_INVISIBLE`] or [`RESET`]. Note that
+/// [`RESET`] will reset all text modes.
+///
+/// Some terminals just set the foreground color to the background color. This
+/// means that the text may actually be visible if the background color is not
+/// solid. Other terminals will just not show the text (e.g. konsole).
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::INVISIBLE;
+/// buf += "invisible text";
+///
+/// buf += codes::RESET_INVISIBLE;
+/// buf += " normal text";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/invisible.png)
 pub const INVISIBLE: &str = graphic!(8);
 /// Set striketrough mode
 pub const STRIKETROUGH: &str = graphic!(9);
@@ -1278,7 +1303,25 @@ pub const RESET_BLINKING: &str = graphic!(25);
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/inverse.png)
 pub const RESET_INVERSE: &str = graphic!(27);
-/// Reset [`INVISIBLE`] mode
+/// Reset [`INVISIBLE`] mode.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::INVISIBLE;
+/// buf += "invisible text";
+///
+/// buf += codes::RESET_INVISIBLE;
+/// buf += " normal text";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/invisible.png)
 pub const RESET_INVISIBLE: &str = graphic!(28);
 /// Reset [`STRIKETROUGH`] mode
 pub const RESET_STRIKETROUGH: &str = graphic!(29);

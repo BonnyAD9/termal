@@ -499,3 +499,17 @@ pub fn show_inverse() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_invisible() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += codes::INVISIBLE;
+    buf += "invisible text";
+
+    buf += codes::RESET_INVISIBLE;
+    buf += " normal text";
+
+    println!("{buf}");
+
+    Ok(())
+}
