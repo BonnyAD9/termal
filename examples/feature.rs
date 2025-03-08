@@ -64,10 +64,12 @@ fn single(name: &str) -> Result<()> {
         "codes::BLINKING" => codes::show_blinking(),
         "codes::INVERSE" => codes::show_inverse(),
         "codes::INVISIBLE" => codes::show_invisible(),
+        "codes::STRIKETROUGH" => codes::show_strigetrough(),
         "codes::RESET_ITALIC" => codes::show_italic(),
         "codes::RESET_BLINKING" => codes::show_blinking(),
         "codes::RESET_INVERSE" => codes::show_inverse(),
         "codes::RESET_INVISIBLE" => codes::show_invisible(),
+        "codes::RESET_STRIKETROUGH" => codes::show_strigetrough(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -141,10 +143,12 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}BLINKING{'_}
   {'c}codes{'y}::{'w bold}INVERSE{'_}
   {'c}codes{'y}::{'w bold}INVISIBLE{'_}
+  {'c}codes{'y}::{'w bold}STRIKETROUGH{'_}
   {'c}codes{'y}::{'w bold}RESET_ITALIC{'_}
   {'c}codes{'y}::{'w bold}RESET_BLINKING{'_}
   {'c}codes{'y}::{'w bold}RESET_INVERSE{'_}
   {'c}codes{'y}::{'w bold}RESET_INVISIBLE{'_}
+  {'c}codes{'y}::{'w bold}RESET_STRIKETROUGH{'_}
     "
     );
     Ok(())

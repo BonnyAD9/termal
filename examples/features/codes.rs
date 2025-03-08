@@ -513,3 +513,17 @@ pub fn show_invisible() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_strigetrough() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += codes::STRIKETROUGH;
+    buf += "striketrough text";
+
+    buf += codes::RESET_STRIKETROUGH;
+    buf += " normal text";
+
+    println!("{buf}");
+
+    Ok(())
+}

@@ -1232,7 +1232,28 @@ pub const INVERSE: &str = graphic!(7);
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/invisible.png)
 pub const INVISIBLE: &str = graphic!(8);
-/// Set striketrough mode
+/// Set striketrough mode.
+///
+/// This mode can be reset with [`RESET_STRIKETROUGH`] or [`RESET`]. Note that
+/// [`RESET`] will reset all text modes.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::STRIKETROUGH;
+/// buf += "striketrough text";
+///
+/// buf += codes::RESET_STRIKETROUGH;
+/// buf += " normal text";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/striketrough.png)
 pub const STRIKETROUGH: &str = graphic!(9);
 /// Set double underline mode
 pub const DOUBLE_UNDERLINE: &str = graphic!(21);
@@ -1323,7 +1344,25 @@ pub const RESET_INVERSE: &str = graphic!(27);
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/invisible.png)
 pub const RESET_INVISIBLE: &str = graphic!(28);
-/// Reset [`STRIKETROUGH`] mode
+/// Reset [`STRIKETROUGH`] mode.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::STRIKETROUGH;
+/// buf += "striketrough text";
+///
+/// buf += codes::RESET_STRIKETROUGH;
+/// buf += " normal text";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/striketrough.png)
 pub const RESET_STRIKETROUGH: &str = graphic!(29);
 /// Reset [`OVERLINE`] mode.
 pub const RESET_OVERLINE: &str = graphic!(55);
