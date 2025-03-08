@@ -100,5 +100,8 @@ pub fn wait_for_stdin(timeout: Duration) -> Result<bool> {
     return windows::wait_for_stdin(timeout);
 
     #[allow(unreachable_code)]
-    Err(Error::NotSupportedOnPlatform("stdin timeout"))
+    {
+        _ = timeout;
+        Err(Error::NotSupportedOnPlatform("stdin timeout"))
+    }
 }
