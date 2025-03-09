@@ -164,7 +164,7 @@ impl Handle {
 
 impl Drop for Handle {
     fn drop(&mut self) {
-        if self.close && unsafe { CloseHandle(self.handle) != 0 } {
+        if self.close && unsafe { CloseHandle(self.handle) == 0 } {
             panic!("Failed to close handle: {}", io::Error::last_os_error());
         }
     }
