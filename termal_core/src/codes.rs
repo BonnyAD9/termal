@@ -1255,7 +1255,29 @@ pub const INVISIBLE: &str = graphic!(8);
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/striketrough.png)
 pub const STRIKETROUGH: &str = graphic!(9);
-/// Set double underline mode
+/// Set double underline mode.
+///
+/// This mode can be reset with [`RESET_UNDERLINE`] or [`RESET`]. Note that
+/// [`RESET_UNDERLINE`] will also reset [`UNDERLINE`] and [`RESET`] will reset
+/// all text modes.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::DOUBLE_UNDERLINE;
+/// buf += "double underline text";
+///
+/// buf += codes::RESET_UNDERLINE;
+/// buf += " normal text";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/double_underline.png)
 pub const DOUBLE_UNDERLINE: &str = graphic!(21);
 /// Set ouverline mode
 pub const OVERLINE: &str = graphic!(53);

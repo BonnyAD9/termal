@@ -527,3 +527,17 @@ pub fn show_strigetrough() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_double_underline() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += codes::DOUBLE_UNDERLINE;
+    buf += "double underline text";
+
+    buf += codes::RESET_UNDERLINE;
+    buf += " normal text";
+
+    println!("{buf}");
+
+    Ok(())
+}

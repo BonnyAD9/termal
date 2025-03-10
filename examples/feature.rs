@@ -65,6 +65,7 @@ fn single(name: &str) -> Result<()> {
         "codes::INVERSE" => codes::show_inverse(),
         "codes::INVISIBLE" => codes::show_invisible(),
         "codes::STRIKETROUGH" => codes::show_strigetrough(),
+        "codes::DOUBLE_UNDERLINE" => codes::show_double_underline(),
         "codes::RESET_ITALIC" => codes::show_italic(),
         "codes::RESET_BLINKING" => codes::show_blinking(),
         "codes::RESET_INVERSE" => codes::show_inverse(),
@@ -144,6 +145,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}INVERSE{'_}
   {'c}codes{'y}::{'w bold}INVISIBLE{'_}
   {'c}codes{'y}::{'w bold}STRIKETROUGH{'_}
+  {'c}codes{'y}::{'w bold}DOUBLE_UNDERLINE{'_}
   {'c}codes{'y}::{'w bold}RESET_ITALIC{'_}
   {'c}codes{'y}::{'w bold}RESET_BLINKING{'_}
   {'c}codes{'y}::{'w bold}RESET_INVERSE{'_}
