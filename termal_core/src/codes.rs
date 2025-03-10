@@ -1279,7 +1279,28 @@ pub const STRIKETROUGH: &str = graphic!(9);
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/double_underline.png)
 pub const DOUBLE_UNDERLINE: &str = graphic!(21);
-/// Set ouverline mode
+/// Set ouverline mode.
+///
+/// This mode can be reset with [`RESET_OVERLINE`] or [`RESET`]. Note that
+/// [`RESET`] will reset all text modes.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::OVERLINE;
+/// buf += "overline text";
+///
+/// buf += codes::RESET_OVERLNIE;
+/// buf += " normal text";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/overline.png)
 pub const OVERLINE: &str = graphic!(53);
 
 /// Reset [`BOLD`] and [`FAINT`] mode
@@ -1387,6 +1408,24 @@ pub const RESET_INVISIBLE: &str = graphic!(28);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/striketrough.png)
 pub const RESET_STRIKETROUGH: &str = graphic!(29);
 /// Reset [`OVERLINE`] mode.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::OVERLINE;
+/// buf += "overline text";
+///
+/// buf += codes::RESET_OVERLNIE;
+/// buf += " normal text";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/overline.png)
 pub const RESET_OVERLINE: &str = graphic!(55);
 
 /// Set the foreground color to black (dark black)

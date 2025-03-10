@@ -541,3 +541,17 @@ pub fn show_double_underline() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_overline() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += codes::OVERLINE;
+    buf += "overline text";
+
+    buf += codes::RESET_OVERLINE;
+    buf += " normal text";
+
+    println!("{buf}");
+
+    Ok(())
+}
