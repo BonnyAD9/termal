@@ -1303,7 +1303,29 @@ pub const DOUBLE_UNDERLINE: &str = graphic!(21);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/overline.png)
 pub const OVERLINE: &str = graphic!(53);
 
-/// Reset [`BOLD`] and [`FAINT`] mode
+/// Reset [`BOLD`] and [`FAINT`] mode.
+///
+/// # Example
+/// ```no_run
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::BOLD;
+/// buf += "bold text";
+///
+/// buf += codes::RESET_BOLD;
+/// buf += " normal text\n";
+///
+/// buf += codes::FAINT;
+/// buf += "faint text";
+///
+/// buf += codes::RESET_BOLD;
+/// buf += " normal text";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/reset_bold.png)
 pub const RESET_BOLD: &str = graphic!(22);
 /// Reset [`ITALIC`] mode.
 ///

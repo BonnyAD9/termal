@@ -555,3 +555,23 @@ pub fn show_overline() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_reset_bold() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += codes::BOLD;
+    buf += "bold text";
+
+    buf += codes::RESET_BOLD;
+    buf += " normal text\n";
+
+    buf += codes::FAINT;
+    buf += "faint text";
+
+    buf += codes::RESET_BOLD;
+    buf += " normal text";
+
+    println!("{buf}");
+
+    Ok(())
+}
