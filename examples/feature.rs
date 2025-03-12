@@ -69,6 +69,7 @@ fn single(name: &str) -> Result<()> {
         "codes::OVERLINE" => codes::show_overline(),
         "codes::RESET_BOLD" => codes::show_reset_bold(),
         "codes::RESET_ITALIC" => codes::show_italic(),
+        "codes::RESET_UNDERLINE" => codes::show_reset_underline(),
         "codes::RESET_BLINKING" => codes::show_blinking(),
         "codes::RESET_INVERSE" => codes::show_inverse(),
         "codes::RESET_INVISIBLE" => codes::show_invisible(),
@@ -152,6 +153,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}OVERLINE{'_}
   {'c}codes{'y}::{'w bold}RESET_BOLD{'_}
   {'c}codes{'y}::{'w bold}RESET_ITALIC{'_}
+  {'c}codes{'y}::{'w bold}RESET_UNDERLINE{'_}
   {'c}codes{'y}::{'w bold}RESET_BLINKING{'_}
   {'c}codes{'y}::{'w bold}RESET_INVERSE{'_}
   {'c}codes{'y}::{'w bold}RESET_INVISIBLE{'_}

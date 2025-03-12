@@ -1307,6 +1307,8 @@ pub const OVERLINE: &str = graphic!(53);
 ///
 /// # Example
 /// ```no_run
+/// use termal_core::codes;
+///
 /// let mut buf = codes::CLEAR.to_string();
 ///
 /// buf += codes::BOLD;
@@ -1347,7 +1349,31 @@ pub const RESET_BOLD: &str = graphic!(22);
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/italic.png)
 pub const RESET_ITALIC: &str = graphic!(23);
-/// Reset [`UNDERLINE`] and [`DOUBLE_UNDERLINE`] mode
+/// Reset [`UNDERLINE`] and [`DOUBLE_UNDERLINE`] mode.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::UNDERLINE;
+/// buf += "underline text";
+///
+/// buf += codes::RESET_UNDERLINE;
+/// buf += " normal text\n";
+///
+/// buf += codes::DOUBLE_UNDERLINE;
+/// buf += "double underline";
+///
+/// buf += codes::RESET_UNDERLINE;
+/// buf += " normal text";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/reset_underline.png)
 pub const RESET_UNDERLINE: &str = graphic!(24);
 /// Reset [`BLINKING`] mode.
 ///

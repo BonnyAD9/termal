@@ -575,3 +575,23 @@ pub fn show_reset_bold() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_reset_underline() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += codes::UNDERLINE;
+    buf += "underline text";
+
+    buf += codes::RESET_UNDERLINE;
+    buf += " normal text\n";
+
+    buf += codes::DOUBLE_UNDERLINE;
+    buf += "double underline";
+
+    buf += codes::RESET_UNDERLINE;
+    buf += " normal text";
+
+    println!("{buf}");
+
+    Ok(())
+}
