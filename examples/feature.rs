@@ -75,6 +75,8 @@ fn single(name: &str) -> Result<()> {
         "codes::RESET_INVISIBLE" => codes::show_invisible(),
         "codes::RESET_STRIKETROUGH" => codes::show_strigetrough(),
         "codes::RESET_OVERLINE" => codes::show_overline(),
+        "codes::BLACK_FG" => codes::show_black_fg(),
+        "codes::WHITE_FG" => codes::show_black_fg(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -159,6 +161,8 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}RESET_INVISIBLE{'_}
   {'c}codes{'y}::{'w bold}RESET_STRIKETROUGH{'_}
   {'c}codes{'y}::{'w bold}RESET_OVERLINE{'_}
+  {'c}codes{'y}::{'w bold}BLACK_FG{'_}
+  {'c}codes{'y}::{'w bold}WHITE_FG{'_}
     "
     );
     Ok(())

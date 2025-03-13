@@ -595,3 +595,26 @@ pub fn show_reset_underline() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_black_fg() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += "normal";
+    buf += codes::BLACK_FG;
+    buf += " black";
+    buf += codes::WHITE_FG;
+    buf += " white\n";
+    buf += codes::RESET_FG;
+
+    buf += codes::FAINT;
+    buf += "faint ";
+    buf += codes::BLACK_FG;
+    buf += " black";
+    buf += codes::WHITE_FG;
+    buf += " white";
+    buf += codes::RESET;
+
+    println!("{buf}");
+
+    Ok(())
+}

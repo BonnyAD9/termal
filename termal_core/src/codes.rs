@@ -1293,7 +1293,7 @@ pub const DOUBLE_UNDERLINE: &str = graphic!(21);
 /// buf += codes::OVERLINE;
 /// buf += "overline text";
 ///
-/// buf += codes::RESET_OVERLNIE;
+/// buf += codes::RESET_OVERLINE;
 /// buf += " normal text";
 ///
 /// println!("{buf}");
@@ -1466,7 +1466,7 @@ pub const RESET_STRIKETROUGH: &str = graphic!(29);
 /// buf += codes::OVERLINE;
 /// buf += "overline text";
 ///
-/// buf += codes::RESET_OVERLNIE;
+/// buf += codes::RESET_OVERLINE;
 /// buf += " normal text";
 ///
 /// println!("{buf}");
@@ -1476,9 +1476,63 @@ pub const RESET_STRIKETROUGH: &str = graphic!(29);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/overline.png)
 pub const RESET_OVERLINE: &str = graphic!(55);
 
-/// Set the foreground color to black (dark black)
+/// Set the foreground color to black (dark black).
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += "normal";
+/// buf += codes::BLACK_FG;
+/// buf += " black";
+/// buf += codes::WHITE_FG;
+/// buf += " white\n";
+/// buf += codes::RESET_FG;
+///
+/// buf += codes::FAINT;
+/// buf += "faint ";
+/// buf += codes::BLACK_FG;
+/// buf += " black";
+/// buf += codes::WHITE_FG;
+/// buf += " white";
+/// buf += codes::RESET;
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/black_fg.png)
 pub const BLACK_FG: &str = graphic!(30);
-/// Set the foreground color to white (bright white)
+/// Set the foreground color to white (bright white).
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += "normal";
+/// buf += codes::BLACK_FG;
+/// buf += " black";
+/// buf += codes::WHITE_FG;
+/// buf += " white\n";
+/// buf += codes::RESET_FG;
+///
+/// buf += codes::FAINT;
+/// buf += "faint ";
+/// buf += codes::BLACK_FG;
+/// buf += " black";
+/// buf += codes::WHITE_FG;
+/// buf += " white";
+/// buf += codes::RESET;
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/black_fg.png)
 pub const WHITE_FG: &str = graphic!(97);
 /// Set the foreground color to gray (bright black)
 pub const GRAY_FG: &str = graphic!(90);
