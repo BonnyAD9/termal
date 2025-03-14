@@ -1478,6 +1478,9 @@ pub const RESET_OVERLINE: &str = graphic!(55);
 
 /// Set the foreground color to black (dark black).
 ///
+/// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
+/// [`RESET`] will also reset all text modes.
+///
 /// # Example
 /// ```no_run
 /// use termal_core::codes;
@@ -1506,6 +1509,9 @@ pub const RESET_OVERLINE: &str = graphic!(55);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/black_fg.png)
 pub const BLACK_FG: &str = graphic!(30);
 /// Set the foreground color to white (bright white).
+///
+/// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
+/// [`RESET`] will also reset all text modes.
 ///
 /// # Example
 /// ```no_run
@@ -1536,6 +1542,9 @@ pub const BLACK_FG: &str = graphic!(30);
 pub const WHITE_FG: &str = graphic!(97);
 /// Set the foreground color to gray (bright black).
 ///
+/// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
+/// [`RESET`] will also reset all text modes.
+///
 /// # Example
 /// ```no_run
 /// use termal_core::codes;
@@ -1564,6 +1573,9 @@ pub const WHITE_FG: &str = graphic!(97);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/gray_fg.png)
 pub const GRAY_FG: &str = graphic!(90);
 /// Set to foreground color to bright gray (dark white).
+///
+/// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
+/// [`RESET`] will also reset all text modes.
 ///
 /// # Example
 /// ```no_run
