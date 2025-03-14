@@ -1534,9 +1534,63 @@ pub const BLACK_FG: &str = graphic!(30);
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/black_fg.png)
 pub const WHITE_FG: &str = graphic!(97);
-/// Set the foreground color to gray (bright black)
+/// Set the foreground color to gray (bright black).
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += "normal";
+/// buf += codes::GRAY_FG;
+/// buf += " gray";
+/// buf += codes::GRAY_BRIGHT_FG;
+/// buf += " bright\n";
+/// buf += codes::RESET_FG;
+///
+/// buf += codes::FAINT;
+/// buf += "faint ";
+/// buf += codes::GRAY_FG;
+/// buf += " gray";
+/// buf += codes::GRAY_BRIGHT_FG;
+/// buf += " bright";
+/// buf += codes::RESET;
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/gray_fg.png)
 pub const GRAY_FG: &str = graphic!(90);
-/// Set to foreground color to bright gray (dark white)
+/// Set to foreground color to bright gray (dark white).
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += "normal";
+/// buf += codes::GRAY_FG;
+/// buf += " gray";
+/// buf += codes::GRAY_BRIGHT_FG;
+/// buf += " bright\n";
+/// buf += codes::RESET_FG;
+///
+/// buf += codes::FAINT;
+/// buf += "faint ";
+/// buf += codes::GRAY_FG;
+/// buf += " gray";
+/// buf += codes::GRAY_BRIGHT_FG;
+/// buf += " bright";
+/// buf += codes::RESET;
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/gray_fg.png)
 pub const GRAY_BRIGHT_FG: &str = graphic!(37);
 
 /// Set the foreground color to red (bright red)

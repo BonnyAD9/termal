@@ -77,6 +77,8 @@ fn single(name: &str) -> Result<()> {
         "codes::RESET_OVERLINE" => codes::show_overline(),
         "codes::BLACK_FG" => codes::show_black_fg(),
         "codes::WHITE_FG" => codes::show_black_fg(),
+        "codes::GRAY_FG" => codes::show_gray_fg(),
+        "codes::GRAY_BRIGHT_FG" => codes::show_gray_fg(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -163,6 +165,8 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}RESET_OVERLINE{'_}
   {'c}codes{'y}::{'w bold}BLACK_FG{'_}
   {'c}codes{'y}::{'w bold}WHITE_FG{'_}
+  {'c}codes{'y}::{'w bold}GRAY_FG{'_}
+  {'c}codes{'y}::{'w bold}GRAY_BRIGHT_FG{'_}
     "
     );
     Ok(())
