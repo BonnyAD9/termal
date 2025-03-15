@@ -1605,7 +1605,37 @@ pub const GRAY_FG: &str = graphic!(90);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/gray_fg.png)
 pub const GRAY_BRIGHT_FG: &str = graphic!(37);
 
-/// Set the foreground color to red (bright red)
+/// Set the foreground color to red (bright red).
+///
+/// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
+/// [`RESET`] will also reset all text modes.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += "normal";
+/// buf += codes::RED_FG;
+/// buf += " red";
+/// buf += codes::RED_DARK_FG;
+/// buf += " dark\n";
+/// buf += codes::RESET_FG;
+///
+/// buf += codes::FAINT;
+/// buf += "faint ";
+/// buf += codes::RED_FG;
+/// buf += " red";
+/// buf += codes::RED_DARK_FG;
+/// buf += " dark";
+/// buf += codes::RESET;
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/red_fg.png)
 pub const RED_FG: &str = graphic!(91);
 /// Set the foreground color to green (bright green)
 pub const GREEN_FG: &str = graphic!(92);
@@ -1618,7 +1648,37 @@ pub const MAGENTA_FG: &str = graphic!(95);
 /// Set the foreground color to cyan (bright cyan)
 pub const CYAN_FG: &str = graphic!(96);
 
-/// Set the foreground color to dark red
+/// Set the foreground color to dark red.
+///
+/// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
+/// [`RESET`] will also reset all text modes.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += "normal";
+/// buf += codes::RED_FG;
+/// buf += " red";
+/// buf += codes::RED_DARK_FG;
+/// buf += " dark\n";
+/// buf += codes::RESET_FG;
+///
+/// buf += codes::FAINT;
+/// buf += "faint ";
+/// buf += codes::RED_FG;
+/// buf += " red";
+/// buf += codes::RED_DARK_FG;
+/// buf += " dark";
+/// buf += codes::RESET;
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/red_fg.png)
 pub const RED_DARK_FG: &str = graphic!(31);
 /// Set the foreground color to dark green
 pub const GREEN_DARK_FG: &str = graphic!(32);
