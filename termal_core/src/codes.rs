@@ -1667,7 +1667,7 @@ pub const RED_FG: &str = graphic!(91);
 /// ```
 ///
 /// ## Result in terminal
-/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/red_fg.png)
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/green_fg.png)
 pub const GREEN_FG: &str = graphic!(92);
 /// Set the foreground color to yellow (bright yellow)
 pub const YELLOW_FG: &str = graphic!(93);
@@ -1708,7 +1708,7 @@ pub const CYAN_FG: &str = graphic!(96);
 /// ```
 ///
 /// ## Result in terminal
-/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/green_fg.png)
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/red_fg.png)
 pub const RED_DARK_FG: &str = graphic!(31);
 /// Set the foreground color to dark green.
 ///
