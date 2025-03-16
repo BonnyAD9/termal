@@ -643,20 +643,30 @@ pub fn show_gray_fg() -> Result<()> {
 }
 
 pub fn show_red_fg() -> Result<()> {
+    show_color_fg("red", codes::RED_FG, codes::RED_DARK_FG)
+}
+
+pub fn show_green_fg() -> Result<()> {
+    show_color_fg("green", codes::GREEN_FG, codes::GREEN_DARK_FG)
+}
+
+pub fn show_color_fg(n: &str, b: &str, d: &str) -> Result<()> {
     let mut buf = codes::CLEAR.to_string();
 
     buf += "normal";
-    buf += codes::RED_FG;
-    buf += " red";
-    buf += codes::RED_DARK_FG;
+    buf += b;
+    buf += " ";
+    buf += n;
+    buf += d;
     buf += " dark\n";
     buf += codes::RESET_FG;
 
     buf += codes::FAINT;
     buf += "faint ";
-    buf += codes::RED_FG;
-    buf += " red";
-    buf += codes::RED_DARK_FG;
+    buf += b;
+    buf += " ";
+    buf += n;
+    buf += d;
     buf += " dark";
     buf += codes::RESET;
 

@@ -1637,7 +1637,37 @@ pub const GRAY_BRIGHT_FG: &str = graphic!(37);
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/red_fg.png)
 pub const RED_FG: &str = graphic!(91);
-/// Set the foreground color to green (bright green)
+/// Set the foreground color to green (bright green).
+///
+/// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
+/// [`RESET`] will also reset all text modes.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += "normal";
+/// buf += codes::GREEN_FG;
+/// buf += " green";
+/// buf += codes::GREEN_DARK_FG;
+/// buf += " dark\n";
+/// buf += codes::RESET_FG;
+///
+/// buf += codes::FAINT;
+/// buf += "faint ";
+/// buf += codes::GREEN_FG;
+/// buf += " green";
+/// buf += codes::GREEN_DARK_FG;
+/// buf += " dark";
+/// buf += codes::RESET;
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/red_fg.png)
 pub const GREEN_FG: &str = graphic!(92);
 /// Set the foreground color to yellow (bright yellow)
 pub const YELLOW_FG: &str = graphic!(93);
@@ -1678,9 +1708,39 @@ pub const CYAN_FG: &str = graphic!(96);
 /// ```
 ///
 /// ## Result in terminal
-/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/red_fg.png)
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/green_fg.png)
 pub const RED_DARK_FG: &str = graphic!(31);
-/// Set the foreground color to dark green
+/// Set the foreground color to dark green.
+///
+/// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
+/// [`RESET`] will also reset all text modes.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += "normal";
+/// buf += codes::GREEN_FG;
+/// buf += " green";
+/// buf += codes::GREEN_DARK_FG;
+/// buf += " dark\n";
+/// buf += codes::RESET_FG;
+///
+/// buf += codes::FAINT;
+/// buf += "faint ";
+/// buf += codes::GREEN_FG;
+/// buf += " green";
+/// buf += codes::GREEN_DARK_FG;
+/// buf += " dark";
+/// buf += codes::RESET;
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/green_fg.png)
 pub const GREEN_DARK_FG: &str = graphic!(32);
 /// Set the foreground color to dark yellow
 pub const YELLOW_DARK_FG: &str = graphic!(33);

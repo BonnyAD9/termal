@@ -80,7 +80,9 @@ fn single(name: &str) -> Result<()> {
         "codes::GRAY_FG" => codes::show_gray_fg(),
         "codes::GRAY_BRIGHT_FG" => codes::show_gray_fg(),
         "codes::RED_FG" => codes::show_red_fg(),
+        "codes::GREEN_FG" => codes::show_green_fg(),
         "codes::RED_DARK_FG" => codes::show_red_fg(),
+        "codes::GREEN_DARK_FG" => codes::show_green_fg(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -170,7 +172,9 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}GRAY_FG{'_}
   {'c}codes{'y}::{'w bold}GRAY_BRIGHT_FG{'_}
   {'c}codes{'y}::{'w bold}RED_FG{'_}
+  {'c}codes{'y}::{'w bold}GREEN_FG{'_}
   {'c}codes{'y}::{'w bold}RED_DARK_FG{'_}
+  {'c}codes{'y}::{'w bold}GREEN_DARK_FG{'_}
     "
     );
     Ok(())
