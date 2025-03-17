@@ -650,6 +650,10 @@ pub fn show_green_fg() -> Result<()> {
     show_color_fg("green", codes::GREEN_FG, codes::GREEN_DARK_FG)
 }
 
+pub fn show_yellow_fg() -> Result<()> {
+    show_color_fg("yellow", codes::YELLOW_FG, codes::YELLOW_DARK_FG)
+}
+
 pub fn show_color_fg(n: &str, b: &str, d: &str) -> Result<()> {
     let mut buf = codes::CLEAR.to_string();
 
