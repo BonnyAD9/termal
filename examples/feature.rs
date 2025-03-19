@@ -83,10 +83,12 @@ fn single(name: &str) -> Result<()> {
         "codes::GREEN_FG" => codes::show_green_fg(),
         "codes::YELLOW_FG" => codes::show_yellow_fg(),
         "codes::BLUE_FG" => codes::show_blue_fg(),
+        "codes::MAGENTA_FG" => codes::show_magenta_fg(),
         "codes::RED_DARK_FG" => codes::show_red_fg(),
         "codes::GREEN_DARK_FG" => codes::show_green_fg(),
         "codes::YELLOW_DARK_FG" => codes::show_yellow_fg(),
         "codes::BLUE_DARK_FG" => codes::show_blue_fg(),
+        "codes::MAGENTA_DARK_FG" => codes::show_magenta_fg(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -179,10 +181,12 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}GREEN_FG{'_}
   {'c}codes{'y}::{'w bold}YELLOW_FG{'_}
   {'c}codes{'y}::{'w bold}BLUE_FG{'_}
+  {'c}codes{'y}::{'w bold}MAGENTA_FG{'_}
   {'c}codes{'y}::{'w bold}RED_DARK_FG{'_}
   {'c}codes{'y}::{'w bold}GREEN_DARK_FG{'_}
   {'c}codes{'y}::{'w bold}YELLOW_DARK_FG{'_}
   {'c}codes{'y}::{'w bold}BLUE_DARK_FG{'_}
+  {'c}codes{'y}::{'w bold}MAGENTA_DARK_FG{'_}
     "
     );
     Ok(())

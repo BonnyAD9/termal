@@ -1733,7 +1733,37 @@ pub const YELLOW_FG: &str = graphic!(93);
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/blue_fg.png)
 pub const BLUE_FG: &str = graphic!(94);
-/// Set the foreground color to magenta (bright magenta)
+/// Set the foreground color to magenta (bright magenta).
+///
+/// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
+/// [`RESET`] will also reset all text modes.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += "normal";
+/// buf += codes::MAGENTA_FG;
+/// buf += " magenta";
+/// buf += codes::MAGENTA_DARK_FG;
+/// buf += " dark\n";
+/// buf += codes::RESET_FG;
+///
+/// buf += codes::FAINT;
+/// buf += "faint ";
+/// buf += codes::MAGENTA_FG;
+/// buf += " magenta";
+/// buf += codes::MAGENTA_DARK_FG;
+/// buf += " dark";
+/// buf += codes::RESET;
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/magenta_fg.png)
 pub const MAGENTA_FG: &str = graphic!(95);
 /// Set the foreground color to cyan (bright cyan)
 pub const CYAN_FG: &str = graphic!(96);
@@ -1866,7 +1896,37 @@ pub const YELLOW_DARK_FG: &str = graphic!(33);
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/blue_fg.png)
 pub const BLUE_DARK_FG: &str = graphic!(34);
-/// Set the foreground color to dark magenta
+/// Set the foreground color to dark magenta.
+///
+/// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
+/// [`RESET`] will also reset all text modes.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += "normal";
+/// buf += codes::MAGENTA_FG;
+/// buf += " magenta";
+/// buf += codes::MAGENTA_DARK_FG;
+/// buf += " dark\n";
+/// buf += codes::RESET_FG;
+///
+/// buf += codes::FAINT;
+/// buf += "faint ";
+/// buf += codes::MAGENTA_FG;
+/// buf += " magenta";
+/// buf += codes::MAGENTA_DARK_FG;
+/// buf += " dark";
+/// buf += codes::RESET;
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/magenta_fg.png)
 pub const MAGENTA_DARK_FG: &str = graphic!(35);
 /// Set the foreground color to dark cyan
 pub const CYAN_DARK_FG: &str = graphic!(36);
