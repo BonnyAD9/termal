@@ -662,6 +662,10 @@ pub fn show_magenta_fg() -> Result<()> {
     show_color_fg("magenta", codes::MAGENTA_FG, codes::MAGENTA_DARK_FG)
 }
 
+pub fn show_cyan_fg() -> Result<()> {
+    show_color_fg("cyan", codes::CYAN_FG, codes::CYAN_DARK_FG)
+}
+
 pub fn show_color_fg(n: &str, b: &str, d: &str) -> Result<()> {
     let mut buf = codes::CLEAR.to_string();
 
