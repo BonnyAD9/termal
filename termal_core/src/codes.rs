@@ -2000,7 +2000,7 @@ pub const CYAN_DARK_FG: &str = graphic!(36);
 ///
 /// let mut buf = codes::CLEAR.to_string();
 ///
-/// buf += codes::BLUE_DARK_BG;
+/// buf += codes::GRAY_BG;
 /// buf += codes::YELLOW_FG;
 /// buf += "fg and bg";
 /// buf += codes::RESET_FG;
