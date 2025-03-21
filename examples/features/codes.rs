@@ -690,3 +690,18 @@ pub fn show_color_fg(n: &str, b: &str, d: &str) -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_reset_fg() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += codes::GRAY_BG;
+    buf += codes::YELLOW_FG;
+    buf += "fg and bg";
+    buf += codes::RESET_FG;
+    buf += " bg only";
+    buf += codes::RESET;
+
+    println!("{buf}");
+
+    Ok(())
+}

@@ -1991,7 +1991,27 @@ pub const MAGENTA_DARK_FG: &str = graphic!(35);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/cyan_fg.png)
 pub const CYAN_DARK_FG: &str = graphic!(36);
 
-/// Reset the foreground color
+/// Reset the foreground color to the default foreground color.
+///
+/// This doesn't affect [`FAINT`] mode.
+///
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::BLUE_DARK_BG;
+/// buf += codes::YELLOW_FG;
+/// buf += "fg and bg";
+/// buf += codes::RESET_FG;
+/// buf += " bg only";
+/// buf += codes::RESET;
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/reset_fg.png)
 pub const RESET_FG: &str = graphic!(39);
 
 /// Set the background color to black (dark black)
