@@ -2014,9 +2014,61 @@ pub const CYAN_DARK_FG: &str = graphic!(36);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/reset_fg.png)
 pub const RESET_FG: &str = graphic!(39);
 
-/// Set the background color to black (dark black)
+/// Set the background color to black (dark black).
+///
+/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// [`RESET`] will also reset all text modes.
+///
+/// Printing newline with background set might fill the whole line to the end
+/// with the background color. This is why I recommend to always reset the
+/// background color before printing newline.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::BLACK_BG;
+/// buf += "black";
+/// buf += codes::WHITE_BG;
+/// buf += " white";
+/// buf += codes::RESET_BG;
+/// buf += " normal";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/black_bg.png)
 pub const BLACK_BG: &str = graphic!(40);
-/// Set the background color to white (bright white)
+/// Set the background color to white (bright white).
+///
+/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// [`RESET`] will also reset all text modes.
+///
+/// Printing newline with background set might fill the whole line to the end
+/// with the background color. This is why I recommend to always reset the
+/// background color before printing newline.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::BLACK_BG;
+/// buf += "black";
+/// buf += codes::WHITE_BG;
+/// buf += " white";
+/// buf += codes::RESET_BG;
+/// buf += " normal";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/black_bg.png)
 pub const WHITE_BG: &str = graphic!(107);
 /// Set the background color to gray (bright black)
 pub const GRAY_BG: &str = graphic!(100);

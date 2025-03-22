@@ -92,6 +92,8 @@ fn single(name: &str) -> Result<()> {
         "codes::MAGENTA_DARK_FG" => codes::show_magenta_fg(),
         "codes::CYAN_DARK_FG" => codes::show_cyan_fg(),
         "codes::RESET_FG" => codes::show_reset_fg(),
+        "codes::BLACK_BG" => codes::show_black_bg(),
+        "codes::WHITE_BG" => codes::show_black_bg(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -193,6 +195,8 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}MAGENTA_DARK_FG{'_}
   {'c}codes{'y}::{'w bold}CYAN_DARK_FG{'_}
   {'c}codes{'y}::{'w bold}RESET_FG{'_}
+  {'c}codes{'y}::{'w bold}BLACK_BG{'_}
+  {'c}codes{'y}::{'w bold}WHITE_BG{'_}
     "
     );
     Ok(())

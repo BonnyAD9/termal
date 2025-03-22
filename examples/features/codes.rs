@@ -705,3 +705,18 @@ pub fn show_reset_fg() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_black_bg() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += codes::BLACK_BG;
+    buf += "black";
+    buf += codes::WHITE_BG;
+    buf += " white";
+    buf += codes::RESET_BG;
+    buf += " normal";
+
+    println!("{buf}");
+
+    Ok(())
+}
