@@ -94,6 +94,8 @@ fn single(name: &str) -> Result<()> {
         "codes::RESET_FG" => codes::show_reset_fg(),
         "codes::BLACK_BG" => codes::show_black_bg(),
         "codes::WHITE_BG" => codes::show_black_bg(),
+        "codes::GRAY_BG" => codes::show_gray_bg(),
+        "codes::GRAY_BRIGHT_BG" => codes::show_gray_bg(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -197,6 +199,8 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}RESET_FG{'_}
   {'c}codes{'y}::{'w bold}BLACK_BG{'_}
   {'c}codes{'y}::{'w bold}WHITE_BG{'_}
+  {'c}codes{'y}::{'w bold}GRAY_BG{'_}
+  {'c}codes{'y}::{'w bold}GRAY_BRIGHT_BG{'_}
     "
     );
     Ok(())

@@ -720,3 +720,18 @@ pub fn show_black_bg() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_gray_bg() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += codes::GRAY_BG;
+    buf += "gray";
+    buf += codes::GRAY_BRIGHT_BG;
+    buf += " bright";
+    buf += codes::RESET_BG;
+    buf += " normal";
+
+    println!("{buf}");
+
+    Ok(())
+}

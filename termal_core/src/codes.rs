@@ -2070,9 +2070,61 @@ pub const BLACK_BG: &str = graphic!(40);
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/black_bg.png)
 pub const WHITE_BG: &str = graphic!(107);
-/// Set the background color to gray (bright black)
+/// Set the background color to gray (bright black).
+///
+/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// [`RESET`] will also reset all text modes.
+///
+/// Printing newline with background set might fill the whole line to the end
+/// with the background color. This is why I recommend to always reset the
+/// background color before printing newline.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::GRAY_BG;
+/// buf += "gray";
+/// buf += codes::GRAY_BRIGHT_BG;
+/// buf += " bright";
+/// buf += codes::RESET_BG;
+/// buf += " normal";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/gray_bg.png)
 pub const GRAY_BG: &str = graphic!(100);
-/// Set to background color to bright gray (dark white)
+/// Set to background color to bright gray (dark white).
+///
+/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// [`RESET`] will also reset all text modes.
+///
+/// Printing newline with background set might fill the whole line to the end
+/// with the background color. This is why I recommend to always reset the
+/// background color before printing newline.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::GRAY_BG;
+/// buf += "gray";
+/// buf += codes::GRAY_BRIGHT_BG;
+/// buf += " bright";
+/// buf += codes::RESET_BG;
+/// buf += " normal";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/gray_bg.png)
 pub const GRAY_BRIGHT_BG: &str = graphic!(47);
 
 /// Set the background color to red (bright red)
