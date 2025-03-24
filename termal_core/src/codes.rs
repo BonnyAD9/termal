@@ -2127,7 +2127,33 @@ pub const GRAY_BG: &str = graphic!(100);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/gray_bg.png)
 pub const GRAY_BRIGHT_BG: &str = graphic!(47);
 
-/// Set the background color to red (bright red)
+/// Set the background color to red (bright red).
+///
+/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// [`RESET`] will also reset all text modes.
+///
+/// Printing newline with background set might fill the whole line to the end
+/// with the background color. This is why I recommend to always reset the
+/// background color before printing newline.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::RED_BG;
+/// buf += "red";
+/// buf += codes::RED_DARK_BG;
+/// buf += " dark";
+/// buf += codes::RESET_BG;
+/// buf += " normal";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/red_bg.png)
 pub const RED_BG: &str = graphic!(101);
 /// Set the background color to green (bright green)
 pub const GREEN_BG: &str = graphic!(102);
@@ -2140,7 +2166,33 @@ pub const MAGENTA_BG: &str = graphic!(105);
 /// Set the background color to cyan (bright cyan)
 pub const CYAN_BG: &str = graphic!(106);
 
-/// Set the background color to dark red
+/// Set the background color to dark red.
+///
+/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// [`RESET`] will also reset all text modes.
+///
+/// Printing newline with background set might fill the whole line to the end
+/// with the background color. This is why I recommend to always reset the
+/// background color before printing newline.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::RED_BG;
+/// buf += "red";
+/// buf += codes::RED_DARK_BG;
+/// buf += " dark";
+/// buf += codes::RESET_BG;
+/// buf += " normal";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/red_bg.png)
 pub const RED_DARK_BG: &str = graphic!(41);
 /// Set the background color to dark green
 pub const GREEN_DARK_BG: &str = graphic!(42);
