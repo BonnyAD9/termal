@@ -737,11 +737,19 @@ pub fn show_gray_bg() -> Result<()> {
 }
 
 pub fn show_red_bg() -> Result<()> {
+    show_color_bg("red", codes::RED_BG, codes::RED_DARK_BG)
+}
+
+pub fn show_green_bg() -> Result<()> {
+    show_color_bg("green", codes::GREEN_BG, codes::GREEN_DARK_BG)
+}
+
+fn show_color_bg(n: &str, l: &str, d: &str) -> Result<()> {
     let mut buf = codes::CLEAR.to_string();
 
-    buf += codes::RED_BG;
-    buf += "red";
-    buf += codes::RED_DARK_BG;
+    buf += l;
+    buf += n;
+    buf += d;
     buf += " dark";
     buf += codes::RESET_BG;
     buf += " normal";
