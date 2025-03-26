@@ -2183,7 +2183,33 @@ pub const RED_BG: &str = graphic!(101);
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/green_bg.png)
 pub const GREEN_BG: &str = graphic!(102);
-/// Set the background color to yellow (bright yellow)
+/// Set the background color to yellow (bright yellow).
+///
+/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// [`RESET`] will also reset all text modes.
+///
+/// Printing newline with background set might fill the whole line to the end
+/// with the background color. This is why I recommend to always reset the
+/// background color before printing newline.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::YELLOW_BG;
+/// buf += "yellow";
+/// buf += codes::YELLOW_DARK_BG;
+/// buf += " dark";
+/// buf += codes::RESET_BG;
+/// buf += " normal";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/yellow_bg.png)
 pub const YELLOW_BG: &str = graphic!(103);
 /// Set the background color to blue (bright blue)
 pub const BLUE_BG: &str = graphic!(104);
@@ -2248,7 +2274,33 @@ pub const RED_DARK_BG: &str = graphic!(41);
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/green_bg.png)
 pub const GREEN_DARK_BG: &str = graphic!(42);
-/// Set the background color to dark yellow
+/// Set the background color to dark yellow.
+///
+/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// [`RESET`] will also reset all text modes.
+///
+/// Printing newline with background set might fill the whole line to the end
+/// with the background color. This is why I recommend to always reset the
+/// background color before printing newline.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::YELLOW_BG;
+/// buf += "yellow";
+/// buf += codes::YELLOW_DARK_BG;
+/// buf += " dark";
+/// buf += codes::RESET_BG;
+/// buf += " normal";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/yellow_bg.png)
 pub const YELLOW_DARK_BG: &str = graphic!(43);
 /// Set the background color to dark blue
 pub const BLUE_DARK_BG: &str = graphic!(44);
