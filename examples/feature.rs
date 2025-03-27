@@ -99,9 +99,11 @@ fn single(name: &str) -> Result<()> {
         "codes::RED_BG" => codes::show_red_bg(),
         "codes::GREEN_BG" => codes::show_green_bg(),
         "codes::YELLOW_BG" => codes::show_yellow_bg(),
+        "codes::BLUE_BG" => codes::show_blue_bg(),
         "codes::RED_DARK_BG" => codes::show_red_bg(),
         "codes::GREEN_DARK_BG" => codes::show_green_bg(),
         "codes::YELLOW_DARK_BG" => codes::show_yellow_bg(),
+        "codes::BLUE_DARK_BG" => codes::show_blue_bg(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -210,9 +212,11 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}RED_BG{'_}
   {'c}codes{'y}::{'w bold}GREEN_BG{'_}
   {'c}codes{'y}::{'w bold}YELLOW_BG{'_}
+  {'c}codes{'y}::{'w bold}BLUE_BG{'_}
   {'c}codes{'y}::{'w bold}RED_DARK_BG{'_}
   {'c}codes{'y}::{'w bold}GREEN_DARK_BG{'_}
   {'c}codes{'y}::{'w bold}YELLOW_DARK_BG{'_}
+  {'c}codes{'y}::{'w bold}BLUE_DARK_BG{'_}
     "
     );
     Ok(())

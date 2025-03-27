@@ -2211,7 +2211,33 @@ pub const GREEN_BG: &str = graphic!(102);
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/yellow_bg.png)
 pub const YELLOW_BG: &str = graphic!(103);
-/// Set the background color to blue (bright blue)
+/// Set the background color to blue (bright blue).
+///
+/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// [`RESET`] will also reset all text modes.
+///
+/// Printing newline with background set might fill the whole line to the end
+/// with the background color. This is why I recommend to always reset the
+/// background color before printing newline.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::BLUE_BG;
+/// buf += "blue";
+/// buf += codes::BLUE_DARK_BG;
+/// buf += " dark";
+/// buf += codes::RESET_BG;
+/// buf += " normal";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/blue_bg.png)
 pub const BLUE_BG: &str = graphic!(104);
 /// Set the background color to magenta (bright magenta)
 pub const MAGENTA_BG: &str = graphic!(105);
@@ -2302,7 +2328,33 @@ pub const GREEN_DARK_BG: &str = graphic!(42);
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/yellow_bg.png)
 pub const YELLOW_DARK_BG: &str = graphic!(43);
-/// Set the background color to dark blue
+/// Set the background color to dark blue.
+///
+/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// [`RESET`] will also reset all text modes.
+///
+/// Printing newline with background set might fill the whole line to the end
+/// with the background color. This is why I recommend to always reset the
+/// background color before printing newline.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::BLUE_BG;
+/// buf += "blue";
+/// buf += codes::BLUE_DARK_BG;
+/// buf += " dark";
+/// buf += codes::RESET_BG;
+/// buf += " normal";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/blue_bg.png)
 pub const BLUE_DARK_BG: &str = graphic!(44);
 /// Set the background color to dark magenta
 pub const MAGENTA_DARK_BG: &str = graphic!(45);
