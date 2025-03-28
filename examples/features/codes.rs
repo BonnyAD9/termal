@@ -752,6 +752,10 @@ pub fn show_blue_bg() -> Result<()> {
     show_color_bg("blue", codes::BLUE_BG, codes::BLUE_DARK_BG)
 }
 
+pub fn show_magenta_bg() -> Result<()> {
+    show_color_bg("magenta", codes::MAGENTA_BG, codes::MAGENTA_DARK_BG)
+}
+
 fn show_color_bg(n: &str, l: &str, d: &str) -> Result<()> {
     let mut buf = codes::CLEAR.to_string();
 
