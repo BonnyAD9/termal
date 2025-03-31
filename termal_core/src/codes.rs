@@ -2465,7 +2465,26 @@ pub const MAGENTA_DARK_BG: &str = graphic!(45);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/cyan_bg.png)
 pub const CYAN_DARK_BG: &str = graphic!(46);
 
-/// Reset the background color
+/// Reset the background color.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::GRAY_BG;
+/// buf += codes::YELLOW_FG;
+/// buf += "fg and bg";
+/// buf += codes::RESET_BG;
+/// buf += " fg only";
+/// buf += codes::RESET;
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/reset_bg.png)
 pub const RESET_BG: &str = graphic!(49);
 
 code_macro! { graphic
