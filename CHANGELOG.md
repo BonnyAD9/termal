@@ -1,11 +1,12 @@
 # CHANGELOG
 
-## future
+## v2.1.0
 ### New features
 - Add codes `ERASE_BUFFER`, `CLEAR` and `MOVE_HOME`.
 
 ### Changes
 - Fix name type of `codes::request_selectoin` to `codes::request_selection`.
+- Improve documentation for some codes.
 
 ### Fixes
 + Fix `ERASE_ALL`.
