@@ -85,7 +85,7 @@ cargo add termal
 ### In Cargo.toml
 ```toml
 [dependencies]
-termal = "2.1.0"
+termal = "2.1.1"
 ```
 
 ### Features

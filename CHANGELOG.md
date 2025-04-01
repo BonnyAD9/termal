@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v2.1.0
+## v2.1.1
 ### New features
 - Add codes `ERASE_BUFFER`, `CLEAR` and `MOVE_HOME`.
 
