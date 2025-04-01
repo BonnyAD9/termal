@@ -789,3 +789,23 @@ pub fn show_reset_bg() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_fg256() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    for y in 0..16 {
+        for x in 0..16 {
+            let c = y * 16 + x;
+
+            buf += &codes::fg256!(c);
+            buf += &format!("{c:03} ");
+        }
+        buf.push('\n');
+    }
+
+    buf += codes::RESET_FG;
+
+    print!("{buf}");
+
+    Ok(())
+}

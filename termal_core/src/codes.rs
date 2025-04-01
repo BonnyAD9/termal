@@ -2489,7 +2489,48 @@ pub const RESET_BG: &str = graphic!(49);
 
 code_macro! { graphic
     fg256, 38, 5, c;
-        ? "creates a foreground color, color is value in range 0..256",
+        ? "
+Creates a foreground color, color is value in range 0..256.
+
+Colors in range `0..16` corespond to the named colors in order black, red,
+green, yellow, blue, magenta, cyan and yellow. `0..8` are the dark variants and
+`8..16` are the bright variants.
+
+Colors in range `16..232` (216 color variants) are usually colors of the form
+16 + RGB in base 6. So for example if you want full green, that is `050` in
+base 6, in base 10 that is `30` and than we add 16. So the final number for
+full green is `46`.
+
+Colors in range `232..256` are 24 shades of gray from dark to bright not
+including full black and full white. (full black is 16 and full white is 231).
+
+If the argument is literal, this expands to [`&'static str`]. Otherwise this
+expands to [`String`]
+
+# Example
+```no_run
+use termal_core::codes;
+
+let mut buf = codes::CLEAR.to_string();
+
+for y in 0..16 {
+    for x in 0..16 {
+        let c = y * 16 + x;
+
+        buf += &codes::fg256!(c);
+        buf += &format!(\"{c:03} \");
+    }
+    buf.push('\\n');
+}
+
+buf += codes::RESET_FG;
+
+print!(\"{buf}\");
+```
+
+## Result in terminal
+![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/fg256.png)
+        ",
 
     bg256, 48, 5, c;
         ? "creates a background color, color is value in range 0..256",
