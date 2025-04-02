@@ -2016,7 +2016,7 @@ pub const RESET_FG: &str = graphic!(39);
 
 /// Set the background color to black (dark black).
 ///
-/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
 /// Printing newline with background set might fill the whole line to the end
@@ -2044,7 +2044,7 @@ pub const RESET_FG: &str = graphic!(39);
 pub const BLACK_BG: &str = graphic!(40);
 /// Set the background color to white (bright white).
 ///
-/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
 /// Printing newline with background set might fill the whole line to the end
@@ -2072,7 +2072,7 @@ pub const BLACK_BG: &str = graphic!(40);
 pub const WHITE_BG: &str = graphic!(107);
 /// Set the background color to gray (bright black).
 ///
-/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
 /// Printing newline with background set might fill the whole line to the end
@@ -2100,7 +2100,7 @@ pub const WHITE_BG: &str = graphic!(107);
 pub const GRAY_BG: &str = graphic!(100);
 /// Set to background color to bright gray (dark white).
 ///
-/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
 /// Printing newline with background set might fill the whole line to the end
@@ -2129,7 +2129,7 @@ pub const GRAY_BRIGHT_BG: &str = graphic!(47);
 
 /// Set the background color to red (bright red).
 ///
-/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
 /// Printing newline with background set might fill the whole line to the end
@@ -2157,7 +2157,7 @@ pub const GRAY_BRIGHT_BG: &str = graphic!(47);
 pub const RED_BG: &str = graphic!(101);
 /// Set the background color to green (bright green).
 ///
-/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
 /// Printing newline with background set might fill the whole line to the end
@@ -2185,7 +2185,7 @@ pub const RED_BG: &str = graphic!(101);
 pub const GREEN_BG: &str = graphic!(102);
 /// Set the background color to yellow (bright yellow).
 ///
-/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
 /// Printing newline with background set might fill the whole line to the end
@@ -2213,7 +2213,7 @@ pub const GREEN_BG: &str = graphic!(102);
 pub const YELLOW_BG: &str = graphic!(103);
 /// Set the background color to blue (bright blue).
 ///
-/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
 /// Printing newline with background set might fill the whole line to the end
@@ -2241,7 +2241,7 @@ pub const YELLOW_BG: &str = graphic!(103);
 pub const BLUE_BG: &str = graphic!(104);
 /// Set the background color to magenta (bright magenta).
 ///
-/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
 /// Printing newline with background set might fill the whole line to the end
@@ -2269,7 +2269,7 @@ pub const BLUE_BG: &str = graphic!(104);
 pub const MAGENTA_BG: &str = graphic!(105);
 /// Set the background color to cyan (bright cyan).
 ///
-/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
 /// Printing newline with background set might fill the whole line to the end
@@ -2298,7 +2298,7 @@ pub const CYAN_BG: &str = graphic!(106);
 
 /// Set the background color to dark red.
 ///
-/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
 /// Printing newline with background set might fill the whole line to the end
@@ -2326,7 +2326,7 @@ pub const CYAN_BG: &str = graphic!(106);
 pub const RED_DARK_BG: &str = graphic!(41);
 /// Set the background color to dark green.
 ///
-/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
 /// Printing newline with background set might fill the whole line to the end
@@ -2354,7 +2354,7 @@ pub const RED_DARK_BG: &str = graphic!(41);
 pub const GREEN_DARK_BG: &str = graphic!(42);
 /// Set the background color to dark yellow.
 ///
-/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
 /// Printing newline with background set might fill the whole line to the end
@@ -2382,7 +2382,7 @@ pub const GREEN_DARK_BG: &str = graphic!(42);
 pub const YELLOW_DARK_BG: &str = graphic!(43);
 /// Set the background color to dark blue.
 ///
-/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
 /// Printing newline with background set might fill the whole line to the end
@@ -2410,7 +2410,7 @@ pub const YELLOW_DARK_BG: &str = graphic!(43);
 pub const BLUE_DARK_BG: &str = graphic!(44);
 /// Set the background color to dark magenta.
 ///
-/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
 /// Printing newline with background set might fill the whole line to the end
@@ -2438,7 +2438,7 @@ pub const BLUE_DARK_BG: &str = graphic!(44);
 pub const MAGENTA_DARK_BG: &str = graphic!(45);
 /// Set the background color to dark cyan.
 ///
-/// Foreground color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+/// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
 /// Printing newline with background set might fill the whole line to the end
@@ -2501,11 +2501,15 @@ Colors in range `16..232` (216 color variants) are usually colors of the form
 base 6, in base 10 that is `30` and than we add 16. So the final number for
 full green is `46`.
 
-Colors in range `232..256` are 24 shades of gray from dark to bright not
-including full black and full white. (full black is 16 and full white is 231).
+Colors in range `232..256` are usually 24 shades of gray from dark to bright
+not including full black and full white. (full black is 16 and full white is
+231).
 
 If the argument is literal, this expands to [`&'static str`]. Otherwise this
-expands to [`String`]
+expands to [`String`].
+
+Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
+[`RESET`] will also reset all text modes.
 
 # Example
 ```no_run
@@ -2533,7 +2537,55 @@ print!(\"{buf}\");
         ",
 
     bg256, 48, 5, c;
-        ? "creates a background color, color is value in range 0..256",
+        ? "Creates a background color, color is value in range 0..256.
+
+Colors in range `0..16` corespond to the named colors in order black, red,
+green, yellow, blue, magenta, cyan and yellow. `0..8` are the dark variants and
+`8..16` are the bright variants.
+
+Colors in range `16..232` (216 color variants) are usually colors of the form
+16 + RGB in base 6. So for example if you want full green, that is `050` in
+base 6, in base 10 that is `30` and than we add 16. So the final number for
+full green is `46`.
+
+Colors in range `232..256` are usually 24 shades of gray from dark to bright
+not including full black and full white. (full black is 16 and full white is
+231).
+
+If the argument is literal, this expands to [`&'static str`]. Otherwise this
+expands to [`String`].
+
+Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
+[`RESET`] will also reset all text modes.
+
+Printing newline with background set might fill the whole line to the end
+with the background color. This is why I recommend to always reset the
+background color before printing newline.
+
+# Example
+```no_run
+use termal_core::codes;
+
+let mut buf = codes::CLEAR.to_string();
+
+for y in 0..16 {
+    for x in 0..16 {
+        let c = y * 16 + x;
+
+        buf += &codes::bg256!(c);
+        buf += &format!(\"{c:03} \");
+    }
+    buf += codes::RESET_BG;
+    buf.push('\\n');
+}
+
+
+print!(\"{buf}\");
+```
+
+## Result in terminal
+![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/bg256.png)
+        ",
 
     underline256, 58, 5, c;
         ? "Set underline color as 256 color.",

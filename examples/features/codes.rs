@@ -809,3 +809,22 @@ pub fn show_fg256() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_bg256() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    for y in 0..16 {
+        for x in 0..16 {
+            let c = y * 16 + x;
+
+            buf += &codes::bg256!(c);
+            buf += &format!("{c:03} ");
+        }
+        buf += codes::RESET_BG;
+        buf.push('\n');
+    }
+
+    print!("{buf}");
+
+    Ok(())
+}
