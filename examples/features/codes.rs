@@ -828,3 +828,24 @@ pub fn show_bg256() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_underline256() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+    const ULS: &[&str] = &[codes::UNDERLINE, codes::DOUBLE_UNDERLINE];
+
+    for y in 0..16 {
+        buf += ULS[y % ULS.len()];
+        for x in 0..16 {
+            let c = y * 16 + x;
+
+            buf += &codes::underline256!(c);
+            buf += &format!("{c:03} ");
+        }
+        buf += codes::RESET_UNDERLINE;
+        buf.push('\n');
+    }
+
+    print!("{buf}");
+
+    Ok(())
+}

@@ -111,6 +111,7 @@ fn single(name: &str) -> Result<()> {
         "codes::RESET_BG" => codes::show_reset_bg(),
         "codes::fg256!" => codes::show_fg256(),
         "codes::bg256!" => codes::show_bg256(),
+        "codes::underline256!" => codes::show_underline256(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -231,6 +232,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}RESET_BG{'_}
   {'c}codes{'y}::{'m i}fg256!{'_}
   {'c}codes{'y}::{'m i}bg256!{'_}
+  {'c}codes{'y}::{'m i}underline256!{'_}
     "
     );
     Ok(())

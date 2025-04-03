@@ -2588,7 +2588,55 @@ print!(\"{buf}\");
         ",
 
     underline256, 58, 5, c;
-        ? "Set underline color as 256 color.",
+        ? "Set underline color as 256 color.
+
+Works for both [`UNDERLINE`] and [`DOUBLE_UNDERLINE`].
+
+Colors in range `0..16` corespond to the named colors in order black, red,
+green, yellow, blue, magenta, cyan and yellow. `0..8` are the dark variants and
+`8..16` are the bright variants.
+
+Colors in range `16..232` (216 color variants) are usually colors of the form
+16 + RGB in base 6. So for example if you want full green, that is `050` in
+base 6, in base 10 that is `30` and than we add 16. So the final number for
+full green is `46`.
+
+Colors in range `232..256` are usually 24 shades of gray from dark to bright
+not including full black and full white. (full black is 16 and full white is
+231).
+
+If the argument is literal, this expands to [`&'static str`]. Otherwise this
+expands to [`String`].
+
+Underline color can be reset with [`RESET_UNDERLINE_COLOR`] or [`RESET`]. Note
+that [`RESET`] will also reset all text modes (uncluding [`UNDERLINE`] and
+[`DOUBLE_UNDERLINE`]).
+
+# Example
+```no_run
+use termal_core::codes;
+
+let mut buf = codes::CLEAR.to_string();
+const ULS: &[&str] = &[codes::UNDERLINE, codes::DOUBLE_UNDERLINE];
+
+for y in 0..16 {
+    buf += ULS[y % ULS.len()];
+    for x in 0..16 {
+        let c = y * 16 + x;
+
+        buf += &codes::underline256!(c);
+        buf += &format!(\"{c:03} \");
+    }
+    buf += codes::RESET_UNDERLINE;
+    buf.push('\\n');
+}
+
+print!(\"{buf}\");
+```
+
+## Result in terminal
+![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/underline256.png)
+        ",
 
     fg, 38, 2, r, g, b;
         ? "creates a true rgb foreground color. R, G and B must be values in
