@@ -873,3 +873,28 @@ pub fn show_fg() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_bg() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+    let size = term_size()?;
+    let w = size.char_width;
+    let h = size.char_height - 1;
+    let l = (w * h).isqrt();
+
+    for y in 0..h {
+        for x in 0..w {
+            let r = y * 256 / h;
+            let g = x * 256 / w;
+            let b = 255 - (x * y).isqrt() * 256 / l;
+
+            buf += &codes::bg!(r, g, b);
+            buf.push('H');
+        }
+        buf += codes::RESET_BG;
+        buf.push('\n');
+    }
+
+    print!("{buf}");
+
+    Ok(())
+}
