@@ -7,7 +7,9 @@ use crate::{
     error::{Error, Result},
     raw::{
         IoProvider, StdioProvider, Terminal,
-        events::{Event, Key, KeyCode, Modifiers, Status},
+        events::{
+            AmbigousEvent, AnyEvent, Event, Key, KeyCode, Modifiers, Status,
+        },
         term_size,
     },
     term_text::TermText,
@@ -306,10 +308,10 @@ where
 
     fn read_next(&mut self) -> Result<bool> {
         if let Some(evt) = self.queue.pop_front() {
-            return self.handle_event(evt);
+            return self.handle_event(AmbigousEvent::event(evt));
         }
 
-        let evt = match self.term.read() {
+        let evt = match self.term.read_ambigous() {
             Ok(e) => e,
             Err(Error::StdInEof) => {
                 self.end();
@@ -322,18 +324,22 @@ where
         self.handle_event(evt)
     }
 
-    fn handle_event(&mut self, evt: Event) -> Result<bool> {
-        if self.exit.matches(&evt) {
-            self.last_event = Some(evt);
+    fn handle_event(&mut self, evt: AmbigousEvent) -> Result<bool> {
+        let AnyEvent::Known(known) = evt.event else {
+            return Ok(false);
+        };
+
+        if self.exit.matches(&known) {
+            self.last_event = Some(known);
             self.end();
             self.commit()?;
             return Ok(true);
         }
 
-        match evt {
+        match known {
             Event::KeyPress(key) => {
-                self.last_event = Some(evt);
-                self.handle_key_press(key)
+                self.last_event = Some(known);
+                self.handle_key_press(key, evt.other.first())
             }
             Event::Status(Status::SelectionData(data)) => {
                 if !self.paste {
@@ -346,13 +352,17 @@ where
                 Ok(false)
             }
             _ => {
-                self.last_event = Some(evt);
+                self.last_event = Some(known);
                 Ok(false)
             }
         }
     }
 
-    fn handle_key_press(&mut self, key: Key) -> Result<bool> {
+    fn handle_key_press(
+        &mut self,
+        key: Key,
+        amb: Option<&Event>,
+    ) -> Result<bool> {
         if let Some(chr) = key.key_char {
             self.buf.insert(self.pos, chr);
 
@@ -386,8 +396,20 @@ where
                     self.move_right()
                 }
             }
-            KeyCode::Backspace => self.backspace(),
-            KeyCode::Delete => self.delete(),
+            KeyCode::Backspace => {
+                if key.modifiers.contains(Modifiers::CONTROL) {
+                    self.backspace_word();
+                } else {
+                    self.backspace();
+                }
+            }
+            KeyCode::Delete => {
+                if key.modifiers.contains(Modifiers::CONTROL) {
+                    self.delete_word();
+                } else {
+                    self.delete();
+                }
+            },
             KeyCode::Home => self.home(),
             KeyCode::End => self.end(),
             KeyCode::Char('v') => {
@@ -396,7 +418,13 @@ where
                     self.pbuf += codes::REQUEST_SELECTION;
                 }
             }
-            _ => {}
+            _ => {
+                if let Some(Event::KeyPress(evt)) = amb {
+                    let res = self.handle_key_press(*evt, None)?;
+                    self.commit()?;
+                    return Ok(res);
+                }
+            }
         }
 
         self.commit()?;
@@ -411,18 +439,14 @@ where
     }
 
     fn move_word_right(&mut self) {
-        let mut pos = self.pos;
-        pos = pos.min(self.buf.len());
-        while pos < self.buf.len() && self.buf[pos].is_ascii_whitespace() {
-            pos += 1;
-        }
-        while pos < self.buf.len() && !self.buf[pos].is_ascii_whitespace() {
-            pos += 1;
-        }
-        self.move_to_pos(pos);
+        self.move_to_pos(self.word_pos_right());
     }
 
     fn move_word_left(&mut self) {
+        self.move_to_pos(self.word_pos_left());
+    }
+
+    fn word_pos_left(&self) -> usize {
         let mut pos = self.pos;
         pos = pos.saturating_sub(1);
         while pos > 0 && self.buf[pos].is_ascii_whitespace() {
@@ -434,7 +458,19 @@ where
         if pos < self.buf.len() && self.buf[pos].is_ascii_whitespace() {
             pos += 1;
         }
-        self.move_to_pos(pos);
+        pos.min(self.pos)
+    }
+
+    fn word_pos_right(&self) -> usize {
+        let mut pos = self.pos;
+        pos = pos.min(self.buf.len());
+        while pos < self.buf.len() && self.buf[pos].is_ascii_whitespace() {
+            pos += 1;
+        }
+        while pos < self.buf.len() && !self.buf[pos].is_ascii_whitespace() {
+            pos += 1;
+        }
+        pos
     }
 
     /// Gets the position + prompt lentgth
@@ -482,10 +518,26 @@ where
         }
     }
 
+    fn delete_word(&mut self) {
+        let pos = self.word_pos_right();
+        if pos != self.pos {
+            self.buf.splice(self.pos..pos, []);
+            self.reprint_pos();
+        }
+    }
+
     fn backspace(&mut self) {
         if self.pos != 0 {
             self.move_left();
             self.delete();
+        }
+    }
+
+    fn backspace_word(&mut self) {
+        let pos = self.word_pos_left();
+        if pos != self.pos {
+            self.buf.splice(pos..self.pos, []);
+            self.reprint_from_move_to(pos, pos);
         }
     }
 

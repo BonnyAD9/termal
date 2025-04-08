@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## future
+### New features
+- Readers support `Ctrl+Backspace` and `Ctdl+Delete` for deleting whole words.
+
+### Changes
+- Improve documentation for some codes.
+
 ## v2.1.1
 ### New features
 - Add codes `ERASE_BUFFER`, `CLEAR` and `MOVE_HOME`.
