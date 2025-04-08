@@ -114,6 +114,7 @@ fn single(name: &str) -> Result<()> {
         "codes::underline256!" => codes::show_underline256(),
         "codes::fg!" => codes::show_fg(),
         "codes::bg!" => codes::show_bg(),
+        "codes::underline_rgb!" => codes::show_underline_rgb(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -237,6 +238,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'m i}underline256!{'_}
   {'c}codes{'y}::{'m i}fg!{'_}
   {'c}codes{'y}::{'m i}bg!{'_}
+  {'c}codes{'y}::{'m i}underline_rgb!{'_}
     "
     );
     Ok(())

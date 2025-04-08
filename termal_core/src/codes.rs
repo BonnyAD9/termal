@@ -2642,6 +2642,9 @@ print!(\"{buf}\");
         ? "Creates a true rgb foreground color. R, G and B must be values in
 range 0..256.
 
+If the argument is literal, this expands to [`&'static str`]. Otherwise this
+expands to [`String`].
+
 Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
 [`RESET`] will also reset all text modes.
 
@@ -2679,6 +2682,9 @@ Ok::<(), Error>(())
     bg, 48, 2, r, g, b;
         ? "Creates a true rgb background color. R, G and B must be values in
 range 0..256.
+
+If the argument is literal, this expands to [`&'static str`]. Otherwise this
+expands to [`String`].
 
 Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 [`RESET`] will also reset all text modes.
@@ -2720,7 +2726,51 @@ Ok::<(), Error>(())
     ",
 
     underline_rgb, 58, 2, r, g, b;
-        ? "Set underline color as rgb.",
+        ? "Set underline color as rgb. R, G, and B muse be values in range
+0..256.
+
+If the argument is literal, this expands to [`&'static str`]. Otherwise this
+expands to [`String`].
+
+Underline color can be reset with [`RESET_UNDERLINE_COLOR`] or [`RESET`]. Note
+that [`RESET`] will also reset all text modes (uncluding [`UNDERLINE`] and
+[`DOUBLE_UNDERLINE`]).
+
+# Example
+```no_run
+use termal_core::{codes, raw::term_size, error::Error};
+
+const ULS: &[&str] = &[codes::UNDERLINE, codes::DOUBLE_UNDERLINE];
+
+let mut buf = codes::CLEAR.to_string();
+let size = term_size()?;
+let w = size.char_width;
+let h = size.char_height - 1;
+let l = (w * h).isqrt();
+
+for y in 0..h {
+    for x in 0..w {
+        let r = y * 256 / h;
+        let g = x * 256 / w;
+        let b = 255 - (x * y).isqrt() * 256 / l;
+
+        buf += ULS[y % ULS.len()];
+        buf += &codes::underline_rgb!(r, g, b);
+        buf.push('H');
+    }
+    buf += codes::RESET_UNDERLINE;
+    buf.push('\\n');
+}
+
+buf += codes::RESET_UNDERLINE_COLOR;
+print!(\"{buf}\");
+
+Ok::<(), Error>(())
+```
+
+## Result in terminal
+![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/underline_rgb.png)
+    ",
 }
 
 /// Reset the underline color.
