@@ -927,3 +927,18 @@ pub fn show_underline_rgb() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_reset_underline_color() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += codes::UNDERLINE;
+    buf += codes::underline256!(2);
+    buf += "colored";
+    buf += codes::RESET_UNDERLINE_COLOR;
+    buf += " default";
+    buf += codes::RESET_UNDERLINE;
+
+    println!("{buf}");
+
+    Ok(())
+}

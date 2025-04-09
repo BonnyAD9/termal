@@ -2774,6 +2774,27 @@ Ok::<(), Error>(())
 }
 
 /// Reset the underline color.
+///
+/// Underline color may be set by [`underline256`] or [`underline_rgb`].
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::UNDERLINE;
+/// buf += codes::underline256!(2);
+/// buf += "colored";
+/// buf += codes::RESET_UNDERLINE_COLOR;
+/// buf += " default";
+/// buf += codes::RESET_UNDERLINE;
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/reset_underline_color.png)
 pub const RESET_UNDERLINE_COLOR: &str = graphic!(59);
 
 // Line modes

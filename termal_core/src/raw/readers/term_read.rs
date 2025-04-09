@@ -409,7 +409,7 @@ where
                 } else {
                     self.delete();
                 }
-            },
+            }
             KeyCode::Home => self.home(),
             KeyCode::End => self.end(),
             KeyCode::Char('v') => {
