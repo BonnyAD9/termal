@@ -942,3 +942,16 @@ pub fn show_reset_underline_color() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_double_char_height_down() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += "above\n";
+    buf += "double";
+    buf += codes::DOUBLE_CHAR_HEIGHT_DOWN;
+    buf += "\nbelow";
+
+    println!("{buf}");
+
+    Ok(())
+}
