@@ -955,3 +955,16 @@ pub fn show_double_char_height_down() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_double_char_height_up() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += "above\n";
+    buf += "double";
+    buf += codes::DOUBLE_CHAR_HEIGHT_UP;
+    buf += "\nbelow";
+
+    println!("{buf}");
+
+    Ok(())
+}

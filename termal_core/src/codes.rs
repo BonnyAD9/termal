@@ -2812,6 +2812,9 @@ pub const RESET_UNDERLINE_COLOR: &str = graphic!(59);
 /// or by using [`ERASE_SCREEN`]. Note that [`ERASE_SCREEN`] will also erase
 /// the whole screen buffer.
 ///
+/// When this mode is reset (with [`RESET_CHAR_SIZE`]), clipped characters will
+/// reapear. Wrapped lines will not unwrap.
+///
 /// Note that the overlapping part of the characters is often clipped when the
 /// line that it overlaps changes. They will be usually redrawn when the
 /// console window resizes or moved.
@@ -2834,6 +2837,42 @@ pub const RESET_UNDERLINE_COLOR: &str = graphic!(59);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/double_char_height_down.png)
 pub const DOUBLE_CHAR_HEIGHT_DOWN: &str = "\x1b#3";
 /// Makes this line characters twice as large overlapping with the line above.
+///
+/// Using this code will affect the current line. It can be printed before or
+/// after the line contents of the line are printed.
+///
+/// If the line already has characters, characters that don't fit on the line
+/// will clip ouside of the buffer. If this mode is already enabled and
+/// characters would clip outside of the buffer, they will move to the next
+/// line as usual.
+///
+/// This line mode can be reset by using [`RESET_CHAR_SIZE`] on the same line,
+/// or by using [`ERASE_SCREEN`]. Note that [`ERASE_SCREEN`] will also erase
+/// the whole screen buffer.
+///
+/// When this mode is reset (with [`RESET_CHAR_SIZE`]), clipped characters will
+/// reapear. Wrapped lines will not unwrap.
+///
+/// Note that the overlapping part of the characters is often clipped when the
+/// line that it overlaps changes. They will be usually redrawn when the
+/// console window resizes or moved.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += "above\n";
+/// buf += "double";
+/// buf += codes::DOUBLE_CHAR_HEIGHT_UP;
+/// buf += "\nbelow";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/double_char_height_up.png)
 pub const DOUBLE_CHAR_HEIGHT_UP: &str = "\x1b#4";
 /// Makes this line character twice as wide (but not twice as tall).
 pub const DOUBLE_CHAR_WIDTH: &str = "\x1b#6";
