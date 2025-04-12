@@ -2875,6 +2875,37 @@ pub const DOUBLE_CHAR_HEIGHT_DOWN: &str = "\x1b#3";
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/double_char_height_up.png)
 pub const DOUBLE_CHAR_HEIGHT_UP: &str = "\x1b#4";
 /// Makes this line character twice as wide (but not twice as tall).
+///
+/// Using this code will affect the current line. It can be printed before or
+/// after the line contents of the line are printed.
+///
+/// If the line already has characters, characters that don't fit on the line
+/// will clip ouside of the buffer. If this mode is already enabled and
+/// characters would clip outside of the buffer, they will move to the next
+/// line as usual.
+///
+/// This line mode can be reset by using [`RESET_CHAR_SIZE`] on the same line,
+/// or by using [`ERASE_SCREEN`]. Note that [`ERASE_SCREEN`] will also erase
+/// the whole screen buffer.
+///
+/// When this mode is reset (with [`RESET_CHAR_SIZE`]), clipped characters will
+/// reapear. Wrapped lines will not unwrap.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += "normal\n";
+/// buf += "double";
+/// buf += codes::DOUBLE_CHAR_WIDTH;
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/double_char_width.png)
 pub const DOUBLE_CHAR_WIDTH: &str = "\x1b#6";
 /// Resets this line character size.
 pub const RESET_CHAR_SIZE: &str = "\x1b#5";

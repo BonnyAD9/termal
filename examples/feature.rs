@@ -120,6 +120,7 @@ fn single(name: &str) -> Result<()> {
             codes::show_double_char_height_down()
         }
         "codes::DOUBLE_CHAR_HEIGHT_UP" => codes::show_double_char_height_up(),
+        "codes::DOUBLE_CHAR_WIDTH" => codes::show_double_char_width(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -247,6 +248,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}RESET_UNDERLINE_COLOR{'_}
   {'c}codes{'y}::{'w bold}DOUBLE_CHAR_HEIGHT_DOWN{'_}
   {'c}codes{'y}::{'w bold}DOUBLE_CHAR_HEIGHT_UP{'_}
+  {'c}codes{'y}::{'w bold}DOUBLE_CHAR_WIDTH{'_}
     "
     );
     Ok(())

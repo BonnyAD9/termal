@@ -968,3 +968,15 @@ pub fn show_double_char_height_up() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_double_char_width() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += "normal\n";
+    buf += "double";
+    buf += codes::DOUBLE_CHAR_WIDTH;
+
+    println!("{buf}");
+
+    Ok(())
+}
