@@ -980,3 +980,27 @@ pub fn show_double_char_width() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_reset_char_size() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += "\nbig1";
+    buf += codes::DOUBLE_CHAR_HEIGHT_UP;
+    buf += "\n\nbig2";
+    buf += codes::DOUBLE_CHAR_HEIGHT_UP;
+    buf += "\nwide1";
+    buf += codes::DOUBLE_CHAR_WIDTH;
+    buf += "\nwide2";
+    buf += codes::DOUBLE_CHAR_WIDTH;
+
+    buf += codes::move_up!(1);
+    buf += codes::RESET_CHAR_SIZE;
+    buf += codes::move_up!(3);
+    buf += codes::RESET_CHAR_SIZE;
+
+    buf += codes::move_down!(4);
+
+    println!("{buf}");
+
+    Ok(())
+}

@@ -2908,6 +2908,39 @@ pub const DOUBLE_CHAR_HEIGHT_UP: &str = "\x1b#4";
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/double_char_width.png)
 pub const DOUBLE_CHAR_WIDTH: &str = "\x1b#6";
 /// Resets this line character size.
+///
+/// This is used to reset [`DOUBLE_CHAR_HEIGHT_DOWN`],
+/// [`DOUBLE_CHAR_HEIGHT_UP`] and [`DOUBLE_CHAR_WIDTH`].
+///
+/// Characters clipped when the mode was set will reapear.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += "\nbig1";
+/// buf += codes::DOUBLE_CHAR_HEIGHT_UP;
+/// buf += "\n\nbig2";
+/// buf += codes::DOUBLE_CHAR_HEIGHT_UP;
+/// buf += "\nwide1";
+/// buf += codes::DOUBLE_CHAR_WIDTH;
+/// buf += "\nwide2";
+/// buf += codes::DOUBLE_CHAR_WIDTH;
+///
+/// buf += codes::move_up!(1);
+/// buf += codes::RESET_CHAR_SIZE;
+/// buf += codes::move_up!(3);
+/// buf += codes::RESET_CHAR_SIZE;
+///
+/// buf += codes::move_down!(4);
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/reset_char_size.png)
 pub const RESET_CHAR_SIZE: &str = "\x1b#5";
 
 // Screen modes
