@@ -122,6 +122,8 @@ fn single(name: &str) -> Result<()> {
         "codes::DOUBLE_CHAR_HEIGHT_UP" => codes::show_double_char_height_up(),
         "codes::DOUBLE_CHAR_WIDTH" => codes::show_double_char_width(),
         "codes::RESET_CHAR_SIZE" => codes::show_reset_char_size(),
+        "codes::ENABLE_LINE_WRAP" => codes::show_disable_line_wrap(),
+        "codes::DISABLE_LINE_WRAP" => codes::show_disable_line_wrap(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -251,6 +253,8 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}DOUBLE_CHAR_HEIGHT_UP{'_}
   {'c}codes{'y}::{'w bold}DOUBLE_CHAR_WIDTH{'_}
   {'c}codes{'y}::{'w bold}RESET_CHAR_SIZE{'_}
+  {'c}codes{'y}::{'w bold}ENABLE_LINE_WRAP{'_}
+  {'c}codes{'y}::{'w bold}DISABLE_LINE_WRAP{'_}
     "
     );
     Ok(())

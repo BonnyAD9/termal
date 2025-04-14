@@ -71,6 +71,7 @@ pub fn reset_terminal() {
     }
     let s = [
         codes::RESET,
+        codes::ENABLE_LINE_WRAP,
         codes::SHOW_CURSOR,
         codes::DISABLE_MOUSE_XY_UTF8_EXT,
         codes::DISABLE_MOUSE_XY_EXT,

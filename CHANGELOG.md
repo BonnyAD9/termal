@@ -6,6 +6,10 @@
 
 ### Changes
 - Improve documentation for some codes.
+- `reset_terminal` will now also reset line wrapping.
+
+### Fixes
+- Fix codes `ENABLE_LINE_WRAP` and `DISABLE_LINE_WRAP`.
 
 ## v2.1.1
 ### New features

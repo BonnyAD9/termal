@@ -2945,10 +2945,58 @@ pub const RESET_CHAR_SIZE: &str = "\x1b#5";
 
 // Screen modes
 
-/// Enables line wrapping
-pub const ENABLE_LINE_WRAP: &str = "\x1b[=7h";
-/// Disables line wrapping
-pub const DISABLE_LINE_WRAP: &str = "\x1b[=7l";
+/// Enables line wrapping.
+///
+/// Line wrapping is usually enabled by default. It can be disabled with
+/// [`DISABLE_LINE_WRAP`].
+///
+/// This doesn't affect line wrapping behaviour on terminal resize.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+/// 
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::DISABLE_LINE_WRAP;
+/// buf +=
+///     "this is some long text that doesn't fit on the line without \
+///     wrapping\n";
+/// buf += codes::ENABLE_LINE_WRAP;
+/// buf += "this is some long text that doesn't fit on the line with wrapping";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/disable_line_wrap.png)
+pub const ENABLE_LINE_WRAP: &str = enable!(7);
+/// Disables line wrapping.
+///
+/// Line wrapping is usually enabled by default. It can be enabled with
+/// [`ENABLE_LINE_WRAP`].
+///
+/// This doesn't affect line wrapping behaviour on terminal resize.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += codes::DISABLE_LINE_WRAP;
+/// buf +=
+///     "this is some long text that doesn't fit on the line without \
+///     wrapping\n";
+/// buf += codes::ENABLE_LINE_WRAP;
+/// buf += "this is some long text that doesn't fit on the line with wrapping";
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/disable_line_wrap.png)
+pub const DISABLE_LINE_WRAP: &str = disable!(7);
 
 /// Enables reverse color for the whole terminal display.
 pub const ENABLE_REVERSE_COLOR: &str = enable!(5);

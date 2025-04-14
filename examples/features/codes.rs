@@ -1004,3 +1004,17 @@ pub fn show_reset_char_size() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_disable_line_wrap() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += codes::DISABLE_LINE_WRAP;
+    buf += "this is some long text that doesn't fit on the line without \
+        wrapping\n";
+    buf += codes::ENABLE_LINE_WRAP;
+    buf += "this is some long text that doesn't fit on the line with wrapping";
+
+    println!("{buf}");
+
+    Ok(())
+}
