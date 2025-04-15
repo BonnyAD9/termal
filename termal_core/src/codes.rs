@@ -2955,7 +2955,7 @@ pub const RESET_CHAR_SIZE: &str = "\x1b#5";
 /// # Example
 /// ```no_run
 /// use termal_core::codes;
-/// 
+///
 /// let mut buf = codes::CLEAR.to_string();
 ///
 /// buf += codes::DISABLE_LINE_WRAP;
@@ -2999,9 +2999,50 @@ pub const ENABLE_LINE_WRAP: &str = enable!(7);
 pub const DISABLE_LINE_WRAP: &str = disable!(7);
 
 /// Enables reverse color for the whole terminal display.
+///
+/// This mode is usually disabled by default and can be disabled by
+/// [`DISABLE_REVERSE_COLOR`].
+///
+/// # Example
+/// ```no_run
+/// use std::io::Write;
+/// use termal_core::{codes, raw::Terminal};
+///
+/// print!("{}", codes::ENABLE_REVERSE_COLOR);
+///
+/// _ = Terminal::stdio().flush();
+/// _ = Terminal::stdio().read(); // wait for enter
+///
+/// print!("{}", codes::DISABLE_REVERSE_COLOR);
+/// ```
+///
+/// # Result in terminal
+/// The screenshot is taken before enter is pressed.
+///
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/enable_reverse_color.png)
 pub const ENABLE_REVERSE_COLOR: &str = enable!(5);
-/// Disables reverse color for the whole terminal display. (This actually often
-/// doesn't work)
+/// Disables reverse color for the whole terminal display.
+///
+/// This mode is usually disabled by default and may be enabled by
+/// [`ENABLE_REVERSE_COLOR`].
+///
+/// # Example
+/// ```no_run
+/// use std::io::Write;
+/// use termal_core::{codes, raw::Terminal};
+///
+/// print!("{}", codes::ENABLE_REVERSE_COLOR);
+///
+/// _ = Terminal::stdio().flush();
+/// _ = Terminal::stdio().read(); // wait for enter
+///
+/// print!("{}", codes::DISABLE_REVERSE_COLOR);
+/// ```
+///
+/// # Result in terminal
+/// The screenshot is taken after enter is pressed.
+///
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/disable_reverse_color.png)
 pub const DISABLE_REVERSE_COLOR: &str = disable!(5);
 
 // Private modes

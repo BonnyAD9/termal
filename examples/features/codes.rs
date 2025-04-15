@@ -1018,3 +1018,14 @@ pub fn show_disable_line_wrap() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_enable_reverse_color() -> Result<()> {
+    print!("{}", codes::ENABLE_REVERSE_COLOR);
+
+    _ = Terminal::stdio().flush();
+    _ = Terminal::stdio().read(); // wait for enter
+
+    print!("{}", codes::DISABLE_REVERSE_COLOR);
+
+    Ok(())
+}
