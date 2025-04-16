@@ -126,6 +126,8 @@ fn single(name: &str) -> Result<()> {
         "codes::DISABLE_LINE_WRAP" => codes::show_disable_line_wrap(),
         "codes::ENABLE_REVERSE_COLOR" => codes::show_enable_reverse_color(),
         "codes::DISABLE_REVERSE_COLOR" => codes::show_enable_reverse_color(),
+        "codes::HIDE_CURSOR" => codes::show_hide_cursor(),
+        "codes::SHOW_CURSOR" => codes::show_hide_cursor(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -259,6 +261,8 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}DISABLE_LINE_WRAP{'_}
   {'c}codes{'y}::{'w bold}ENABLE_REVERSE_COLOR{'_}
   {'c}codes{'y}::{'w bold}DISABLE_REVERSE_COLOR{'_}
+  {'c}codes{'y}::{'w bold}HIDE_CURSOR{'_}
+  {'c}codes{'y}::{'w bold}SHOW_CURSOR{'_}
     "
     );
     Ok(())

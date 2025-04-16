@@ -1029,3 +1029,27 @@ pub fn show_enable_reverse_color() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_hide_cursor() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += "cursor is here > <";
+    buf += codes::HIDE_CURSOR;
+    buf += codes::move_left!(2);
+
+    print!("{buf}");
+
+    _ = Terminal::stdio().flush();
+    _ = Terminal::stdio().read(); // Wait for first enter
+
+    buf = codes::SHOW_CURSOR.to_string();
+    buf += codes::move_right!(16);
+    buf += codes::move_up!(1);
+
+    print!("{buf}");
+
+    _ = Terminal::stdio().flush();
+    _ = Terminal::stdio().read(); // Wait for second enter
+
+    Ok(())
+}

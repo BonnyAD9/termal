@@ -76,7 +76,7 @@
 //! - `move_to_column`, `mc`: moves the cursor to the given x coordinate, has
 //!   one argument, default value is `0`
 //! + `move_up_scrl`, `mus`: moves the cursor up by one line, scrolling if
-//!    needed
+//!   needed
 //! + `save_cur`, `save`, `s`: saves the current cursor position (single slot,
 //!   not stack)
 //! + `load_cur`, `load`, `l`: loads the last saved cursor position

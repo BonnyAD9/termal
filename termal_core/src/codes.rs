@@ -3047,9 +3047,77 @@ pub const DISABLE_REVERSE_COLOR: &str = disable!(5);
 
 // Private modes
 
-/// Makes the cursor invisible
+/// Makes the cursor invisible.
+///
+/// Cursor is usually visible by default. It can be made visible with
+/// [`SHOW_CURSOR`].
+///
+/// # Example
+/// ```no_run
+/// use std::io::Write;
+/// use termal_core::{codes, raw::Terminal};
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += "cursor is here > <";
+/// buf += codes::HIDE_CURSOR;
+/// buf += codes::move_left!(2);
+///
+/// print!("{buf}");
+///
+/// _ = Terminal::stdio().flush();
+/// _ = Terminal::stdio().read(); // Wait for first enter
+///
+/// buf = codes::SHOW_CURSOR.to_string();
+/// buf += codes::move_right!(16);
+/// buf += codes::move_up!(1);
+///
+/// print!("{buf}");
+///
+/// _ = Terminal::stdio().flush();
+/// _ = Terminal::stdio().read(); // Wait for second enter
+/// ```
+///
+/// # Result in terminal
+/// The screenshot is taken before enter is pressed.
+///
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/hide_cursor.png)
 pub const HIDE_CURSOR: &str = disable!(25);
-/// Makes the cursor visible
+/// Makes the cursor visible.
+///
+/// Cursor is usually visible by default. It can be made invisible with
+/// [`HIDE_CURSOR`].
+///
+/// # Example
+/// ```no_run
+/// use std::io::Write;
+/// use termal_core::{codes, raw::Terminal};
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += "cursor is here > <";
+/// buf += codes::HIDE_CURSOR;
+/// buf += codes::move_left!(2);
+///
+/// print!("{buf}");
+///
+/// _ = Terminal::stdio().flush();
+/// _ = Terminal::stdio().read(); // Wait for first enter
+///
+/// buf = codes::SHOW_CURSOR.to_string();
+/// buf += codes::move_right!(16);
+/// buf += codes::move_up!(1);
+///
+/// print!("{buf}");
+///
+/// _ = Terminal::stdio().flush();
+/// _ = Terminal::stdio().read(); // Wait for second enter
+/// ```
+///
+/// # Result in terminal
+/// The screenshot is taken after first enter press.
+///
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/show_curosr.png)
 pub const SHOW_CURSOR: &str = enable!(25);
 /// Saves the visible part of the screen buffer
 pub const SAVE_SCREEN: &str = disable!(47);
