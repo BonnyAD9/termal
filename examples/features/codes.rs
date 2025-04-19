@@ -1053,3 +1053,20 @@ pub fn show_hide_cursor() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_save_screen() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += "This text will be saved and restored";
+    buf += codes::SAVE_SCREEN;
+
+    buf += codes::CLEAR;
+    buf += "You will not see this text because it will be overwritten with \
+        the saved screen";
+
+    buf += codes::LOAD_SCREEN;
+
+    println!("{buf}");
+
+    Ok(())
+}

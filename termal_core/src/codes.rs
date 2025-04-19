@@ -3119,9 +3119,60 @@ pub const HIDE_CURSOR: &str = disable!(25);
 ///
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/show_curosr.png)
 pub const SHOW_CURSOR: &str = enable!(25);
-/// Saves the visible part of the screen buffer
+/// Saves the visible part of the screen buffer and the cursor position.
+///
+/// The screen and cursor position may be restored to the saved state with
+/// [`LOAD_SCREEN`].
+///
+/// The lines are not preserved; loaded text will not unwrap after resize.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += "This text will be saved and restored";
+/// buf += codes::SAVE_SCREEN;
+///
+/// buf += codes::CLEAR;
+/// buf += "You will not see this text because it will be overwritten with \
+///     the saved screen";
+///
+/// buf += codes::LOAD_SCREEN;
+///
+/// println!("{buf}");
+/// ```
+///
+/// # Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/save_screen.png)
 pub const SAVE_SCREEN: &str = disable!(47);
-/// Loads the last saved screen
+/// Loads the last saved screen and the cursor position.
+///
+/// The screen and cursor position are saved with [`SAVE_SCREEN`].
+///
+/// The lines are not preserved; loaded text will not unwrap after resize.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += "This text will be saved and restored";
+/// buf += codes::SAVE_SCREEN;
+///
+/// buf += codes::CLEAR;
+/// buf += "You will not see this text because it will be overwritten with \
+///     the saved screen";
+///
+/// buf += codes::LOAD_SCREEN;
+///
+/// println!("{buf}");
+/// ```
+///
+/// # Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/save_screen.png)
 pub const LOAD_SCREEN: &str = enable!(47);
 /// Enables alternative buffer
 pub const ENABLE_ALTERNATIVE_BUFFER: &str = enable!(1049);
