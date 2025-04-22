@@ -130,6 +130,12 @@ fn single(name: &str) -> Result<()> {
         "codes::SHOW_CURSOR" => codes::show_hide_cursor(),
         "codes::SAVE_SCREEN" => codes::show_save_screen(),
         "codes::LOAD_SCREEN" => codes::show_save_screen(),
+        "codes::ENABLE_ALTERNATIVE_BUFFER" => {
+            codes::show_enable_alternative_buffer()
+        }
+        "codes::DISABLE_ALTERNATIVE_BUFFER" => {
+            codes::show_enable_alternative_buffer()
+        }
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -267,6 +273,8 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}SHOW_CURSOR{'_}
   {'c}codes{'y}::{'w bold}SAVE_SCREEN{'_}
   {'c}codes{'y}::{'w bold}LOAD_SCREEN{'_}
+  {'c}codes{'y}::{'w bold}ENABLE_ALTERNATIVE_BUFFER{'_}
+  {'c}codes{'y}::{'w bold}DISABLE_ALTERNATIVE_BUFFER{'_}
     "
     );
     Ok(())

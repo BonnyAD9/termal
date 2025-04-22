@@ -3126,6 +3126,9 @@ pub const SHOW_CURSOR: &str = enable!(25);
 ///
 /// The lines are not preserved; loaded text will not unwrap after resize.
 ///
+/// If you have tui app and you want to preserve the terminal state, rather
+/// use [`ENABLE_ALTERNATIVE_BUFFER`] and [`DISABLE_ALTERNATIVE_BUFFER`].
+///
 /// # Example
 /// ```no_run
 /// use termal_core::codes;
@@ -3153,6 +3156,9 @@ pub const SAVE_SCREEN: &str = disable!(47);
 ///
 /// The lines are not preserved; loaded text will not unwrap after resize.
 ///
+/// If you have tui app and you want to preserve the terminal state, rather
+/// use [`ENABLE_ALTERNATIVE_BUFFER`] and [`DISABLE_ALTERNATIVE_BUFFER`].
+///
 /// # Example
 /// ```no_run
 /// use termal_core::codes;
@@ -3174,9 +3180,58 @@ pub const SAVE_SCREEN: &str = disable!(47);
 /// # Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/save_screen.png)
 pub const LOAD_SCREEN: &str = enable!(47);
-/// Enables alternative buffer
+/// Enables alternative buffer.
+///
+/// Some terminal functionalities are sometimes allowed only in alternative
+/// buffer.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += "This text is in the default buffer";
+/// buf += codes::ENABLE_ALTERNATIVE_BUFFER;
+///
+/// buf += codes::CLEAR;
+/// buf += "In this alternative buffer I can do whatever I want without \
+///     affecting the default buffer.";
+///
+/// buf += codes::DISABLE_ALTERNATIVE_BUFFER;
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/enable_alternative_buffer.png)
 pub const ENABLE_ALTERNATIVE_BUFFER: &str = enable!(1049);
-/// Disables the laternative buffer
+/// Disables the laternative buffer and loads the previous contents of the
+/// default buffer.
+///
+/// Some terminal functionalities are sometimes allowed only in alternative
+/// buffer.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// buf += "This text is in the default buffer";
+/// buf += codes::ENABLE_ALTERNATIVE_BUFFER;
+///
+/// buf += codes::CLEAR;
+/// buf += "In this alternative buffer I can do whatever I want without \
+///     affecting the default buffer.";
+///
+/// buf += codes::DISABLE_ALTERNATIVE_BUFFER;
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/enable_alternative_buffer.png)
 pub const DISABLE_ALTERNATIVE_BUFFER: &str = disable!(1049);
 
 // Other

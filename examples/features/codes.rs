@@ -1070,3 +1070,20 @@ pub fn show_save_screen() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_enable_alternative_buffer() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+
+    buf += "This text is in the default buffer";
+    buf += codes::ENABLE_ALTERNATIVE_BUFFER;
+
+    buf += codes::CLEAR;
+    buf += "In this alternative buffer I can do whatever I want without \
+        affecting the default buffer.";
+
+    buf += codes::DISABLE_ALTERNATIVE_BUFFER;
+
+    println!("{buf}");
+
+    Ok(())
+}
