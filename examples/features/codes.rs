@@ -1087,3 +1087,15 @@ pub fn show_enable_alternative_buffer() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_full_reset() -> Result<()> {
+    let mut buf = codes::HIDE_CURSOR.to_string();
+    buf += codes::ENABLE_REVERSE_COLOR;
+    buf += "printing some text";
+
+    buf += codes::FULL_RESET;
+
+    print!("{buf}");
+
+    Ok(())
+}

@@ -136,6 +136,7 @@ fn single(name: &str) -> Result<()> {
         "codes::DISABLE_ALTERNATIVE_BUFFER" => {
             codes::show_enable_alternative_buffer()
         }
+        "codes::FULL_RESET" => codes::show_full_reset(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -275,6 +276,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}LOAD_SCREEN{'_}
   {'c}codes{'y}::{'w bold}ENABLE_ALTERNATIVE_BUFFER{'_}
   {'c}codes{'y}::{'w bold}DISABLE_ALTERNATIVE_BUFFER{'_}
+  {'c}codes{'y}::{'w bold}FULL_RESET{'_}
     "
     );
     Ok(())

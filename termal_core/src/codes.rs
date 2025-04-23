@@ -3236,6 +3236,22 @@ pub const DISABLE_ALTERNATIVE_BUFFER: &str = disable!(1049);
 
 // Other
 /// Full terminal reset. Clear the screen, buffer, reset all modes, ...
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::HIDE_CURSOR.to_string();
+/// buf += codes::ENABLE_REVERSE_COLOR;
+/// buf += "printing some text";
+///
+/// buf += codes::FULL_RESET;
+///
+/// print!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/full_reset.png)
 pub const FULL_RESET: &str = "\x1bc";
 
 /// Request the device attributes.
