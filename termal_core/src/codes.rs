@@ -3255,6 +3255,70 @@ pub const DISABLE_ALTERNATIVE_BUFFER: &str = disable!(1049);
 pub const FULL_RESET: &str = "\x1bc";
 
 /// Request the device attributes.
+///
+/// The terminal will reply with one of the following options based on its
+/// attributes:
+/// - `CSI ? 1 ; 2 c`: VT100
+/// - `CSI ? 1 ; 0 c`: VT101
+/// - `CSI ? 4 ; 6 c`: VT132
+/// - `CSI ? 6 c`: VT102
+/// - `CSI ? 7 c`: VT131
+/// - `CSI ? 1 2 ; Ps c`: VT125
+/// - `CSI ? 6 2 ; Ps c`: VT220
+/// - `CSI ? 6 3 ; Ps c`: VT320
+/// - `CSI ? 6 4 ; Ps c`: VT420
+/// - `CSI ? 6 5 ; Ps c`: VT510 - VT525
+///
+/// Where Ps is list of terminal features:
+/// - `1`: 132-columns
+/// - `2`: Printer
+/// - `3`: ReGIS graphics
+/// - `4`: Sixel graphics
+/// - `6`: Selective erase
+/// - `8`: User-defined keys
+/// - `9`: National Replacement Character sets
+/// - `1 5`: Technical characters
+/// - `1 6`: Locator port
+/// - `1 7`: Terminal state integration
+/// - `1 8`: User windows
+/// - `2 1`: Horizontal scrolling
+/// - `2 2`: ANSI color
+/// - `2 8`: Rectangular editing
+/// - `2 9`: ANSI text locator
+///
+/// Most of these features are not supported by modern terminals because of
+/// modern alternatives or because they are not used.
+///
+/// Termal can parse the response as [`crate::raw::events::Event::Status`] with
+/// [`crate::raw::events::Status::Attributes`] with instance of
+/// [`crate::raw::events::TermAttr`]. So the event will match
+/// `Event::Status(Status::Attributes(TermAttr { .. }))`.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::{
+///     raw::{enable_raw_mode, disable_raw_mode, Terminal}, codes
+/// };
+/// use std::io::Write;
+///
+/// enable_raw_mode()?;
+///
+/// print!("{}", codes::REQUEST_DEVICE_ATTRIBUTES);
+///
+/// let mut term = Terminal::stdio();
+/// term.flush()?;
+///
+/// let event = term.read()?;
+///
+/// disable_raw_mode()?;
+///
+/// println!("{}{event:#?}", codes::CLEAR);
+///
+/// # Ok::<_, termal_core::error::Error>(())
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/request_device_attributes.png)
 pub const REQUEST_DEVICE_ATTRIBUTES: &str = csi!('c');
 /// Request the device status.
 pub const REQUEST_STATUS_REPORT: &str = csi!('n', 5);

@@ -4,7 +4,7 @@ use termal::{
     codes,
     error::Result,
     formatc, printcln,
-    raw::{TermSize, Terminal, enable_raw_mode, term_size},
+    raw::{TermSize, Terminal, disable_raw_mode, enable_raw_mode, term_size},
     reset_terminal,
 };
 
@@ -1096,6 +1096,23 @@ pub fn show_full_reset() -> Result<()> {
     buf += codes::FULL_RESET;
 
     print!("{buf}");
+
+    Ok(())
+}
+
+pub fn show_request_device_attributes() -> Result<()> {
+    enable_raw_mode()?;
+
+    print!("{}", codes::REQUEST_DEVICE_ATTRIBUTES);
+
+    let mut term = Terminal::stdio();
+    term.flush()?;
+
+    let event = term.read()?;
+
+    disable_raw_mode()?;
+
+    println!("{}{event:#?}", codes::CLEAR);
 
     Ok(())
 }
