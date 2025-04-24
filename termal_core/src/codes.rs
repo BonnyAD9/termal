@@ -3269,7 +3269,7 @@ pub const FULL_RESET: &str = "\x1bc";
 /// - `CSI ? 6 4 ; Ps c`: VT420
 /// - `CSI ? 6 5 ; Ps c`: VT510 - VT525
 ///
-/// Where Ps is list of terminal features:
+/// Where `Ps` is list of terminal features:
 /// - `1`: 132-columns
 /// - `2`: Printer
 /// - `3`: ReGIS graphics
