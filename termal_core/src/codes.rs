@@ -3318,7 +3318,7 @@ pub const FULL_RESET: &str = "\x1bc";
 /// ```
 ///
 /// ## Result in terminal
-/// ![](https://raw.githubusercntent.com/BonnyAD9/termal/refs/heads/master/assets/codes/request_device_attributes.png)
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/request_device_attributes.png)
 pub const REQUEST_DEVICE_ATTRIBUTES: &str = csi!('c');
 /// Request the device status.
 ///
@@ -3354,7 +3354,7 @@ pub const REQUEST_DEVICE_ATTRIBUTES: &str = csi!('c');
 /// ```
 ///
 /// ## Result in terminal
-/// ![](https://raw.githubusercntent.com/BonnyAD9/termal/refs/heads/master/assets/codes/request_status_report.png)
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/request_status_report.png)
 pub const REQUEST_STATUS_REPORT: &str = csi!('n', 5);
 /// Request the current cursor position. In some terminals, the report may be
 /// ambigous with F3 key press with modifiers.
