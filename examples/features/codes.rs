@@ -1101,9 +1101,17 @@ pub fn show_full_reset() -> Result<()> {
 }
 
 pub fn show_request_device_attributes() -> Result<()> {
+    request(codes::REQUEST_DEVICE_ATTRIBUTES)
+}
+
+pub fn show_request_status_report() -> Result<()> {
+    request(codes::REQUEST_STATUS_REPORT)
+}
+
+fn request(code: &str) -> Result<()> {
     enable_raw_mode()?;
 
-    print!("{}", codes::REQUEST_DEVICE_ATTRIBUTES);
+    print!("{code}");
 
     let mut term = Terminal::stdio();
     term.flush()?;

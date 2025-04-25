@@ -3318,9 +3318,43 @@ pub const FULL_RESET: &str = "\x1bc";
 /// ```
 ///
 /// ## Result in terminal
-/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/request_device_attributes.png)
+/// ![](https://raw.githubusercntent.com/BonnyAD9/termal/refs/heads/master/assets/codes/request_device_attributes.png)
 pub const REQUEST_DEVICE_ATTRIBUTES: &str = csi!('c');
 /// Request the device status.
+///
+/// Basically ping the terminal :).
+///
+/// The terminal will reply with `CSI 0 n`.
+///
+/// Termal can parse the response as [`crate::raw::events::Event::Status`] with
+/// [`crate::raw::events::Status::Ok`]. So the read event will match
+/// `Event::Status(Status::Ok)`.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::{
+///     raw::{enable_raw_mode, disable_raw_mode, Terminal}, codes
+/// };
+/// use std::io::Write;
+///
+/// enable_raw_mode()?;
+///
+/// print!("{}", codes::REQUEST_STATUS_REPORT);
+///
+/// let mut term = Terminal::stdio();
+/// term.flush()?;
+///
+/// let event = term.read()?;
+///
+/// disable_raw_mode()?;
+///
+/// println!("{}{event:#?}", codes::CLEAR);
+///
+/// # Ok::<_, termal_core::error::Error>(())
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercntent.com/BonnyAD9/termal/refs/heads/master/assets/codes/request_status_report.png)
 pub const REQUEST_STATUS_REPORT: &str = csi!('n', 5);
 /// Request the current cursor position. In some terminals, the report may be
 /// ambigous with F3 key press with modifiers.

@@ -140,6 +140,7 @@ fn single(name: &str) -> Result<()> {
         "codes::REQUEST_DEVICE_ATTRIBUTES" => {
             codes::show_request_device_attributes()
         }
+        "codes::REQUEST_STATUS_REPORT" => codes::show_request_status_report(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -281,6 +282,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}DISABLE_ALTERNATIVE_BUFFER{'_}
   {'c}codes{'y}::{'w bold}FULL_RESET{'_}
   {'c}codes{'y}::{'w bold}REQUEST_DEVICE_ATTRIBUTES{'_}
+  {'c}codes{'y}::{'w bold}REQUEST_STATUS_REPORT{'_}
     "
     );
     Ok(())
