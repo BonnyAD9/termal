@@ -1108,6 +1108,12 @@ pub fn show_request_status_report() -> Result<()> {
     request(codes::REQUEST_STATUS_REPORT)
 }
 
+pub fn show_request_cursor_position() -> Result<()> {
+    print!("{}", codes::move_to!(5, 2));
+
+    request(codes::REQUEST_CURSOR_POSITION)
+}
+
 fn request(code: &str) -> Result<()> {
     enable_raw_mode()?;
 
