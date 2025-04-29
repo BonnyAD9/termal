@@ -3359,11 +3359,11 @@ pub const REQUEST_STATUS_REPORT: &str = csi!('n', 5);
 /// Request the current cursor position. In some terminals, the report may be
 /// ambigous with F3 key press with modifiers.
 ///
-/// The terminal will reply with `CSI Px Py R` where `Px` is the column and
+/// The terminal will reply with `CSI Px ; Py R` where `Px` is the column and
 /// `Py` is the row. Top left corner is `Px` = `1` and `Py` = 1.
 ///
-/// The code `CSI 1 Ps R` is in some terminals used for the key press `F3` with
-/// `Ps` being the modifiers. This is ambiguous with the report of cursor
+/// The code `CSI 1 ; Ps R` is in some terminals used for the key press `F3`
+/// with `Ps` being the modifiers. This is ambiguous with the report of cursor
 /// position. In this ambiguous case, termal will choose `F3` key press as the
 /// primary interpretation because it is more likely when the application
 /// desn't expect to receive cursor position report.
