@@ -3366,7 +3366,9 @@ pub const REQUEST_STATUS_REPORT: &str = csi!('n', 5);
 /// with `Ps` being the modifiers. This is ambiguous with the report of cursor
 /// position. In this ambiguous case, termal will choose `F3` key press as the
 /// primary interpretation because it is more likely when the application
-/// desn't expect to receive cursor position report.
+/// desn't expect to receive cursor position report. If you want to avoid this
+/// ambiguity, you can use [`REQUEST_CURSOR_POSITION2`], but it is not
+/// supported by some terminals that do support this code.
 ///
 /// Termal can parse the response as [`crate::raw::events::Event::Status`] with
 /// [`crate::raw::events::Status::CursorPosition`]. So the read event will
@@ -3403,6 +3405,41 @@ pub const REQUEST_CURSOR_POSITION: &str = csi!('n', 6);
 /// Request the current cursor position. Difference from
 /// [`REQUEST_CURSOR_POSITION`] is that the response is not ambigous, but it is
 /// not supported by some terminals that support [`REQUEST_CURSOR_POSITION`].
+///
+/// The terminal will reply with `CSI ? Px ; Py R` where `Px` is the column and
+/// `Py` is the row. Top left corner is `Px` = `1` and `Py` = 1.
+///
+/// Termal can parse the response as [`crate::raw::events::Event::Status`] with
+/// [`crate::raw::events::Status::CursorPosition`]. So the read event will
+/// match `Event::Status(Status::CursorPosition { x: _, y: _ })`.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::{
+///     raw::{enable_raw_mode, disable_raw_mode, Terminal}, codes
+/// };
+/// use std::io::Write;
+///
+/// print!("{}", codes::move_to!(5, 2));
+///
+/// enable_raw_mode()?;
+///
+/// print!("{}", codes::REQUEST_CURSOR_POSITION2);
+///
+/// let mut term = Terminal::stdio();
+/// term.flush()?;
+///
+/// let event = term.read()?;
+///
+/// disable_raw_mode()?;
+///
+/// println!("{}{event:#?}", codes::CLEAR);
+///
+/// # Ok::<_, termal_core::error::Error>(())
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/request_cursor_position.png)
 pub const REQUEST_CURSOR_POSITION2: &str = "\x1b[?6n";
 /// Requests the terminal name and version.
 pub const REQUEST_TERMINAL_NAME: &str = "\x1b[>0q";

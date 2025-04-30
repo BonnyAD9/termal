@@ -144,6 +144,9 @@ fn single(name: &str) -> Result<()> {
         "codes::REQUEST_CURSOR_POSITION" => {
             codes::show_request_cursor_position()
         }
+        "codes::REQUEST_CURSOR_POSITION2" => {
+            codes::show_request_cursor_position2()
+        }
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -287,6 +290,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}REQUEST_DEVICE_ATTRIBUTES{'_}
   {'c}codes{'y}::{'w bold}REQUEST_STATUS_REPORT{'_}
   {'c}codes{'y}::{'w bold}REQUEST_CURSOR_POSITION{'_}
+  {'c}codes{'y}::{'w bold}REQUEST_CURSOR_POSITION2{'_}
     "
     );
     Ok(())
