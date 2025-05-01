@@ -1120,6 +1120,10 @@ pub fn show_request_cursor_position2() -> Result<()> {
     request(codes::REQUEST_CURSOR_POSITION2)
 }
 
+pub fn show_request_terminal_name() -> Result<()> {
+    request(codes::REQUEST_TERMINAL_NAME)
+}
+
 fn request(code: &str) -> Result<()> {
     enable_raw_mode()?;
 

@@ -3442,6 +3442,40 @@ pub const REQUEST_CURSOR_POSITION: &str = csi!('n', 6);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/request_cursor_position.png)
 pub const REQUEST_CURSOR_POSITION2: &str = "\x1b[?6n";
 /// Requests the terminal name and version.
+/// Request the device status.
+///
+/// The terminal will reply with `DCS > | text ST` where `text` is the terminal
+/// name and version.
+///
+/// Termal can parse the response as [`crate::raw::events::Event::Status`] with
+/// [`crate::raw::events::Status::TerminalName`]. So the read event will match
+/// `Event::Status(Status::TerminalName(_))`.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::{
+///     raw::{enable_raw_mode, disable_raw_mode, Terminal}, codes
+/// };
+/// use std::io::Write;
+///
+/// enable_raw_mode()?;
+///
+/// print!("{}", codes::REQUEST_TERMINAL_NAME);
+///
+/// let mut term = Terminal::stdio();
+/// term.flush()?;
+///
+/// let event = term.read()?;
+///
+/// disable_raw_mode()?;
+///
+/// println!("{}{event:#?}", codes::CLEAR);
+///
+/// # Ok::<_, termal_core::error::Error>(())
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/request_terminal_name.png)
 pub const REQUEST_TERMINAL_NAME: &str = "\x1b[>0q";
 /// Request the text area size of terminal in pixels.
 pub const REQUEST_TEXT_AREA_SIZE_PX: &str = csi!('t', 14);
