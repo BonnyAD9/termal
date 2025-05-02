@@ -3442,7 +3442,6 @@ pub const REQUEST_CURSOR_POSITION: &str = csi!('n', 6);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/request_cursor_position.png)
 pub const REQUEST_CURSOR_POSITION2: &str = "\x1b[?6n";
 /// Requests the terminal name and version.
-/// Request the device status.
 ///
 /// The terminal will reply with `DCS > | text ST` where `text` is the terminal
 /// name and version.
@@ -3477,7 +3476,43 @@ pub const REQUEST_CURSOR_POSITION2: &str = "\x1b[?6n";
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/request_terminal_name.png)
 pub const REQUEST_TERMINAL_NAME: &str = "\x1b[>0q";
-/// Request the text area size of terminal in pixels.
+/// Request the text area size of the terminal in pixels.
+///
+/// The terminal will reply with `CSI 4 ; Ph ; Pw t` where `Ph` is the height
+/// name `Pw` is the width of the terminal text area in pixels.
+///
+/// On unix (linux) it is better to use [`crate::raw::term_size`]. Windows
+/// doesn't provide size in pixels when using [`crate::raw::term_size`].
+///
+/// Termal can parse the response as [`crate::raw::events::Event::Status`] with
+/// [`crate::raw::events::Status::TextAreaSizePx`]. So the read event will match
+/// `Event::Status(Status::TextAreaSizePx { w: _, h: _ })`.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::{
+///     raw::{enable_raw_mode, disable_raw_mode, Terminal}, codes
+/// };
+/// use std::io::Write;
+///
+/// enable_raw_mode()?;
+///
+/// print!("{}", codes::REQUEST_TEXT_AREA_SIZE_PX);
+///
+/// let mut term = Terminal::stdio();
+/// term.flush()?;
+///
+/// let event = term.read()?;
+///
+/// disable_raw_mode()?;
+///
+/// println!("{}{event:#?}", codes::CLEAR);
+///
+/// # Ok::<_, termal_core::error::Error>(())
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/request_text_area_size_px.png)
 pub const REQUEST_TEXT_AREA_SIZE_PX: &str = csi!('t', 14);
 /// Request size of single character on creen in pixels.
 pub const REQUEST_CHAR_SIZE: &str = csi!('t', 16);

@@ -1124,6 +1124,10 @@ pub fn show_request_terminal_name() -> Result<()> {
     request(codes::REQUEST_TERMINAL_NAME)
 }
 
+pub fn show_request_text_area_size_px() -> Result<()> {
+    request(codes::REQUEST_TEXT_AREA_SIZE_PX)
+}
+
 fn request(code: &str) -> Result<()> {
     enable_raw_mode()?;
 
