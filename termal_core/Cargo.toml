@@ -23,13 +23,13 @@ readers = ["raw", "term_text", "events"]
 image =  { version = "0.25.6", optional = true }
 litrs = { version = "0.4.1", optional = true }
 place_macro = "1.0.0"
-proc-macro2 = { version = "1.0.94", optional = true }
+proc-macro2 = { version = "1.0.95", optional = true }
 thiserror = "2.0.12"
 bitflags = { version = "2.9.0", optional = true }
 base64 = "0.22.1"
 
 [target.'cfg(unix)'.dependencies]
-libc = { version = "0.2.171", optional = true }
+libc = { version = "0.2.172", optional = true }
 
 [target.'cfg(windows)'.dependencies.winapi]
 version = "0.3.9"
