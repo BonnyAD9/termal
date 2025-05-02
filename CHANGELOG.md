@@ -2,7 +2,7 @@
 
 ## future
 ### New features
-- Readers support `Ctrl+Backspace` and `Ctdl+Delete` for deleting whole words.
+- Readers support `Ctrl+Backspace` and `Ctrl+Delete` for deleting whole words.
 
 ### Changes
 - Improve documentation for some codes.
