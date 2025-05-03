@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## future
+### Changes
+- Improve documentation for some codes.
+
 ## v2.1.2
 ### New features
 - Readers support `Ctrl+Backspace` and `Ctrl+Delete` for deleting whole words.

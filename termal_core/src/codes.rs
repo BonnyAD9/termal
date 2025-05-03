@@ -44,17 +44,27 @@ macro_rules! seq {
 
 // Sequences:
 
-/// The escape character
+/// The escape character.
 pub const ESC: char = '\x1b';
-/// Control Sequence Introducer: Start of CSI sequence
+/// Control Sequence Introducer: Start of CSI sequence.
+///
+/// Equivalent to `ESC [`.
 pub const CSI: &str = "\x1b[";
-/// Device Control String: Start of DCS sequence
+/// Device Control String: Start of DCS sequence.
+///
+/// Equivalent to `ESC P`.
 pub const DCS: &str = "\x1bP";
-/// Operating System Command: Start of OSC sequence
+/// Operating System Command: Start of OSC sequence.
+///
+/// Equivalent to `ESC ]`
 pub const OSC: &str = "\x1b]";
 /// String terminator. Terminates for example DCS.
+///
+/// Equivalent to `ESC \`
 pub const ST: &str = "\x1b\\";
-/// Single shift three
+/// Single shift three.
+///
+/// Equivalent to `ESC O`.
 pub const SS3: &str = "\x1bO";
 
 /// Creates control escape sequence, the first literal is the end of the
@@ -264,6 +274,8 @@ macro_rules! code_macro {
 /// Moves cursor to the given position. Position of the top left conrner is
 /// (1, 1).
 ///
+/// Equivalent to `CSI Py ; Px H`
+///
 /// If used with literals, produces `&'static str`, otherwise produces
 /// [`String`].
 ///
@@ -313,6 +325,8 @@ code_macro!(csi != 0 =>
     move_up, n; 'A'
         ? "Moves cursor up by N positions.
 
+Equivalent to `CSI Pn A`.
+
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
 # Example
@@ -331,6 +345,8 @@ printcln!(\"{'clear}\\n\\nhello{'mu2}up{'md}down{'md}\");
 
     move_down, n; 'B'
         ? "Moves cursor down by N positions.
+
+Equivalent to `CSI Pn B`.
 
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
@@ -351,6 +367,8 @@ printcln!(\"{'clear}\\n\\nhello{'mu2}up{'md}down{'md}\");
     move_right, n; 'C'
         ? "Moves cursor right by N positions.
 
+Equivalent to `CSI Pn C`.
+
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
 # Example
@@ -368,6 +386,8 @@ printcln!(\"{'clear}{'mr7}there{'ml11}hello\");
     move_left, n; 'D'
         ? "Moves cursor left by N positions.
 
+Equivalent to `CSI Pn D`.
+
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
 # Example
@@ -384,6 +404,8 @@ printcln!(\"{'clear}{'mr7}there{'ml11}hello\");
 
     insert_lines, n; 'L'
         ? "Insert n lines at the cursor moving them down.
+
+Equivalent to `CSI Pn L`.
 
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
@@ -408,6 +430,8 @@ println!(\"{buf}\");
     delete_lines, n; 'M'
         ? "Delete n lines at the cursor, moving the remaining from bottom.
 
+Equivalent to `CSI Pn M`.
+
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
 # Example
@@ -431,6 +455,8 @@ println!(\"{buf}\");
     insert_chars, n; '@'
         ? "Insert n characters, moving them to the right.
 
+Equivalent to `CSI Pn @`.
+
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
 # Example
@@ -451,6 +477,8 @@ println!(\"{buf}\");
 
     delete_chars, n; 'P'
         ? "Delete n characters, moving the chars from right.
+
+Equivalent to `CSI Pn P`.
 
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
@@ -473,6 +501,8 @@ println!(\"{buf}\");
 
     insert_columns, n; "'}"
         ? "Insert n columns, moving them to the right.
+
+Equivalent to `CSI Pn ' }`.
 
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
@@ -497,7 +527,9 @@ println!(\"{buf}\");
         ",
 
     delete_columns, n; "'~"
-        ? "Delete n columns, moving them from the right
+        ? "Delete n columns, moving them from the right.
+
+Equivalent to `CSI Pn ' ~`.
 
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
@@ -523,6 +555,8 @@ println!(\"{buf}\");
     set_down, n; 'E'
         ? "Moves cursor to the start of line N lines down.
 
+Equivalent to `CSI Pn E`.
+
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
 # Example
@@ -544,6 +578,8 @@ println!(\"{buf}\");
 
     set_up, n; 'F'
         ? "Moves cursor to the start of line N lines up
+
+Equivalent to `CSI Pn F`.
 
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
@@ -569,6 +605,8 @@ println!(\"{buf}\");
     repeat_char, n; 'b'
         ? "Repeat the previous char n times.
 
+Equivalent to `CSI Pn b`.
+
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
 # Example
@@ -593,6 +631,8 @@ code_macro!(csi
     column, n; 'G'
         ? "Moves cursor to the given column.
 
+Equivalent to `CSI Pn G`.
+
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
 # Example
@@ -615,6 +655,8 @@ println!(\"{buf}\");
 
 /// Moves cursor to the top left of the screen.
 ///
+/// Equivalent to `CSI H`
+///
 /// Has the same effect as `move_to!(1, 1)`, but it is a little shorter code.
 ///
 /// # Example
@@ -632,9 +674,11 @@ println!(\"{buf}\");
 ///
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/move_home.png)
-pub const MOVE_HOME: &str = "\x1b[H";
+pub const MOVE_HOME: &str = csi!('H');
 
 /// Moves cursor one line up, 'scrolling' if needed.
+///
+/// Equivalent to `ESC M`
 ///
 /// **THIS MAY NOT DO WHAT YOU EXPECT** read precise description below:
 ///
@@ -675,6 +719,8 @@ pub const UP_SCRL: &str = "\x1bM";
 /// Saves the cursor position (this is single save slot, not stack). Position
 /// can be later restored by [`CUR_LOAD`].
 ///
+/// Equivalent to `ESC 7`
+///
 /// # Example
 /// ```no_run
 /// use termal_core::codes;
@@ -695,6 +741,8 @@ pub const UP_SCRL: &str = "\x1bM";
 pub const CUR_SAVE: &str = "\x1b7";
 /// Restores the cursor position to the last saved position (this is single
 /// save slot, not stack). The position can be saved by [`CUR_SAVE`].
+///
+/// Equivalent to `ESC 8`
 ///
 /// # Example
 /// ```no_run
@@ -718,6 +766,8 @@ pub const CUR_LOAD: &str = "\x1b8";
 // Erase codes
 
 /// Erases from the cursor to the end of the screen.
+///
+/// Equivalent to `CSI J`
 ///
 /// Note that [`ERASE_TO_END`] and [`ERASE_FROM_START`] are not opposite. Both
 /// will also erase character at the cursor position.
@@ -749,6 +799,8 @@ pub const CUR_LOAD: &str = "\x1b8";
 pub const ERASE_TO_END: &str = csi!('J');
 /// Erases from the start of the screen to the cursor.
 ///
+/// Equivalent to `CSI 1 J`
+///
 /// Note that [`ERASE_FROM_START`] and [`ERASE_TO_END`] are not opposite. Both
 /// will also erase character at the cursor position.
 ///
@@ -778,6 +830,8 @@ pub const ERASE_TO_END: &str = csi!('J');
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/erase_from_start.png)
 pub const ERASE_FROM_START: &str = csi!('J', 1);
 /// Erases the entire screen.
+///
+/// Equivalent to `CSI 2 J`
 ///
 /// Doesn't erase the scrollback buffer. If you want to do both, use
 /// [`ERASE_ALL`], if you want to erase just the scrollback buffer, use
@@ -809,6 +863,8 @@ pub const ERASE_FROM_START: &str = csi!('J', 1);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/erase_screen.png)
 pub const ERASE_SCREEN: &str = csi!('J', 2);
 /// Erase the scrollback buffer.
+///
+/// Equivalent to `CSI 3 J`
 ///
 /// Doesn't erase the screen, only what is not visible on the screen because it
 /// was scrolled. If you wan't to also erase the screen use [`ERASE_ALL`], if
@@ -844,6 +900,8 @@ pub const ERASE_SCREEN: &str = csi!('J', 2);
 pub const ERASE_BUFFER: &str = csi!('J', 3);
 /// Erases from cursor to the end of the line.
 ///
+/// Equivalent to `CSI K`
+///
 /// Note that [`ERASE_TO_LN_END`] and [`ERASE_FROM_LN_START`] are not opposite.
 /// Both will also erase character at the cursor position.
 ///
@@ -873,6 +931,8 @@ pub const ERASE_BUFFER: &str = csi!('J', 3);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/erase_to_ln_end.png)
 pub const ERASE_TO_LN_END: &str = csi!('K');
 /// Erases from the start of the line to the cursor.
+///
+/// Equivalent to `CSI 1 K`
 ///
 /// Note that [`ERASE_FROM_LN_START`] and [`ERASE_TO_LN_END`] are not opposite.
 /// Both will also erase character at the cursor position.
@@ -904,6 +964,8 @@ pub const ERASE_TO_LN_END: &str = csi!('K');
 pub const ERASE_FROM_LN_START: &str = csi!('K', 1);
 /// Erases the entire line.
 ///
+/// Equivalent to `CSI 2 K`
+///
 /// # Example
 /// ```no_run
 /// use termal_core::{codes, error::Error, raw::{
@@ -930,6 +992,8 @@ pub const ERASE_FROM_LN_START: &str = csi!('K', 1);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/erase_line.png)
 pub const ERASE_LINE: &str = csi!('K', 2);
 /// Erases the whole screen and the scrollback buffer.
+///
+/// Equivalent to `CSI 2 J CSI 3 J`
 ///
 /// It is the same as combination of [`ERASE_SCREEN`] and [`ERASE_BUFFER`].
 ///
@@ -963,6 +1027,8 @@ pub const ERASE_LINE: &str = csi!('K', 2);
 pub const ERASE_ALL: &str = "\x1b[2J\x1b[3J";
 /// Erases the whole screen and the scrollback buffer and moves cursor to the
 /// top left.
+///
+/// Equivalent to `CSI 2 J CSI 3 J CSI H`
 ///
 /// It is the same as combination of [`ERASE_SCREEN`], [`ERASE_BUFFER`] and
 /// [`MOVE_HOME`].
@@ -1002,6 +1068,8 @@ pub const CLEAR: &str = "\x1b[2J\x1b[3J\x1b[H";
 
 /// Resets all the text modes (colors and styles).
 ///
+/// Equivalent to `CSI 0 m`
+///
 /// # Example
 /// ```no_run
 /// use termal_core::codes;
@@ -1034,6 +1102,8 @@ pub const RESET: &str = graphic!(0);
 
 /// Set bold text mode (on some terminals may be just brighter color).
 ///
+/// Equivalent to `CSI 1 m`
+///
 /// This mode can be reset with [`RESET_BOLD`] or [`RESET`]. Note that
 /// [`RESET_BOLD`] will also reset [`FAINT`] and [`RESET`] will reset all text
 /// modes.
@@ -1060,6 +1130,8 @@ pub const RESET: &str = graphic!(0);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/bold.png)
 pub const BOLD: &str = graphic!(1);
 /// Set dim/faint text mode.
+///
+/// Equivalent to `CSI 2 m`
 ///
 /// Doesn't affect the background color.
 ///
@@ -1112,6 +1184,8 @@ pub const BOLD: &str = graphic!(1);
 pub const FAINT: &str = graphic!(2);
 /// Set italic mode.
 ///
+/// Equivalent to `CSI 3 m`
+///
 /// This mode can be reset with [`RESET_ITALIC`] or [`RESET`]. Note that
 /// [`RESET`] will reset all text modes.
 ///
@@ -1134,6 +1208,8 @@ pub const FAINT: &str = graphic!(2);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/italic.png)
 pub const ITALIC: &str = graphic!(3);
 /// Set underline mode.
+///
+/// Equivalent to `CSI 4 m`
 ///
 /// This mode can be reset with [`RESET_UNDERLINE`] or [`RESET`]. Note that
 /// [`RESET_UNDERLINE`] will also reset [`DOUBLE_UNDERLINE`] and [`RESET`] will
@@ -1158,6 +1234,8 @@ pub const ITALIC: &str = graphic!(3);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/underline.png)
 pub const UNDERLINE: &str = graphic!(4);
 /// Set blinking mode.
+///
+/// Equivalent to `CSI 5 m`
 ///
 /// Doesn't affect background color (only foreground).
 ///
@@ -1184,6 +1262,8 @@ pub const UNDERLINE: &str = graphic!(4);
 pub const BLINKING: &str = graphic!(5);
 /// Set inverse mode (inverse foreground and background).
 ///
+/// Equivalent to `CSI 7 m`
+///
 /// This mode can be reset with [`RESET_INVERSE`] or [`RESET`]. Note that
 /// [`RESET`] will reset all text modes.
 ///
@@ -1206,6 +1286,8 @@ pub const BLINKING: &str = graphic!(5);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/inverse.png)
 pub const INVERSE: &str = graphic!(7);
 /// Set invisible mode.
+///
+/// Equivalent to `CSI 8 m`
 ///
 /// This mode can be reset with [`RESET_INVISIBLE`] or [`RESET`]. Note that
 /// [`RESET`] will reset all text modes.
@@ -1234,6 +1316,8 @@ pub const INVERSE: &str = graphic!(7);
 pub const INVISIBLE: &str = graphic!(8);
 /// Set striketrough mode.
 ///
+/// Equivalent to `CSI 9 m`
+///
 /// This mode can be reset with [`RESET_STRIKETROUGH`] or [`RESET`]. Note that
 /// [`RESET`] will reset all text modes.
 ///
@@ -1256,6 +1340,8 @@ pub const INVISIBLE: &str = graphic!(8);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/striketrough.png)
 pub const STRIKETROUGH: &str = graphic!(9);
 /// Set double underline mode.
+///
+/// Equivalent to `CSI 2 1 m`
 ///
 /// This mode can be reset with [`RESET_UNDERLINE`] or [`RESET`]. Note that
 /// [`RESET_UNDERLINE`] will also reset [`UNDERLINE`] and [`RESET`] will reset
@@ -1281,6 +1367,8 @@ pub const STRIKETROUGH: &str = graphic!(9);
 pub const DOUBLE_UNDERLINE: &str = graphic!(21);
 /// Set ouverline mode.
 ///
+/// Equivalent to `CSI 5 3 m`
+///
 /// This mode can be reset with [`RESET_OVERLINE`] or [`RESET`]. Note that
 /// [`RESET`] will reset all text modes.
 ///
@@ -1304,6 +1392,8 @@ pub const DOUBLE_UNDERLINE: &str = graphic!(21);
 pub const OVERLINE: &str = graphic!(53);
 
 /// Reset [`BOLD`] and [`FAINT`] mode.
+///
+/// Equivalent to `CSI 2 2 m`
 ///
 /// # Example
 /// ```no_run
@@ -1331,6 +1421,8 @@ pub const OVERLINE: &str = graphic!(53);
 pub const RESET_BOLD: &str = graphic!(22);
 /// Reset [`ITALIC`] mode.
 ///
+/// Equivalent to `CSI 2 3 m`
+///
 /// # Example
 /// ```no_run
 /// use termal_core::codes;
@@ -1350,6 +1442,8 @@ pub const RESET_BOLD: &str = graphic!(22);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/italic.png)
 pub const RESET_ITALIC: &str = graphic!(23);
 /// Reset [`UNDERLINE`] and [`DOUBLE_UNDERLINE`] mode.
+///
+/// Equivalent to `CSI 2 4 m`
 ///
 /// # Example
 /// ```no_run
@@ -1377,6 +1471,8 @@ pub const RESET_ITALIC: &str = graphic!(23);
 pub const RESET_UNDERLINE: &str = graphic!(24);
 /// Reset [`BLINKING`] mode.
 ///
+/// Equivalent to `CSI 2 5 m`
+///
 /// # Example
 /// ```no_run
 /// use termal_core::codes;
@@ -1396,6 +1492,8 @@ pub const RESET_UNDERLINE: &str = graphic!(24);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/blinking.gif)
 pub const RESET_BLINKING: &str = graphic!(25);
 /// Reset [`INVERSE`] mode.
+///
+/// Equivalent to `CSI 2 7 m`
 ///
 /// # Example
 /// ```no_run
@@ -1417,6 +1515,8 @@ pub const RESET_BLINKING: &str = graphic!(25);
 pub const RESET_INVERSE: &str = graphic!(27);
 /// Reset [`INVISIBLE`] mode.
 ///
+/// Equivalent to `CSI 2 8 m`
+///
 /// # Example
 /// ```no_run
 /// use termal_core::codes;
@@ -1436,6 +1536,8 @@ pub const RESET_INVERSE: &str = graphic!(27);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/invisible.png)
 pub const RESET_INVISIBLE: &str = graphic!(28);
 /// Reset [`STRIKETROUGH`] mode.
+///
+/// Equivalent to `CSI 2 9 m`
 ///
 /// # Example
 /// ```no_run
@@ -1457,6 +1559,8 @@ pub const RESET_INVISIBLE: &str = graphic!(28);
 pub const RESET_STRIKETROUGH: &str = graphic!(29);
 /// Reset [`OVERLINE`] mode.
 ///
+/// Equivalent to `CSI 5 5 m`
+///
 /// # Example
 /// ```no_run
 /// use termal_core::codes;
@@ -1477,6 +1581,8 @@ pub const RESET_STRIKETROUGH: &str = graphic!(29);
 pub const RESET_OVERLINE: &str = graphic!(55);
 
 /// Set the foreground color to black (dark black).
+///
+/// Equivalent to `CSI 3 0 m`
 ///
 /// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
@@ -1510,6 +1616,8 @@ pub const RESET_OVERLINE: &str = graphic!(55);
 pub const BLACK_FG: &str = graphic!(30);
 /// Set the foreground color to white (bright white).
 ///
+/// Equivalent to `CSI 9 7 m`
+///
 /// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
@@ -1542,6 +1650,8 @@ pub const BLACK_FG: &str = graphic!(30);
 pub const WHITE_FG: &str = graphic!(97);
 /// Set the foreground color to gray (bright black).
 ///
+/// Equivalent to `CSI 9 0 m`
+///
 /// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
@@ -1573,6 +1683,8 @@ pub const WHITE_FG: &str = graphic!(97);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/gray_fg.png)
 pub const GRAY_FG: &str = graphic!(90);
 /// Set to foreground color to bright gray (dark white).
+///
+/// Equivalent to `CSI 3 7 m`
 ///
 /// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
@@ -1607,6 +1719,8 @@ pub const GRAY_BRIGHT_FG: &str = graphic!(37);
 
 /// Set the foreground color to red (bright red).
 ///
+/// Equivalent to `CSI 9 1 m`
+///
 /// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
@@ -1638,6 +1752,8 @@ pub const GRAY_BRIGHT_FG: &str = graphic!(37);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/red_fg.png)
 pub const RED_FG: &str = graphic!(91);
 /// Set the foreground color to green (bright green).
+///
+/// Equivalent to `CSI 9 2 m`
 ///
 /// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
@@ -1671,6 +1787,8 @@ pub const RED_FG: &str = graphic!(91);
 pub const GREEN_FG: &str = graphic!(92);
 /// Set the foreground color to yellow (bright yellow).
 ///
+/// Equivalent to `CSI 9 3 m`
+///
 /// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
@@ -1702,6 +1820,8 @@ pub const GREEN_FG: &str = graphic!(92);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/yellow_fg.png)
 pub const YELLOW_FG: &str = graphic!(93);
 /// Set the foreground color to blue (bright blue).
+///
+/// Equivalent to `CSI 9 4 m`
 ///
 /// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
@@ -1735,6 +1855,8 @@ pub const YELLOW_FG: &str = graphic!(93);
 pub const BLUE_FG: &str = graphic!(94);
 /// Set the foreground color to magenta (bright magenta).
 ///
+/// Equivalent to `CSI 9 5 m`
+///
 /// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
@@ -1766,6 +1888,8 @@ pub const BLUE_FG: &str = graphic!(94);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/magenta_fg.png)
 pub const MAGENTA_FG: &str = graphic!(95);
 /// Set the foreground color to cyan (bright cyan).
+///
+/// Equivalent to `CSI 9 6 m`
 ///
 /// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
@@ -1800,6 +1924,8 @@ pub const CYAN_FG: &str = graphic!(96);
 
 /// Set the foreground color to dark red.
 ///
+/// Equivalent to `CSI 3 1 m`
+///
 /// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
@@ -1831,6 +1957,8 @@ pub const CYAN_FG: &str = graphic!(96);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/red_fg.png)
 pub const RED_DARK_FG: &str = graphic!(31);
 /// Set the foreground color to dark green.
+///
+/// Equivalent to `CSI 3 2 m`
 ///
 /// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
@@ -1864,6 +1992,8 @@ pub const RED_DARK_FG: &str = graphic!(31);
 pub const GREEN_DARK_FG: &str = graphic!(32);
 /// Set the foreground color to dark yellow.
 ///
+/// Equivalent to `CSI 3 3 m`
+///
 /// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
@@ -1895,6 +2025,8 @@ pub const GREEN_DARK_FG: &str = graphic!(32);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/yellow_fg.png)
 pub const YELLOW_DARK_FG: &str = graphic!(33);
 /// Set the foreground color to dark blue.
+///
+/// Equivalent to `CSI 3 4 m`
 ///
 /// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
@@ -1928,6 +2060,8 @@ pub const YELLOW_DARK_FG: &str = graphic!(33);
 pub const BLUE_DARK_FG: &str = graphic!(34);
 /// Set the foreground color to dark magenta.
 ///
+/// Equivalent to `CSI 3 5 m`
+///
 /// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
@@ -1959,6 +2093,8 @@ pub const BLUE_DARK_FG: &str = graphic!(34);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/magenta_fg.png)
 pub const MAGENTA_DARK_FG: &str = graphic!(35);
 /// Set the foreground color to dark cyan.
+///
+/// Equivalent to `CSI 3 6 m`
 ///
 /// Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
@@ -1993,6 +2129,8 @@ pub const CYAN_DARK_FG: &str = graphic!(36);
 
 /// Reset the foreground color to the default foreground color.
 ///
+/// Equivalent to `CSI 3 9 m`
+///
 /// This doesn't affect [`FAINT`] mode.
 ///
 /// ```no_run
@@ -2015,6 +2153,8 @@ pub const CYAN_DARK_FG: &str = graphic!(36);
 pub const RESET_FG: &str = graphic!(39);
 
 /// Set the background color to black (dark black).
+///
+/// Equivalent to `CSI 4 0 m`
 ///
 /// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
@@ -2044,6 +2184,8 @@ pub const RESET_FG: &str = graphic!(39);
 pub const BLACK_BG: &str = graphic!(40);
 /// Set the background color to white (bright white).
 ///
+/// Equivalent to `CSI 1 0 7 m`
+///
 /// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
@@ -2072,6 +2214,8 @@ pub const BLACK_BG: &str = graphic!(40);
 pub const WHITE_BG: &str = graphic!(107);
 /// Set the background color to gray (bright black).
 ///
+/// Equivalent to `CSI 1 0 0 m`
+///
 /// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
@@ -2099,6 +2243,8 @@ pub const WHITE_BG: &str = graphic!(107);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/gray_bg.png)
 pub const GRAY_BG: &str = graphic!(100);
 /// Set to background color to bright gray (dark white).
+///
+/// Equivalent to `CSI 4 7 m`
 ///
 /// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
@@ -2129,6 +2275,8 @@ pub const GRAY_BRIGHT_BG: &str = graphic!(47);
 
 /// Set the background color to red (bright red).
 ///
+/// Equivalent to `CSI 1 0 1 m`
+///
 /// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
@@ -2156,6 +2304,8 @@ pub const GRAY_BRIGHT_BG: &str = graphic!(47);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/red_bg.png)
 pub const RED_BG: &str = graphic!(101);
 /// Set the background color to green (bright green).
+///
+/// Equivalent to `CSI 1 0 2 m`
 ///
 /// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
@@ -2185,6 +2335,8 @@ pub const RED_BG: &str = graphic!(101);
 pub const GREEN_BG: &str = graphic!(102);
 /// Set the background color to yellow (bright yellow).
 ///
+/// Equivalent to `CSI 1 0 3 m`
+///
 /// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
@@ -2212,6 +2364,8 @@ pub const GREEN_BG: &str = graphic!(102);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/yellow_bg.png)
 pub const YELLOW_BG: &str = graphic!(103);
 /// Set the background color to blue (bright blue).
+///
+/// Equivalent to `CSI 1 0 4 m`
 ///
 /// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
@@ -2241,6 +2395,8 @@ pub const YELLOW_BG: &str = graphic!(103);
 pub const BLUE_BG: &str = graphic!(104);
 /// Set the background color to magenta (bright magenta).
 ///
+/// Equivalent to `CSI 1 0 5 m`
+///
 /// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
@@ -2268,6 +2424,8 @@ pub const BLUE_BG: &str = graphic!(104);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/magenta_bg.png)
 pub const MAGENTA_BG: &str = graphic!(105);
 /// Set the background color to cyan (bright cyan).
+///
+/// Equivalent to `CSI 1 0 6 m`
 ///
 /// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
@@ -2298,6 +2456,8 @@ pub const CYAN_BG: &str = graphic!(106);
 
 /// Set the background color to dark red.
 ///
+/// Equivalent to `CSI 4 1 m`
+///
 /// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
@@ -2325,6 +2485,8 @@ pub const CYAN_BG: &str = graphic!(106);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/red_bg.png)
 pub const RED_DARK_BG: &str = graphic!(41);
 /// Set the background color to dark green.
+///
+/// Equivalent to `CSI 4 2 m`
 ///
 /// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
@@ -2354,6 +2516,8 @@ pub const RED_DARK_BG: &str = graphic!(41);
 pub const GREEN_DARK_BG: &str = graphic!(42);
 /// Set the background color to dark yellow.
 ///
+/// Equivalent to `CSI 4 3 m`
+///
 /// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
@@ -2381,6 +2545,8 @@ pub const GREEN_DARK_BG: &str = graphic!(42);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/yellow_bg.png)
 pub const YELLOW_DARK_BG: &str = graphic!(43);
 /// Set the background color to dark blue.
+///
+/// Equivalent to `CSI 4 4 m`
 ///
 /// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
@@ -2410,6 +2576,8 @@ pub const YELLOW_DARK_BG: &str = graphic!(43);
 pub const BLUE_DARK_BG: &str = graphic!(44);
 /// Set the background color to dark magenta.
 ///
+/// Equivalent to `CSI 4 5 m`
+///
 /// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
 ///
@@ -2437,6 +2605,8 @@ pub const BLUE_DARK_BG: &str = graphic!(44);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/magenta_bg.png)
 pub const MAGENTA_DARK_BG: &str = graphic!(45);
 /// Set the background color to dark cyan.
+///
+/// Equivalent to `CSI 4 6 m`
 ///
 /// Background color can be reset with [`RESET_BG`] or [`RESET`]. Note that
 /// [`RESET`] will also reset all text modes.
@@ -2467,6 +2637,8 @@ pub const CYAN_DARK_BG: &str = graphic!(46);
 
 /// Reset the background color.
 ///
+/// Equivalent to `CSI 4 9 m`
+///
 /// # Example
 /// ```no_run
 /// use termal_core::codes;
@@ -2491,6 +2663,8 @@ code_macro! { graphic
     fg256, 38, 5, c;
         ? "
 Creates a foreground color, color is value in range 0..256.
+
+Equivalent to `CSI 3 8 ; 5 ; Pc m`.
 
 Colors in range `0..16` corespond to the named colors in order black, red,
 green, yellow, blue, magenta, cyan and yellow. `0..8` are the dark variants and
@@ -2538,6 +2712,8 @@ print!(\"{buf}\");
 
     bg256, 48, 5, c;
         ? "Creates a background color, color is value in range 0..256.
+
+Equivalent to `CSI 4 8 ; 5 ; Pc m`.
 
 Colors in range `0..16` corespond to the named colors in order black, red,
 green, yellow, blue, magenta, cyan and yellow. `0..8` are the dark variants and
@@ -2589,6 +2765,8 @@ print!(\"{buf}\");
 
     underline256, 58, 5, c;
         ? "Set underline color as 256 color.
+
+Equivalent to `CSI 5 8 ; 5 ; Pc m`.
 
 Works for both [`UNDERLINE`] and [`DOUBLE_UNDERLINE`].
 
@@ -2642,6 +2820,8 @@ print!(\"{buf}\");
         ? "Creates a true rgb foreground color. R, G and B must be values in
 range 0..256.
 
+Equivalent to `CSI 3 8 ; 2 ; Pr ; Pg ; Pb m`.
+
 If the argument is literal, this expands to [`&'static str`]. Otherwise this
 expands to [`String`].
 
@@ -2682,6 +2862,8 @@ Ok::<(), Error>(())
     bg, 48, 2, r, g, b;
         ? "Creates a true rgb background color. R, G and B must be values in
 range 0..256.
+
+Equivalent to `CSI 4 8 ; 2 ; Pr ; Pg ; Pb m`.
 
 If the argument is literal, this expands to [`&'static str`]. Otherwise this
 expands to [`String`].
@@ -2729,6 +2911,8 @@ Ok::<(), Error>(())
         ? "Set underline color as rgb. R, G, and B muse be values in range
 0..256.
 
+Equivalent to `CSI 5 8 ; 2 ; Pr ; Pg ; Pb m`.
+
 If the argument is literal, this expands to [`&'static str`]. Otherwise this
 expands to [`String`].
 
@@ -2775,6 +2959,8 @@ Ok::<(), Error>(())
 
 /// Reset the underline color.
 ///
+/// Equivalent to `CSI 5 9 m`.
+///
 /// Underline color may be set by [`underline256`] or [`underline_rgb`].
 ///
 /// # Example
@@ -2799,6 +2985,8 @@ pub const RESET_UNDERLINE_COLOR: &str = graphic!(59);
 
 // Line modes
 /// Makes this line characters twice as large overlapping with the line below.
+///
+/// Equivalent to `ESC # 3`.
 ///
 /// Using this code will affect the current line. It can be printed before or
 /// after the line contents of the line are printed.
@@ -2838,6 +3026,8 @@ pub const RESET_UNDERLINE_COLOR: &str = graphic!(59);
 pub const DOUBLE_CHAR_HEIGHT_DOWN: &str = "\x1b#3";
 /// Makes this line characters twice as large overlapping with the line above.
 ///
+/// Equivalent to `ESC # 4`.
+///
 /// Using this code will affect the current line. It can be printed before or
 /// after the line contents of the line are printed.
 ///
@@ -2876,6 +3066,8 @@ pub const DOUBLE_CHAR_HEIGHT_DOWN: &str = "\x1b#3";
 pub const DOUBLE_CHAR_HEIGHT_UP: &str = "\x1b#4";
 /// Makes this line character twice as wide (but not twice as tall).
 ///
+/// Equivalent to `ESC # 6`.
+///
 /// Using this code will affect the current line. It can be printed before or
 /// after the line contents of the line are printed.
 ///
@@ -2908,6 +3100,8 @@ pub const DOUBLE_CHAR_HEIGHT_UP: &str = "\x1b#4";
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/double_char_width.png)
 pub const DOUBLE_CHAR_WIDTH: &str = "\x1b#6";
 /// Resets this line character size.
+///
+/// Equivalent to `ESC # 5`.
 ///
 /// This is used to reset [`DOUBLE_CHAR_HEIGHT_DOWN`],
 /// [`DOUBLE_CHAR_HEIGHT_UP`] and [`DOUBLE_CHAR_WIDTH`].
@@ -2947,6 +3141,8 @@ pub const RESET_CHAR_SIZE: &str = "\x1b#5";
 
 /// Enables line wrapping.
 ///
+/// Equivalent to `CSI ? 7 h`.
+///
 /// Line wrapping is usually enabled by default. It can be disabled with
 /// [`DISABLE_LINE_WRAP`].
 ///
@@ -2972,6 +3168,8 @@ pub const RESET_CHAR_SIZE: &str = "\x1b#5";
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/disable_line_wrap.png)
 pub const ENABLE_LINE_WRAP: &str = enable!(7);
 /// Disables line wrapping.
+///
+/// Equivalent to `CSI ? 7 l`.
 ///
 /// Line wrapping is usually enabled by default. It can be enabled with
 /// [`ENABLE_LINE_WRAP`].
@@ -3000,6 +3198,8 @@ pub const DISABLE_LINE_WRAP: &str = disable!(7);
 
 /// Enables reverse color for the whole terminal display.
 ///
+/// Equivalent to `CSI ? 5 h`.
+///
 /// This mode is usually disabled by default and can be disabled by
 /// [`DISABLE_REVERSE_COLOR`].
 ///
@@ -3022,6 +3222,8 @@ pub const DISABLE_LINE_WRAP: &str = disable!(7);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/enable_reverse_color.png)
 pub const ENABLE_REVERSE_COLOR: &str = enable!(5);
 /// Disables reverse color for the whole terminal display.
+///
+/// Equivalent to `CSI ? 5 l`.
 ///
 /// This mode is usually disabled by default and may be enabled by
 /// [`ENABLE_REVERSE_COLOR`].
@@ -3048,6 +3250,8 @@ pub const DISABLE_REVERSE_COLOR: &str = disable!(5);
 // Private modes
 
 /// Makes the cursor invisible.
+///
+/// Equivalent to `CSI ? 2 5 l`.
 ///
 /// Cursor is usually visible by default. It can be made visible with
 /// [`SHOW_CURSOR`].
@@ -3085,6 +3289,8 @@ pub const DISABLE_REVERSE_COLOR: &str = disable!(5);
 pub const HIDE_CURSOR: &str = disable!(25);
 /// Makes the cursor visible.
 ///
+/// Equivalent to `CSI ? 2 5 h`.
+///
 /// Cursor is usually visible by default. It can be made invisible with
 /// [`HIDE_CURSOR`].
 ///
@@ -3121,6 +3327,8 @@ pub const HIDE_CURSOR: &str = disable!(25);
 pub const SHOW_CURSOR: &str = enable!(25);
 /// Saves the visible part of the screen buffer and the cursor position.
 ///
+/// Equivalent to `CSI ? 4 7 l`.
+///
 /// The screen and cursor position may be restored to the saved state with
 /// [`LOAD_SCREEN`].
 ///
@@ -3152,6 +3360,8 @@ pub const SHOW_CURSOR: &str = enable!(25);
 pub const SAVE_SCREEN: &str = disable!(47);
 /// Loads the last saved screen and the cursor position.
 ///
+/// Equivalent to `CSI ? 4 7 h`.
+///
 /// The screen and cursor position are saved with [`SAVE_SCREEN`].
 ///
 /// The lines are not preserved; loaded text will not unwrap after resize.
@@ -3182,6 +3392,8 @@ pub const SAVE_SCREEN: &str = disable!(47);
 pub const LOAD_SCREEN: &str = enable!(47);
 /// Enables alternative buffer.
 ///
+/// Equivalent to `CSI ? 1 0 4 9 h`.
+///
 /// Some terminal functionalities are sometimes allowed only in alternative
 /// buffer.
 ///
@@ -3208,6 +3420,8 @@ pub const LOAD_SCREEN: &str = enable!(47);
 pub const ENABLE_ALTERNATIVE_BUFFER: &str = enable!(1049);
 /// Disables the laternative buffer and loads the previous contents of the
 /// default buffer.
+///
+/// Equivalent to `CSI ? 1 0 4 9 l`.
 ///
 /// Some terminal functionalities are sometimes allowed only in alternative
 /// buffer.
@@ -3237,6 +3451,8 @@ pub const DISABLE_ALTERNATIVE_BUFFER: &str = disable!(1049);
 // Other
 /// Full terminal reset. Clear the screen, buffer, reset all modes, ...
 ///
+/// Equivalent to `ESC c`.
+///
 /// # Example
 /// ```no_run
 /// use termal_core::codes;
@@ -3255,6 +3471,8 @@ pub const DISABLE_ALTERNATIVE_BUFFER: &str = disable!(1049);
 pub const FULL_RESET: &str = "\x1bc";
 
 /// Request the device attributes.
+///
+/// Equivalent to `CSI c`.
 ///
 /// The terminal will reply with one of the following options based on its
 /// attributes:
@@ -3322,6 +3540,8 @@ pub const FULL_RESET: &str = "\x1bc";
 pub const REQUEST_DEVICE_ATTRIBUTES: &str = csi!('c');
 /// Request the device status.
 ///
+/// Equivalent to `CSI 5 n`.
+///
 /// Basically ping the terminal :).
 ///
 /// The terminal will reply with `CSI 0 n`.
@@ -3358,6 +3578,8 @@ pub const REQUEST_DEVICE_ATTRIBUTES: &str = csi!('c');
 pub const REQUEST_STATUS_REPORT: &str = csi!('n', 5);
 /// Request the current cursor position. In some terminals, the report may be
 /// ambigous with F3 key press with modifiers.
+///
+/// Equivalent to `CSI 6 n`.
 ///
 /// The terminal will reply with `CSI Px ; Py R` where `Px` is the column and
 /// `Py` is the row. Top left corner is `Px` = `1` and `Py` = 1.
@@ -3406,6 +3628,8 @@ pub const REQUEST_CURSOR_POSITION: &str = csi!('n', 6);
 /// [`REQUEST_CURSOR_POSITION`] is that the response is not ambigous, but it is
 /// not supported by some terminals that support [`REQUEST_CURSOR_POSITION`].
 ///
+/// Equivalent to `CSI ? 6 n`.
+///
 /// The terminal will reply with `CSI ? Px ; Py R` where `Px` is the column and
 /// `Py` is the row. Top left corner is `Px` = `1` and `Py` = 1.
 ///
@@ -3443,6 +3667,8 @@ pub const REQUEST_CURSOR_POSITION: &str = csi!('n', 6);
 pub const REQUEST_CURSOR_POSITION2: &str = "\x1b[?6n";
 /// Requests the terminal name and version.
 ///
+/// Equivalent to `CSI > 0 q`.
+///
 /// The terminal will reply with `DCS > | text ST` where `text` is the terminal
 /// name and version.
 ///
@@ -3477,6 +3703,8 @@ pub const REQUEST_CURSOR_POSITION2: &str = "\x1b[?6n";
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/request_terminal_name.png)
 pub const REQUEST_TERMINAL_NAME: &str = "\x1b[>0q";
 /// Request the text area size of the terminal in pixels.
+///
+/// Equivalent to `CSI 1 4 t`.
 ///
 /// The terminal will reply with `CSI 4 ; Ph ; Pw t` where `Ph` is the height
 /// name `Pw` is the width of the terminal text area in pixels.
@@ -3514,7 +3742,46 @@ pub const REQUEST_TERMINAL_NAME: &str = "\x1b[>0q";
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/request_text_area_size_px.png)
 pub const REQUEST_TEXT_AREA_SIZE_PX: &str = csi!('t', 14);
-/// Request size of single character on creen in pixels.
+/// Request size of single character on screen in pixels.
+///
+/// Equivalent to `CSI 1 6 t`.
+///
+/// The terminal will reply with `CSI 6 ; Ph ; Pw t` where `Ph` is the height
+/// name `Pw` is the width of the terminal text area in pixels.
+///
+/// On unix (linux) it is better to use [`crate::raw::term_size`] and calculate
+/// the character size. Windows doesn't provide size in pixels when using
+/// [`crate::raw::term_size`].
+///
+/// Termal can parse the response as [`crate::raw::events::Event::Status`] with
+/// [`crate::raw::events::Status::CharSize`]. So the read event will match
+/// `Event::Status(Status::CharSize { w: _, h: _ })`.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::{
+///     raw::{enable_raw_mode, disable_raw_mode, Terminal}, codes
+/// };
+/// use std::io::Write;
+///
+/// enable_raw_mode()?;
+///
+/// print!("{}", codes::REQUEST_CHAR_SIZE);
+///
+/// let mut term = Terminal::stdio();
+/// term.flush()?;
+///
+/// let event = term.read()?;
+///
+/// disable_raw_mode()?;
+///
+/// println!("{}{event:#?}", codes::CLEAR);
+///
+/// # Ok::<_, termal_core::error::Error>(())
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/request_char_size.png)
 pub const REQUEST_CHAR_SIZE: &str = csi!('t', 16);
 /// Request size of the text area in characters.
 pub const REQUEST_TEXT_AREA_SIZE: &str = csi!('t', 18);

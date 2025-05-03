@@ -151,6 +151,7 @@ fn single(name: &str) -> Result<()> {
         "codes::REQUEST_TEXT_AREA_SIZE_PX" => {
             codes::show_request_text_area_size_px()
         }
+        "codes::REQUEST_CHAR_SIZE" => codes::show_request_char_size(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -297,6 +298,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}REQUEST_CURSOR_POSITION2{'_}
   {'c}codes{'y}::{'w bold}REQUEST_TERMINAL_NAME{'_}
   {'c}codes{'y}::{'w bold}REQUEST_TEXT_AREA_SIZE_PX{'_}
+  {'c}codes{'y}::{'w bold}REQUEST_CHAR_SIZE{'_}
     "
     );
     Ok(())
