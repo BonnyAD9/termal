@@ -68,7 +68,9 @@ pub const ST: &str = "\x1b\\";
 pub const SS3: &str = "\x1bO";
 
 /// Creates control escape sequence, the first literal is the end of the
-/// sequence, the other arguments are the values in the sequence
+/// sequence, the other arguments are the values in the sequence.
+///
+/// `csi!(Pi, (Pa),*)` is quivalent to `CSI (Pa);* Pi`.
 #[macro_export]
 macro_rules! csi {
     ($i:literal $(,$a:expr)* $(,)?) => {
@@ -77,6 +79,8 @@ macro_rules! csi {
 }
 
 /// Creates control escape sequence for graphic mode.
+///
+/// `graphic!((Pa),*)` is quivalent to `CSI (Pa);* m`.
 #[macro_export]
 macro_rules! graphic {
     ($($a:expr),* $(,)?) => {
@@ -86,6 +90,8 @@ macro_rules! graphic {
 
 /// Creates operating system command sequence. The arguments are the values in
 /// the sequence.
+///
+/// `osc!((Pa),*)` is quivalent to `OSC (Pa);* ST`.
 #[macro_export]
 macro_rules! osc {
     ($($a:expr),+) => {
@@ -94,6 +100,8 @@ macro_rules! osc {
 }
 
 /// Enables the given private terminal mode.
+///
+/// `enable!(Pa)` is quivalent to `CSI ? Pa h`.
 #[macro_export]
 macro_rules! enable {
     ($a:expr) => {
@@ -102,6 +110,8 @@ macro_rules! enable {
 }
 
 /// Disables the given private terminal mode.
+///
+/// `enable!(Pa)` is quivalent to `CSI ? Pa l`.
 #[macro_export]
 macro_rules! disable {
     ($a:expr) => {
