@@ -1132,6 +1132,10 @@ pub fn show_request_char_size() -> Result<()> {
     request(codes::REQUEST_CHAR_SIZE)
 }
 
+pub fn show_request_text_area_size() -> Result<()> {
+    request(codes::REQUEST_TEXT_AREA_SIZE)
+}
+
 fn request(code: &str) -> Result<()> {
     enable_raw_mode()?;
 

@@ -3794,6 +3794,43 @@ pub const REQUEST_TEXT_AREA_SIZE_PX: &str = csi!('t', 14);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/request_char_size.png)
 pub const REQUEST_CHAR_SIZE: &str = csi!('t', 16);
 /// Request size of the text area in characters.
+///
+/// Equivalent to `CSI 1 8 t`.
+///
+/// The terminal will reply with `CSI 8 ; Ph ; Pw t` where `Ph` is the height
+/// name `Pw` is the width of the terminal text area in characters.
+///
+/// On unix (linux) and windows it is better to use [`crate::raw::term_size`].
+///
+/// Termal can parse the response as [`crate::raw::events::Event::Status`] with
+/// [`crate::raw::events::Status::TextAreaSize`]. So the read event will match
+/// `Event::Status(Status::TextAreaSize { w: _, h: _ })`.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::{
+///     raw::{enable_raw_mode, disable_raw_mode, Terminal}, codes
+/// };
+/// use std::io::Write;
+///
+/// enable_raw_mode()?;
+///
+/// print!("{}", codes::REQUEST_TEXT_AREA_SIZE);
+///
+/// let mut term = Terminal::stdio();
+/// term.flush()?;
+///
+/// let event = term.read()?;
+///
+/// disable_raw_mode()?;
+///
+/// println!("{}{event:#?}", codes::CLEAR);
+///
+/// # Ok::<_, termal_core::error::Error>(())
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/request_text_area_size.png)
 pub const REQUEST_TEXT_AREA_SIZE: &str = csi!('t', 18);
 /// Request the number of sixel color registers.
 pub const REQUEST_SIXEL_COLORS: &str = "\x1b[?1;1;1S";
