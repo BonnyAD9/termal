@@ -1136,6 +1136,10 @@ pub fn show_request_text_area_size() -> Result<()> {
     request(codes::REQUEST_TEXT_AREA_SIZE)
 }
 
+pub fn show_request_sixel_colors() -> Result<()> {
+    request(codes::REQUEST_SIXEL_COLORS)
+}
+
 fn request(code: &str) -> Result<()> {
     enable_raw_mode()?;
 

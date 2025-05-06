@@ -3833,6 +3833,43 @@ pub const REQUEST_CHAR_SIZE: &str = csi!('t', 16);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/request_text_area_size.png)
 pub const REQUEST_TEXT_AREA_SIZE: &str = csi!('t', 18);
 /// Request the number of sixel color registers.
+///
+/// Equivalent to `CSI ? 1 ; 1 ; 1 S`.
+///
+/// The terminal will reply with `CSI 1 ; 0 ; Ps S` where `Ps` is the number of
+/// sixel registers that are supported by this terminal.
+///
+/// Note that terminals that don't support sixels will propably not reply.
+///
+/// Termal can parse the response as [`crate::raw::events::Event::Status`] with
+/// [`crate::raw::events::Status::SixelColors`]. So the read event will match
+/// `Event::Status(Status::SixelColors(_))`.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::{
+///     raw::{enable_raw_mode, disable_raw_mode, Terminal}, codes
+/// };
+/// use std::io::Write;
+///
+/// enable_raw_mode()?;
+///
+/// print!("{}", codes::REQUEST_SIXEL_COLORS);
+///
+/// let mut term = Terminal::stdio();
+/// term.flush()?;
+///
+/// let event = term.read()?;
+///
+/// disable_raw_mode()?;
+///
+/// println!("{}{event:#?}", codes::CLEAR);
+///
+/// # Ok::<_, termal_core::error::Error>(())
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/request_sixel_colors.png)
 pub const REQUEST_SIXEL_COLORS: &str = "\x1b[?1;1;1S";
 
 /// Enables mouse tracking for X and Y coordinate on press.
