@@ -3836,8 +3836,8 @@ pub const REQUEST_TEXT_AREA_SIZE: &str = csi!('t', 18);
 ///
 /// Equivalent to `CSI ? 1 ; 1 ; 1 S`.
 ///
-/// The terminal will reply with `CSI 1 ; 0 ; Ps S` where `Ps` is the number of
-/// sixel registers that are supported by this terminal.
+/// The terminal will reply with `CSI ? 1 ; 0 ; Ps S` where `Ps` is the number
+/// of sixel registers that are supported by this terminal.
 ///
 /// Note that terminals that don't support sixels will propably not reply.
 ///
