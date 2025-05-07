@@ -3872,10 +3872,40 @@ pub const REQUEST_TEXT_AREA_SIZE: &str = csi!('t', 18);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/request_sixel_colors.png)
 pub const REQUEST_SIXEL_COLORS: &str = "\x1b[?1;1;1S";
 
-/// Enables mouse tracking for X and Y coordinate on press.
+/// Enables mouse tracking for X and Y coordinate on press (mouse down).
+///
+/// Equivalent to `CSI ? 9 h`.
 ///
 /// This is usually not supported by terminals. The code
 /// [`ENABLE_MOUSE_XY_PR_TRACKING`] is more widely supported.
+///
+/// The terminal will reply with `CSI M Cb Cx Cy` where:
+/// - `Cb` is the button pressed on the mouse
+///     - ` ` (space) for primary button (left)
+///     - `!` for middle button
+///     - `"` for secondary button (right)
+/// - `Cx` and `Cy` are character coordinates of the mouse press. They are
+///   encoded as single character where ordinary value of the character - 32 is
+///   the value of the coordinate.
+///
+/// Note that the responses usually aren't well formed CSI escape sequences.
+///
+/// Termal can parse the responses as [`crate::raw::events::Event::Mouse`] with
+/// [`crate::raw::events::mouse::Mouse`]. So the read event will match:
+/// ```ignore
+/// Event::Mouse(mouse::Mouse {
+///     button:
+///         mouse::Button::Left | mouse::Button::Middle | mouse::Button::Right,
+///     event: mouse::Event::Down,
+///     modifiers: Modifiers::NONE,
+///     x: 1..=233,
+///     y: 1..=233,
+/// })
+/// ```
+///
+/// The limitation on the maximum value of `x` and `y` coordinate comes from
+/// the fact that single character can have only value from 0 to 255 and the
+/// first 32 characters are unused. (255 - 32 == 233)
 ///
 /// # Example
 /// ```no_run
@@ -3919,7 +3949,12 @@ pub const REQUEST_SIXEL_COLORS: &str = "\x1b[?1;1;1S";
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/enable_mouse_xy_tracking.gif)
 pub const ENABLE_MOUSE_XY_TRACKING: &str = enable!(9);
-/// Disables mouse tracking for X and Y coordinate on press.
+/// Disables mouse tracking for X and Y coordinate on press enabled by
+/// [`ENABLE_MOUSE_XY_TRACKING`].
+///
+/// Equivalent to `CSI ? 9 l`.
+///
+/// See [`ENABLE_MOUSE_XY_TRACKING`] for more info about the mouse tracking.
 pub const DISABLE_MOUSE_XY_TRACKING: &str = disable!(9);
 /// Enables mouse tracking for X and Y coordinate on press and release.
 pub const ENABLE_MOUSE_XY_PR_TRACKING: &str = enable!(1000);
