@@ -156,6 +156,9 @@ fn single(name: &str) -> Result<()> {
             codes::show_request_text_area_size()
         }
         "codes::REQUEST_SIXEL_COLORS" => codes::show_request_sixel_colors(),
+        "codes::ENABLE_MOUSE_XY_TRACKING" => {
+            codes::show_enable_mouse_xy_tracking()
+        }
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -305,6 +308,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}REQUEST_CHAR_SIZE{'_}
   {'c}codes{'y}::{'w bold}REQUEST_TEXT_AREA_SIZE{'_}
   {'c}codes{'y}::{'w bold}REQUEST_SIXEL_COLORS{'_}
+  {'c}codes{'y}::{'w bold}ENABLE_MOUSE_XY_TRACKING{'_}
     "
     );
     Ok(())

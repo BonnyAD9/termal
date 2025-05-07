@@ -3873,6 +3873,51 @@ pub const REQUEST_TEXT_AREA_SIZE: &str = csi!('t', 18);
 pub const REQUEST_SIXEL_COLORS: &str = "\x1b[?1;1;1S";
 
 /// Enables mouse tracking for X and Y coordinate on press.
+///
+/// This is usually not supported by terminals. The code
+/// [`ENABLE_MOUSE_XY_PR_TRACKING`] is more widely supported.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::{
+///     codes,
+///     raw::{
+///         enable_raw_mode, disable_raw_mode, Terminal,
+///         events::{Event, Key, KeyCode, Modifiers},
+///     },
+/// };
+/// use std::io::Write;
+///
+/// print!("{}", codes::ENABLE_MOUSE_XY_TRACKING);
+/// print!("{}", codes::CLEAR);
+///
+/// enable_raw_mode()?;
+///
+/// let mut term = Terminal::stdio();
+/// term.flush()?;
+///
+/// loop {
+///     let event = term.read()?;
+///     term.flushed(format!("{}{event:#?}", codes::CLEAR))?;
+///     if matches!(
+///         event,
+///         Event::KeyPress(Key { code: KeyCode::Char('c'), modifiers, .. })
+///             if modifiers.contains(Modifiers::CONTROL)
+///     ) {
+///         break;
+///     }
+/// }
+///
+/// print!("{}", codes::DISABLE_MOUSE_XY_TRACKING);
+/// term.flush()?;
+///
+/// disable_raw_mode()?;
+///
+/// # Ok::<_, termal_core::error::Error>(())
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/enable_mouse_xy_tracking.gif)
 pub const ENABLE_MOUSE_XY_TRACKING: &str = enable!(9);
 /// Disables mouse tracking for X and Y coordinate on press.
 pub const DISABLE_MOUSE_XY_TRACKING: &str = disable!(9);

@@ -4,7 +4,11 @@ use termal::{
     codes,
     error::Result,
     formatc, printcln,
-    raw::{TermSize, Terminal, disable_raw_mode, enable_raw_mode, term_size},
+    raw::{
+        TermSize, Terminal, disable_raw_mode, enable_raw_mode,
+        events::{Event, Key, KeyCode, Modifiers},
+        term_size,
+    },
     reset_terminal,
 };
 
@@ -1153,6 +1157,35 @@ fn request(code: &str) -> Result<()> {
     disable_raw_mode()?;
 
     println!("{}{event:#?}", codes::CLEAR);
+
+    Ok(())
+}
+
+pub fn show_enable_mouse_xy_tracking() -> Result<()> {
+    print!("{}", codes::ENABLE_MOUSE_XY_TRACKING);
+    print!("{}", codes::CLEAR);
+
+    enable_raw_mode()?;
+
+    let mut term = Terminal::stdio();
+    term.flush()?;
+
+    loop {
+        let event = term.read()?;
+        term.flushed(format!("{}{event:#?}", codes::CLEAR))?;
+        if matches!(
+            event,
+            Event::KeyPress(Key { code: KeyCode::Char('c'), modifiers, .. })
+                if modifiers.contains(Modifiers::CONTROL)
+        ) {
+            break;
+        }
+    }
+
+    print!("{}", codes::DISABLE_MOUSE_XY_TRACKING);
+    term.flush()?;
+
+    disable_raw_mode()?;
 
     Ok(())
 }
