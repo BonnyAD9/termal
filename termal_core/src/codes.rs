@@ -3885,10 +3885,11 @@ pub const REQUEST_SIXEL_COLORS: &str = "\x1b[?1;1;1S";
 ///     - `!` for middle button
 ///     - `"` for secondary button (right)
 /// - `Cx` and `Cy` are character coordinates of the mouse press. They are
-///   encoded as single character where ordinary value of the character - 32 is
-///   the value of the coordinate.
+///   encoded as single byte character where ordinary value of the character -
+///   32 is the value of the coordinate.
 ///
-/// Note that the responses usually aren't well formed CSI escape sequences.
+/// Note that the responses usually aren't well formed CSI escape sequences and
+/// also not well formed UTF-8 strings.
 ///
 /// Termal can parse the responses as [`crate::raw::events::Event::Mouse`] with
 /// [`crate::raw::events::mouse::Mouse`]. So the read event will match:
@@ -3904,8 +3905,8 @@ pub const REQUEST_SIXEL_COLORS: &str = "\x1b[?1;1;1S";
 /// ```
 ///
 /// The limitation on the maximum value of `x` and `y` coordinate comes from
-/// the fact that single character can have only value from 0 to 255 and the
-/// first 32 characters are unused. (255 - 32 == 233)
+/// the fact that single byte character can have only value from 0 to 255 and
+/// the first 32 characters are unused. (255 - 32 == 233)
 ///
 /// # Example
 /// ```no_run
