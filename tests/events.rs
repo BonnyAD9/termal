@@ -249,7 +249,7 @@ fn test_mouse() {
     assert_eq!(
         AmbigousEvent::from_code(b"\x1b[M\x71\x28\x2F"),
         AmbigousEvent::mouse(Mouse {
-            button: mouse::Button::None,
+            button: mouse::Button::Middle,
             modifiers: Modifiers::CONTROL,
             event: mouse::Event::ScrollDown,
             x: 8,
@@ -308,7 +308,7 @@ fn test_mouse() {
     assert_eq!(
         AmbigousEvent::from_code(b"\x1b[<81;8;15M"),
         AmbigousEvent::mouse(Mouse {
-            button: mouse::Button::None,
+            button: mouse::Button::Middle,
             modifiers: Modifiers::CONTROL,
             event: mouse::Event::ScrollDown,
             x: 8,
@@ -354,7 +354,7 @@ fn test_mouse() {
     assert_eq!(
         AmbigousEvent::from_code(b"\x1b[113;8;15M"),
         AmbigousEvent::mouse(Mouse {
-            button: mouse::Button::None,
+            button: mouse::Button::Middle,
             modifiers: Modifiers::CONTROL,
             event: mouse::Event::ScrollDown,
             x: 8,

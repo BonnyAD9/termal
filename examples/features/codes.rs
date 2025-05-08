@@ -1163,6 +1163,15 @@ fn request(code: &str) -> Result<()> {
 
 pub fn show_enable_mouse_xy_tracking() -> Result<()> {
     print!("{}", codes::ENABLE_MOUSE_XY_TRACKING);
+    track_events(codes::DISABLE_MOUSE_XY_TRACKING)
+}
+
+pub fn show_enable_mouse_xy_pr_tracking() -> Result<()> {
+    print!("{}", codes::ENABLE_MOUSE_XY_PR_TRACKING);
+    track_events(codes::DISABLE_MOUSE_XY_PR_TRACKING)
+}
+
+fn track_events(disable: &str) -> Result<()> {
     print!("{}", codes::CLEAR);
 
     enable_raw_mode()?;
@@ -1182,7 +1191,7 @@ pub fn show_enable_mouse_xy_tracking() -> Result<()> {
         }
     }
 
-    print!("{}", codes::DISABLE_MOUSE_XY_TRACKING);
+    print!("{disable}");
     term.flush()?;
 
     disable_raw_mode()?;

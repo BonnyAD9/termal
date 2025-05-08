@@ -1,8 +1,15 @@
 # CHANGELOG
 
 ## future
+### Features
+- Support more mouse button events.
+
 ### Changes
 - Improve documentation for some codes.
+
+### Fixes
+- Fix parsing of mouse scroll events.
+- Don't panic on unknown mouse button event.
 
 ## v2.1.2
 ### New features

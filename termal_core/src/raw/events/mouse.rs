@@ -8,16 +8,23 @@ bitflags::bitflags! {
         const MIDDLE = 0x1;
         const SECONDARY = 0x2;
         const RELEASE = 0x3;
-        const BUTTON = 0x3;
         const SHIFT = 0x4;
         const ALT = 0x8;
         const CONTROL = 0x10;
         const MODIFIERS = 0x1C;
         const MOVE = 0x20;
+        const ANY_SCROLL = 0x40;
         const SCROLL_UP = 0x40;
         const SCROLL_DOWN = 0x41;
         const SCROLL = 0x41;
-        const ACTION = 0x43;
+        const OTHER_BTN = 0x80;
+        /// Usually the back button on mouse.
+        const BUTTON4 = 0x80;
+        /// Usually the forward button on mouse.
+        const BUTTON5 = 0x81;
+        const BUTTON6 = 0x82;
+        const BUTTON7 = 0x83;
+        const BUTTON = 0xC3;
     }
 }
 
@@ -28,6 +35,13 @@ pub enum Button {
     Left,
     Middle,
     Right,
+    /// Usually the back button on mouse.
+    Button4,
+    /// Usually the forward button on mouse.
+    Button5,
+    Button6,
+    Button7,
+    Other(u32),
 }
 
 /// Mouse events.
@@ -66,8 +80,8 @@ impl Mouse {
         down: Option<bool>,
     ) -> Self {
         let state = State::from_bits_retain(state);
-        let button = if state.contains(State::SCROLL) {
-            Button::None
+        let button = if state.contains(State::ANY_SCROLL) {
+            Button::Middle
         } else {
             state.into()
         };
@@ -99,9 +113,15 @@ impl From<State> for Button {
         match value & State::BUTTON {
             State::RELEASE => Self::None,
             State::PRIMARY => Self::Left,
-            State::MIDDLE => Self::Middle,
+            State::MIDDLE | State::SCROLL_DOWN | State::SCROLL_UP => {
+                Self::Middle
+            }
             State::SECONDARY => Self::Right,
-            _ => unreachable!(),
+            State::BUTTON4 => Self::Button4,
+            State::BUTTON5 => Self::Button5,
+            State::BUTTON6 => Self::Button6,
+            State::BUTTON7 => Self::Button7,
+            v => Self::Other(v.bits()),
         }
     }
 }

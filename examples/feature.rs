@@ -5,7 +5,9 @@ use std::{
 };
 
 use features::codes;
-use termal::{eprintacln, error::Result, gradient, printacln};
+use termal::{
+    eprintacln, error::Result, gradient, printacln, register_reset_on_panic,
+};
 
 mod features;
 
@@ -18,6 +20,7 @@ pub fn main() -> Result<()> {
 }
 
 fn single(name: &str) -> Result<()> {
+    register_reset_on_panic();
     match name {
         "-h" | "-?" | "--help" => help(),
         "codes::BELL" => codes::show_bell(),
@@ -158,6 +161,9 @@ fn single(name: &str) -> Result<()> {
         "codes::REQUEST_SIXEL_COLORS" => codes::show_request_sixel_colors(),
         "codes::ENABLE_MOUSE_XY_TRACKING" => {
             codes::show_enable_mouse_xy_tracking()
+        }
+        "codes::ENABLE_MOUSE_XY_PR_TRACKING" => {
+            codes::show_enable_mouse_xy_pr_tracking()
         }
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
@@ -309,6 +315,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}REQUEST_TEXT_AREA_SIZE{'_}
   {'c}codes{'y}::{'w bold}REQUEST_SIXEL_COLORS{'_}
   {'c}codes{'y}::{'w bold}ENABLE_MOUSE_XY_TRACKING{'_}
+  {'c}codes{'y}::{'w bold}ENABLE_MOUSE_XY_PR_TRACKING{'_}
     "
     );
     Ok(())
