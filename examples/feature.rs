@@ -165,6 +165,9 @@ fn single(name: &str) -> Result<()> {
         "codes::ENABLE_MOUSE_XY_PR_TRACKING" => {
             codes::show_enable_mouse_xy_pr_tracking()
         }
+        "codes::ENABLE_MOUSE_XY_DRAG_TRACKING" => {
+            codes::show_enable_mouse_xy_drag_tracking()
+        }
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -316,6 +319,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}REQUEST_SIXEL_COLORS{'_}
   {'c}codes{'y}::{'w bold}ENABLE_MOUSE_XY_TRACKING{'_}
   {'c}codes{'y}::{'w bold}ENABLE_MOUSE_XY_PR_TRACKING{'_}
+  {'c}codes{'y}::{'w bold}ENABLE_MOUSE_XY_DRAG_TRACKING{'_}
     "
     );
     Ok(())

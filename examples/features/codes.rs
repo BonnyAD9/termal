@@ -1171,6 +1171,11 @@ pub fn show_enable_mouse_xy_pr_tracking() -> Result<()> {
     track_events(codes::DISABLE_MOUSE_XY_PR_TRACKING)
 }
 
+pub fn show_enable_mouse_xy_drag_tracking() -> Result<()> {
+    print!("{}", codes::ENABLE_MOUSE_XY_DRAG_TRACKING);
+    track_events(codes::DISABLE_MOUSE_XY_DRAG_TRACKING)
+}
+
 fn track_events(disable: &str) -> Result<()> {
     print!("{}", codes::CLEAR);
 
