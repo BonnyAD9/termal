@@ -3876,6 +3876,8 @@ pub const REQUEST_SIXEL_COLORS: &str = "\x1b[?1;1;1S";
 ///
 /// Equivalent to `CSI ? 9 h`.
 ///
+/// Can be disabled with [`DISABLE_MOUSE_XY_TRACKING`].
+///
 /// This is usually not supported by terminals. The code
 /// [`ENABLE_MOUSE_XY_PR_TRACKING`] is more widely supported.
 ///
@@ -3961,6 +3963,8 @@ pub const DISABLE_MOUSE_XY_TRACKING: &str = disable!(9);
 /// track mouse scroll events. Also reports modifiers.
 ///
 /// Equivalent to `CSI ? 1000 h`.
+///
+/// Can be disabled with [`DISABLE_MOUSE_XY_PR_TRACKING`].
 ///
 /// The terminal will reply with `CSI M Cb Cx Cy` where:
 /// - `Cb` is the button pressed on the mouse, event and modifiers. Value that
@@ -4070,6 +4074,8 @@ pub const DISABLE_MOUSE_XY_PR_TRACKING: &str = disable!(1000);
 ///
 /// Equivalent to `CSI ? 1002 h`.
 ///
+/// Can be disabled with [`DISABLE_MOUSE_XY_DRAG_TRACKING`].
+///
 /// The terminal will reply with `CSI M Cb Cx Cy` where:
 /// - `Cb` is the button pressed on the mouse, event and modifiers. Value that
 ///   it represents is ordinary value of the single byte character - 32. The
@@ -4176,10 +4182,117 @@ pub const ENABLE_MOUSE_XY_DRAG_TRACKING: &str = enable!(1002);
 /// See [`ENABLE_MOUSE_XY_DRAG_TRACKING`] for more info.
 pub const DISABLE_MOUSE_XY_DRAG_TRACKING: &str = disable!(1002);
 /// Enables mouse tracking for X and Y coordinate on press, release, drag and
-/// move.
+/// move. Also track scroll events.
+///
+/// Equivalent to `CSI ? 1003 h`.
+///
+/// Can be disabled with [`DISABLE_MOUSE_XY_ALL_TRACKING`].
+///
+/// The terminal will reply with `CSI M Cb Cx Cy` where:
+/// - `Cb` is the button pressed on the mouse, event and modifiers. Value that
+///   it represents is ordinary value of the single byte character - 32. The
+///   value bits from lowest to highest (`76543210`) have this meaning:
+///     - Bits `7610` form number representing the mouse button:
+///         - `0` primary press (left)
+///         - `1` middle press
+///         - `2` secondary press (right)
+///         - `3` button release (may be any button that was pressed)
+///         - `4` scroll up
+///         - `5` scroll down
+///         - `8` button 4 (back)
+///         - `9` button 5 (forward)
+///         - `10` button 6
+///         - `11` button 7
+///     - Bit `2` represents whether shift was pressed with the event.
+///     - Bit `3` represents whether alt was pressed with the event.
+///     - Bit `4` represents whether control was pressed with the event.
+///     - If bit `5` is set, the event is that mouse moved and not that key was
+///       pressed.
+/// - `Cx` and `Cy` are character coordinates of the mouse press. They are
+///   encoded as single byte character where ordinary value of the character -
+///   32 is the value of the coordinate.
+///
+/// Note that the responses usually aren't well formed CSI escape sequences and
+/// also not well formed UTF-8 strings.
+///
+/// The reply sequence may be modified with extensions:
+/// - [`ENABLE_MOUSE_XY_UTF8_EXT`]: use utf8 encoding to increase the
+///   coordinate range to `1..2015`
+/// - [`ENABLE_MOUSE_XY_EXT`]: use proper CSI sequences. Coordinate range is
+///   unlimited and button release contains information about which button was
+///   released.
+/// - [`ENABLE_MOUSE_XY_URXVT_EXT`]: use proper CSI sequences. Coordinate range
+///   is unlimited. May be ambiguous with other events so it is not
+///   recommended.
+/// - [`ENABLE_MOUSE_XY_PIX_EXT`]: Same as [`ENABLE_MOUSE_XY_EXT`] but the
+///   coordinates are in pxels instead of characters.
+///
+/// See the respective codes for more detailed description.
+///
+/// Termal can parse the responses as [`crate::raw::events::Event::Mouse`] with
+/// [`crate::raw::events::mouse::Mouse`]. So the read event will match:
+/// ```ignore
+/// Event::Mouse(mouse::Mouse {
+///     button: _,
+///     event: _,
+///     modifiers: Modifiers::SHIFT | Modifiers::ALT | Modifiers::CONTROL,
+///     x: 1..=233,
+///     y: 1..=233,
+/// })
+/// ```
+///
+/// The limitation on the maximum value of `x` and `y` coordinate comes from
+/// the fact that single byte character can have only value from 0 to 255 and
+/// the first 32 characters are unused. (255 - 32 == 233)
+///
+/// # Example
+/// ```no_run
+/// use termal_core::{
+///     codes,
+///     raw::{
+///         enable_raw_mode, disable_raw_mode, Terminal,
+///         events::{Event, Key, KeyCode, Modifiers},
+///     },
+/// };
+/// use std::io::Write;
+///
+/// print!("{}", codes::ENABLE_MOUSE_XY_ALL_TRACKING);
+/// print!("{}", codes::CLEAR);
+///
+/// enable_raw_mode()?;
+///
+/// let mut term = Terminal::stdio();
+/// term.flush()?;
+///
+/// loop {
+///     let event = term.read()?;
+///     term.flushed(format!("{}{event:#?}", codes::CLEAR))?;
+///     if matches!(
+///         event,
+///         Event::KeyPress(Key { code: KeyCode::Char('c'), modifiers, .. })
+///             if modifiers.contains(Modifiers::CONTROL)
+///     ) {
+///         break;
+///     }
+/// }
+///
+/// print!("{}", codes::DISABLE_MOUSE_XY_ALL_TRACKING);
+/// term.flush()?;
+///
+/// disable_raw_mode()?;
+///
+/// # Ok::<_, termal_core::error::Error>(())
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/enable_mouse_xy_all_tracking.gif)
 pub const ENABLE_MOUSE_XY_ALL_TRACKING: &str = enable!(1003);
 /// Disables mouse tracking for X and Y coordinate on press, release, drag and
 /// move.
+///
+/// Equivalent to `CSI ? 1003 l`.
+///
+/// See [`ENABLE_MOUSE_XY_ALL_TRACKING`] for more info.
 pub const DISABLE_MOUSE_XY_ALL_TRACKING: &str = disable!(1003);
 /// Enables sending event on focus gain.
 pub const ENABLE_FOCUS_EVENT: &str = enable!(1004);
