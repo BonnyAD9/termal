@@ -1,6 +1,6 @@
 use base64::Engine;
 
-use crate::{codes, raw::events::csi::Csi};
+use crate::{FromColorStr, Rgb, codes, raw::events::csi::Csi};
 
 use super::{
     Key, KeyCode, Modifiers, Status, TermAttr, mouse::Mouse, osc::Osc,
@@ -286,17 +286,17 @@ impl AmbigousEvent {
         match (&osc.args[..], osc.data) {
             ([4, code], color) => Some(Self::status(Status::ColorCodeColor {
                 code: *code as u8,
-                color: color.parse().ok()?,
+                color: Rgb::<u16>::from_color_str(color).ok()?,
             })),
-            ([10], color) => {
-                Some(Self::status(Status::DefaultFgColor(color.parse().ok()?)))
-            }
-            ([11], color) => {
-                Some(Self::status(Status::DefaultBgColor(color.parse().ok()?)))
-            }
-            ([12], color) => {
-                Some(Self::status(Status::CursorColor(color.parse().ok()?)))
-            }
+            ([10], color) => Some(Self::status(Status::DefaultFgColor(
+                Rgb::<u16>::from_color_str(color).ok()?,
+            ))),
+            ([11], color) => Some(Self::status(Status::DefaultBgColor(
+                Rgb::<u16>::from_color_str(color).ok()?,
+            ))),
+            ([12], color) => Some(Self::status(Status::CursorColor(
+                Rgb::<u16>::from_color_str(color).ok()?,
+            ))),
             ([52], selection) => Some(Self::status(Status::SelectionData(
                 base64::prelude::BASE64_STANDARD
                     .decode(selection.split_once(';')?.1)

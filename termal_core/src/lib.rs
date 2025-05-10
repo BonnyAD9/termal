@@ -31,17 +31,18 @@ pub fn write_gradient(
     end: impl Into<Rgb>,
 ) {
     let len = s_len as f32 - 1.;
-    let start = start.into().as_f32();
-    let end = end.into().as_f32();
+    let start = start.into().cast::<f32>();
+    let end = end.into().cast::<f32>();
 
     let step = if s_len == 1 {
-        Rgb::<f32>::BLACK
+        Rgb::<f32>::ZERO
     } else {
         (end - start) / len
     };
 
     for (i, c) in s.as_ref().chars().take(s_len).enumerate() {
-        res.push_str(&(start + step * i as f32).as_u8().fg());
+        let col = (start + step * i as f32).cast::<u8>();
+        res.push_str(&fg!(col.r(), col.g(), col.b()));
         res.push(c);
     }
 }

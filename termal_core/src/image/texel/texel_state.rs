@@ -75,8 +75,8 @@ where
             self.texh - half,
         ));
         Texel {
-            bg: top.as_u8(),
-            fg: bot.as_u8(),
+            bg: top.cast(),
+            fg: bot.cast(),
             chr: '▄',
         }
     }
@@ -132,14 +132,14 @@ where
         let mut diff = Rgb::<f32>::default();
 
         for (v, d) in vals.iter().zip(&desc) {
-            diff += (*v - sum[*d]).abs();
+            diff += (*v - sum[*d]).cabs();
         }
 
         (
             diff.sum(),
             Texel {
-                bg: sum[0].as_u8(),
-                fg: sum[1].as_u8(),
+                bg: sum[0].cast(),
+                fg: sum[1].cast(),
                 chr,
             },
         )

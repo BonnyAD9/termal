@@ -27,16 +27,16 @@ pub trait Image {
 
         let x = rect.x as usize;
         let y = rect.y as usize;
-        let w = (rect.w as usize).max(1);
-        let h = (rect.h as usize).max(1);
+        let w = (*rect.width() as usize).max(1);
+        let h = (*rect.height() as usize).max(1);
 
         for y in y..y + h {
             for x in x..x + w {
-                color_sum += self.get_pixel(x, y);
+                color_sum += self.get_pixel(x, y).convert::<usize>();
             }
         }
 
-        color_sum.as_f32() / (w * h) as f32
+        color_sum.cast::<f32>() / (w * h) as f32
     }
 }
 
@@ -58,6 +58,7 @@ where
 
         <Self as image::GenericImageView>::get_pixel(self, x as u32, y as u32)
             .to_rgb()
+            .0
             .into()
     }
 }

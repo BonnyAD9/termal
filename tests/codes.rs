@@ -107,11 +107,11 @@ fn functions() {
     );
 
     assert_eq!(
-        codes::define_color_code(11, (0x12, 0x34, 0x56)),
+        codes::define_color_code(11, (0x12_u8, 0x34, 0x56)),
         "\x1b]4;11;rgb:12/34/56\x1b\\"
     );
     assert_eq!(
-        codes::define_color_code(11, (0x11, 0x33, 0x55)),
+        codes::define_color_code(11, (0x11_u8, 0x33, 0x55)),
         "\x1b]4;11;rgb:1/3/5\x1b\\"
     );
     assert_eq!(
@@ -131,15 +131,15 @@ fn functions() {
         "\x1b]4;11;rgb:123/567/9ab\x1b\\"
     );
     assert_eq!(
-        codes::set_default_fg_color((0x12, 0x34, 0x56)),
+        codes::set_default_fg_color((0x12_u8, 0x34, 0x56)),
         "\x1b]10;rgb:12/34/56\x1b\\"
     );
     assert_eq!(
-        codes::set_default_bg_color((0x12, 0x34, 0x56)),
+        codes::set_default_bg_color((0x12_u8, 0x34, 0x56)),
         "\x1b]11;rgb:12/34/56\x1b\\"
     );
     assert_eq!(
-        codes::set_cursor_color((0x12, 0x34, 0x56)),
+        codes::set_cursor_color((0x12_u8, 0x34, 0x56)),
         "\x1b]12;rgb:12/34/56\x1b\\"
     );
 

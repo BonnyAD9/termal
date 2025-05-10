@@ -18,8 +18,8 @@ struct Texel {
 
 impl Texel {
     pub fn append_to(&self, r: &mut String) {
-        *r += &fg!(self.fg.r, self.fg.g, self.fg.b);
-        *r += &bg!(self.bg.r, self.bg.g, self.bg.b);
+        *r += &fg!(self.fg.r(), self.fg.g(), self.fg.b());
+        *r += &bg!(self.bg.r(), self.bg.g(), self.bg.b());
         r.push(self.chr);
     }
 }

@@ -20,8 +20,6 @@
 //!   to terminal to do what they say they do. This is the majority of the
 //!   codes.
 
-use std::fmt::Display;
-
 use base64::Engine;
 use place_macro::place;
 
@@ -329,7 +327,7 @@ macro_rules! move_to {
 
 pub use move_to;
 
-use crate::Rgb;
+use crate::{Rgb, ToColorStr};
 
 code_macro!(csi != 0 =>
     move_up, n; 'A'
@@ -4382,33 +4380,33 @@ code_macro! {osc
 /// Defines color for the given color code.
 pub fn define_color_code<T>(code: u8, color: impl Into<Rgb<T>>) -> String
 where
-    Rgb<T>: Display,
+    Rgb<T>: ToColorStr,
 {
-    osc!(4, code, color.into())
+    osc!(4, code, color.into().to_color_str())
 }
 
 /// Sets the default foreground color
 pub fn set_default_fg_color<T>(color: impl Into<Rgb<T>>) -> String
 where
-    Rgb<T>: Display,
+    Rgb<T>: ToColorStr,
 {
-    osc!(10, color.into())
+    osc!(10, color.into().to_color_str())
 }
 
 /// Sets the default foreground color
 pub fn set_default_bg_color<T>(color: impl Into<Rgb<T>>) -> String
 where
-    Rgb<T>: Display,
+    Rgb<T>: ToColorStr,
 {
-    osc!(11, color.into())
+    osc!(11, color.into().to_color_str())
 }
 
 /// Sets the color of the cursor.
 pub fn set_cursor_color<T>(color: impl Into<Rgb<T>>) -> String
 where
-    Rgb<T>: Display,
+    Rgb<T>: ToColorStr,
 {
-    osc!(12, color.into())
+    osc!(12, color.into().to_color_str())
 }
 
 /// Resets all the color codes to their default colors.

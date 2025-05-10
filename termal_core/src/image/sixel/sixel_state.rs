@@ -51,7 +51,8 @@ where
 
     fn define_colors(&mut self) {
         for i in 1..=255 {
-            let Rgb { r, g, b } = Rgb::from_332(i).to_range(100);
+            let (r, g, b) =
+                Rgb::<u8>::from_332(i).norm_to_range(0, 100).into();
             *self.out += &format!("#{i};2;{r};{g};{b}");
         }
     }

@@ -21,7 +21,7 @@ impl<I: Image> Image for ImgNearest<I> {
     }
 
     fn get_avg(&self, rect: Rect) -> Rgb<f32> {
-        let (x, y) = rect.center();
-        self.0.get_pixel(x as usize, y as usize).as_f32()
+        let (x, y) = rect.rect_center().into();
+        self.0.get_pixel(x as usize, y as usize).cast()
     }
 }

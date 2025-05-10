@@ -7,6 +7,9 @@
 ### Changes
 - Improve documentation for some codes.
 
+### Breaking changes
+- Remove Rect and Rgb in favor of minlin data types.
+
 ### Fixes
 - Fix parsing of mouse scroll events.
 - Don't panic on unknown mouse button event.
