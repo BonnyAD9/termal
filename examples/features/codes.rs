@@ -1181,6 +1181,11 @@ pub fn show_enable_mouse_xy_all_tracking() -> Result<()> {
     track_events(codes::DISABLE_MOUSE_XY_ALL_TRACKING)
 }
 
+pub fn show_enable_focus_event() -> Result<()> {
+    print!("{}", codes::ENABLE_FOCUS_EVENT);
+    track_events(codes::DISABLE_FOCUS_EVENT)
+}
+
 fn track_events(disable: &str) -> Result<()> {
     print!("{}", codes::CLEAR);
 

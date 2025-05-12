@@ -4293,8 +4293,63 @@ pub const ENABLE_MOUSE_XY_ALL_TRACKING: &str = enable!(1003);
 /// See [`ENABLE_MOUSE_XY_ALL_TRACKING`] for more info.
 pub const DISABLE_MOUSE_XY_ALL_TRACKING: &str = disable!(1003);
 /// Enables sending event on focus gain.
+///
+/// Equivalent to `CSI ? 1004 h`.
+///
+/// The terminal will reply with `CSI I` on focus gain and with `CSI O` on
+/// focus lost.
+///
+/// Termal can parse the responses as [`crate::raw::events::Event::Focus`]
+/// and [`crate::raw::events::Event::FocusLost`]. So the read event will match
+/// `Event::Focus | Event::FocusLost`.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::{
+///     codes,
+///     raw::{
+///         enable_raw_mode, disable_raw_mode, Terminal,
+///         events::{Event, Key, KeyCode, Modifiers},
+///     },
+/// };
+/// use std::io::Write;
+///
+/// print!("{}", codes::ENABLE_FOCUS_EVENT);
+/// print!("{}", codes::CLEAR);
+///
+/// enable_raw_mode()?;
+///
+/// let mut term = Terminal::stdio();
+/// term.flush()?;
+///
+/// loop {
+///     let event = term.read()?;
+///     term.flushed(format!("{}{event:#?}", codes::CLEAR))?;
+///     if matches!(
+///         event,
+///         Event::KeyPress(Key { code: KeyCode::Char('c'), modifiers, .. })
+///             if modifiers.contains(Modifiers::CONTROL)
+///     ) {
+///         break;
+///     }
+/// }
+///
+/// print!("{}", codes::DISABLE_FOCUS_EVENT);
+/// term.flush()?;
+///
+/// disable_raw_mode()?;
+///
+/// # Ok::<_, termal_core::error::Error>(())
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/enable_mouse_xy_all_tracking.gif)
 pub const ENABLE_FOCUS_EVENT: &str = enable!(1004);
 /// Disables sending event on focus gain.
+///
+/// Equivalent to `CSI ? 1004 l`.
+///
+/// See [`ENABLE_FOCUS_EVENT`] for more info.
 pub const DISABLE_FOCUS_EVENT: &str = disable!(1004);
 /// Enables extension to send mouse inputs in format extended to utf8 two byte
 /// characters.
