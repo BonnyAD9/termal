@@ -1163,30 +1163,39 @@ fn request(code: &str) -> Result<()> {
 
 pub fn show_enable_mouse_xy_tracking() -> Result<()> {
     print!("{}", codes::ENABLE_MOUSE_XY_TRACKING);
-    track_events(codes::DISABLE_MOUSE_XY_TRACKING)
+    track_events([codes::DISABLE_MOUSE_XY_TRACKING])
 }
 
 pub fn show_enable_mouse_xy_pr_tracking() -> Result<()> {
     print!("{}", codes::ENABLE_MOUSE_XY_PR_TRACKING);
-    track_events(codes::DISABLE_MOUSE_XY_PR_TRACKING)
+    track_events([codes::DISABLE_MOUSE_XY_PR_TRACKING])
 }
 
 pub fn show_enable_mouse_xy_drag_tracking() -> Result<()> {
     print!("{}", codes::ENABLE_MOUSE_XY_DRAG_TRACKING);
-    track_events(codes::DISABLE_MOUSE_XY_DRAG_TRACKING)
+    track_events([codes::DISABLE_MOUSE_XY_DRAG_TRACKING])
 }
 
 pub fn show_enable_mouse_xy_all_tracking() -> Result<()> {
     print!("{}", codes::ENABLE_MOUSE_XY_ALL_TRACKING);
-    track_events(codes::DISABLE_MOUSE_XY_ALL_TRACKING)
+    track_events([codes::DISABLE_MOUSE_XY_ALL_TRACKING])
 }
 
 pub fn show_enable_focus_event() -> Result<()> {
     print!("{}", codes::ENABLE_FOCUS_EVENT);
-    track_events(codes::DISABLE_FOCUS_EVENT)
+    track_events([codes::DISABLE_FOCUS_EVENT])
 }
 
-fn track_events(disable: &str) -> Result<()> {
+pub fn show_enable_mouse_xy_utf8_ext() -> Result<()> {
+    print!("{}", codes::ENABLE_MOUSE_XY_ALL_TRACKING);
+    print!("{}", codes::ENABLE_MOUSE_XY_UTF8_EXT);
+    track_events([
+        codes::DISABLE_MOUSE_XY_UTF8_EXT,
+        codes::DISABLE_MOUSE_XY_ALL_TRACKING,
+    ])
+}
+
+fn track_events<'a>(disable: impl IntoIterator<Item = &'a str>) -> Result<()> {
     print!("{}", codes::CLEAR);
 
     enable_raw_mode()?;
@@ -1206,7 +1215,9 @@ fn track_events(disable: &str) -> Result<()> {
         }
     }
 
-    print!("{disable}");
+    for d in disable {
+        print!("{d}");
+    }
     term.flush()?;
 
     disable_raw_mode()?;

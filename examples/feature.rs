@@ -172,6 +172,9 @@ fn single(name: &str) -> Result<()> {
             codes::show_enable_mouse_xy_all_tracking()
         }
         "codes::ENABLE_FOCUS_EVENT" => codes::show_enable_focus_event(),
+        "codes::ENABLE_MOUSE_XY_UTF8_EXT" => {
+            codes::show_enable_mouse_xy_utf8_ext()
+        }
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -326,6 +329,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}ENABLE_MOUSE_XY_DRAG_TRACKING{'_}
   {'c}codes{'y}::{'w bold}ENABLE_MOUSE_XY_ALL_TRACKING{'_}
   {'c}codes{'y}::{'w bold}ENABLE_FOCUS_EVENT{'_}
+  {'c}codes{'y}::{'w bold}ENABLE_MOUSE_XY_UTF8_EXT{'_}
     "
     );
     Ok(())
