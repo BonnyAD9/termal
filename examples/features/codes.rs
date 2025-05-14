@@ -1195,6 +1195,15 @@ pub fn show_enable_mouse_xy_utf8_ext() -> Result<()> {
     ])
 }
 
+pub fn show_enable_mouse_xy_ext() -> Result<()> {
+    print!("{}", codes::ENABLE_MOUSE_XY_ALL_TRACKING);
+    print!("{}", codes::ENABLE_MOUSE_XY_EXT);
+    track_events([
+        codes::DISABLE_MOUSE_XY_EXT,
+        codes::DISABLE_MOUSE_XY_ALL_TRACKING,
+    ])
+}
+
 fn track_events<'a>(disable: impl IntoIterator<Item = &'a str>) -> Result<()> {
     print!("{}", codes::CLEAR);
 
