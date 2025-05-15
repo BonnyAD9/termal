@@ -4566,10 +4566,108 @@ pub const ENABLE_MOUSE_XY_EXT: &str = enable!(1006);
 ///
 /// See [`ENABLE_MOUSE_XY_EXT`] for more info.
 pub const DISABLE_MOUSE_XY_EXT: &str = disable!(1006);
-/// Enables URXVT mouse extension. Not recommended, rather use
-/// [`ENABLE_MOUSE_XY_EXT`].
+/// Enables URXVT mouse extension. The terminal will send valid CSI codes.
+/// The codes may have different meaning when printed. This is why it is not
+/// recommended, rather use [`ENABLE_MOUSE_XY_EXT`].
+///
+/// Equivalent to `CSI ? 1 0 1 5 h`.
+///
+/// Can be disabled with [`DISABLE_MOUSE_XY_URXVT_EXT`].
+///
+/// The terminal will reply with `CSI Pb ; Px ; Py M` where:
+/// - `Pb` is decimal number representing the button pressed on the mouse,
+///   event and modifiers. To get the desired value subtract 32. The value bits
+///   from lowest to highest (`76543210`) have this meaning:
+///     - Bits `7610` form number representing the mouse button:
+///         - `0` primary press (left)
+///         - `1` middle press
+///         - `2` secondary press (right)
+///         - `3` no button
+///         - `4` scroll up
+///         - `5` scroll down
+///         - `8` button 4 (back)
+///         - `9` button 5 (forward)
+///         - `10` button 6
+///         - `11` button 7
+///     - If bit `5` is set, the event is that mouse moved and not that key was
+///       pressed.
+/// - `Cx` and `Cy` are decimal number representing character coordinates of
+///   the mouse press.
+///
+/// Note that this extension doesn't support modifiers and signalling button
+/// up.
+///
+/// This extension may be applied to:
+/// - [`ENABLE_MOUSE_XY_PR_TRACKING`]
+/// - [`ENABLE_MOUSE_XY_DRAG_TRACKING`]
+/// - [`ENABLE_MOUSE_XY_ALL_TRACKING`]
+///
+/// See the respective codes for their description.
+///
+/// Termal can parse the responses as [`crate::raw::events::Event::Mouse`] with
+/// [`crate::raw::events::mouse::Mouse`]. So the read event will match:
+/// ```ignore
+/// Event::Mouse(mouse::Mouse {
+///     button: _,
+///     event: !mouse::Event::Up,
+///     modifiers: Modifiers::NONE,
+///     x: 1..,
+///     y: 1..,
+/// })
+/// ```
+///
+/// Note that compared to some other extensions, here the value of corrdinates
+/// is not limited.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::{
+///     codes,
+///     raw::{
+///         enable_raw_mode, disable_raw_mode, Terminal,
+///         events::{Event, Key, KeyCode, Modifiers},
+///     },
+/// };
+/// use std::io::Write;
+///
+/// print!("{}", codes::ENABLE_MOUSE_XY_ALL_TRACKING);
+/// print!("{}", codes::ENABLE_MOUSE_XY_URXVT_EXT);
+/// print!("{}", codes::CLEAR);
+///
+/// enable_raw_mode()?;
+///
+/// let mut term = Terminal::stdio();
+/// term.flush()?;
+///
+/// loop {
+///     let event = term.read()?;
+///     term.flushed(format!("{}{event:#?}", codes::CLEAR))?;
+///     if matches!(
+///         event,
+///         Event::KeyPress(Key { code: KeyCode::Char('c'), modifiers, .. })
+///             if modifiers.contains(Modifiers::CONTROL)
+///     ) {
+///         break;
+///     }
+/// }
+///
+/// print!("{}", codes::DISABLE_MOUSE_XY_URXVT_EXT);
+/// print!("{}", codes::DISABLE_MOUSE_XY_ALL_TRACKING);
+/// term.flush()?;
+///
+/// disable_raw_mode()?;
+///
+/// # Ok::<_, termal_core::error::Error>(())
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/enable_mouse_xy_urxvt_ext.gif)
 pub const ENABLE_MOUSE_XY_URXVT_EXT: &str = enable!(1015);
 /// Disables URXVT mouse extension.
+///
+/// Equivalent to `CSI ? 1 0 1 5 l`.
+///
+/// See [`ENABLE_MOUSE_XY_URXVT_EXT`] for more info.
 pub const DISABLE_MOUSE_XY_URXVT_EXT: &str = disable!(1015);
 /// Enables extension to send mouse inputs in different format as position in
 /// pixels.
