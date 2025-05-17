@@ -179,6 +179,9 @@ fn single(name: &str) -> Result<()> {
         "codes::ENABLE_MOUSE_XY_URXVT_EXT" => {
             codes::show_enable_mouse_xy_urxvt_ext()
         }
+        "codes::ENABLE_MOUSE_XY_PIX_EXT" => {
+            codes::show_enable_mouse_xy_pix_ext()
+        }
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -336,6 +339,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}ENABLE_MOUSE_XY_UTF8_EXT{'_}
   {'c}codes{'y}::{'w bold}ENABLE_MOUSE_XY_EXT{'_}
   {'c}codes{'y}::{'w bold}ENABLE_MOUSE_XY_URXVT_EXT{'_}
+  {'c}codes{'y}::{'w bold}ENABLE_MOUSE_XY_PIX_EXT{'_}
     "
     );
     Ok(())

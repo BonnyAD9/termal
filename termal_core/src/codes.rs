@@ -4669,8 +4669,108 @@ pub const ENABLE_MOUSE_XY_URXVT_EXT: &str = enable!(1015);
 ///
 /// See [`ENABLE_MOUSE_XY_URXVT_EXT`] for more info.
 pub const DISABLE_MOUSE_XY_URXVT_EXT: &str = disable!(1015);
-/// Enables extension to send mouse inputs in different format as position in
+/// Enables extension to send mouse inputs as valid CSI sequences. The
+/// position is in pixels.
+///
+/// This is same as [`ENABLE_MOUSE_XY_EXT`], but the position is in
 /// pixels.
+///
+/// Equivalent to `CSI ? 1 0 1 6 h`.
+///
+/// Can be disabled with [`DISABLE_MOUSE_XY_PIX_EXT`].
+///
+/// The terminal will reply with `CSI < Pb ; Px ; Py Cm` where:
+/// - `Pb` is decimal number representing the button pressed on the mouse,
+///   event and modifiers. The value bits from lowest to highest (`76543210`)
+///   have this meaning:
+///     - Bits `7610` form number representing the mouse button:
+///         - `0` primary press (left)
+///         - `1` middle press
+///         - `2` secondary press (right)
+///         - `3` no button
+///         - `4` scroll up
+///         - `5` scroll down
+///         - `8` button 4 (back)
+///         - `9` button 5 (forward)
+///         - `10` button 6
+///         - `11` button 7
+///     - Bit `2` represents whether shift was pressed with the event.
+///     - Bit `3` represents whether alt was pressed with the event.
+///     - Bit `4` represents whether control was pressed with the event.
+///     - If bit `5` is set, the event is that mouse moved and not that key was
+///       pressed.
+/// - `Cx` and `Cy` are decimal number representing pixel coordinates of the
+///   mouse press.
+/// - `Cm` is `M` for button press and `m` for button release.
+///
+/// Note that compared to some other extensions, this extension is able to
+/// encode which buttons were released on release.
+///
+/// This extension may be applied to:
+/// - [`ENABLE_MOUSE_XY_PR_TRACKING`]
+/// - [`ENABLE_MOUSE_XY_DRAG_TRACKING`]
+/// - [`ENABLE_MOUSE_XY_ALL_TRACKING`]
+///
+/// See the respective codes for their description.
+///
+/// Termal can parse the responses as [`crate::raw::events::Event::Mouse`] with
+/// [`crate::raw::events::mouse::Mouse`]. So the read event will match:
+/// ```ignore
+/// Event::Mouse(mouse::Mouse {
+///     button: _,
+///     event: _,
+///     modifiers: Modifiers::SHIFT | Modifiers::ALT | Modifiers::CONTROL,
+///     x: 0..,
+///     y: 0..,
+/// })
+/// ```
+///
+/// Note that compared to some other extensions, here the value of corrdinates
+/// is not limited.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::{
+///     codes,
+///     raw::{
+///         enable_raw_mode, disable_raw_mode, Terminal,
+///         events::{Event, Key, KeyCode, Modifiers},
+///     },
+/// };
+/// use std::io::Write;
+///
+/// print!("{}", codes::ENABLE_MOUSE_XY_ALL_TRACKING);
+/// print!("{}", codes::ENABLE_MOUSE_XY_PIX_EXT);
+/// print!("{}", codes::CLEAR);
+///
+/// enable_raw_mode()?;
+///
+/// let mut term = Terminal::stdio();
+/// term.flush()?;
+///
+/// loop {
+///     let event = term.read()?;
+///     term.flushed(format!("{}{event:#?}", codes::CLEAR))?;
+///     if matches!(
+///         event,
+///         Event::KeyPress(Key { code: KeyCode::Char('c'), modifiers, .. })
+///             if modifiers.contains(Modifiers::CONTROL)
+///     ) {
+///         break;
+///     }
+/// }
+///
+/// print!("{}", codes::DISABLE_MOUSE_XY_PIX_EXT);
+/// print!("{}", codes::DISABLE_MOUSE_XY_ALL_TRACKING);
+/// term.flush()?;
+///
+/// disable_raw_mode()?;
+///
+/// # Ok::<_, termal_core::error::Error>(())
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/enable_mouse_xy_pix_ext.gif)
 pub const ENABLE_MOUSE_XY_PIX_EXT: &str = enable!(1016);
 /// Disables extension to send mouse inputs in different format as position in
 /// pixels.
