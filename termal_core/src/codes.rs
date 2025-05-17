@@ -4774,6 +4774,10 @@ pub const DISABLE_MOUSE_XY_URXVT_EXT: &str = disable!(1015);
 pub const ENABLE_MOUSE_XY_PIX_EXT: &str = enable!(1016);
 /// Disables extension to send mouse inputs in different format as position in
 /// pixels.
+///
+/// Equivalent to `CSI ? 1 0 1 6 l`.
+///
+/// See [`ENABLE_MOUSE_XY_PIX_EXT`] for more info.
 pub const DISABLE_MOUSE_XY_PIX_EXT: &str = disable!(1016);
 
 code_macro! { csi
