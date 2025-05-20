@@ -4775,19 +4775,46 @@ pub const ENABLE_MOUSE_XY_PIX_EXT: &str = enable!(1016);
 /// Disables extension to send mouse inputs in different format as position in
 /// pixels.
 ///
-/// Equivalent to `CSI ? 1 0 1 6 l`.
+/// equivalent to `csi ? 1 0 1 6 l`.
 ///
-/// See [`ENABLE_MOUSE_XY_PIX_EXT`] for more info.
+/// see [`enable_mouse_xy_pix_ext`] for more info.
 pub const DISABLE_MOUSE_XY_PIX_EXT: &str = disable!(1016);
 
 code_macro! { csi
     scroll_region, t, b; 'r'
-        ? "Set the scroll region in the terminal. Also moves the cursor to the
-           top left."
+        ? "set the scroll region in the terminal. also moves the cursor to the
+top left.
+
+equivalent to `csi pt ; pb r` where `pt` is the top index (starting from 1) and
+`pb` is the bottom index.
+
+```no_run
+print!(\"{}\", codes::clear);
+print!(\"{}\", codes::scroll_region!(3, 10));
+
+let term = Terminal::stdio();
+
+let mut i = 0;
+while !term.has_input() {
+    println!(\"{i}\");
+    i += 1;
+    thread::sleep(Duration::from_millis(500));
 }
 
-/// Reset the scroll region
-pub const RESET_SCROLL_REGION: &str = scroll_region!(0, 0);
+print!(\"{}\", codes::RESET_SCROLL_REGION);
+```
+
+## Result in terminal
+![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/scroll_region.gif)
+"
+}
+
+/// Reset the scroll region.
+/// 
+/// Equivalent to `CSI r`.
+/// 
+/// See [`scroll_region!`] for more information.
+pub const RESET_SCROLL_REGION: &str = csi!('r');
 /// Don't limit the printing area.
 pub const DONT_LIMIT_PRINT_TO_SCROLL_REGION: &str = enable!(19);
 /// Limit printing area only to scroll region.

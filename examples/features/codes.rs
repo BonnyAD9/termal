@@ -1,4 +1,4 @@
-use std::io::Write;
+use std::{io::Write, thread, time::Duration};
 
 use termal::{
     codes,
@@ -1249,5 +1249,23 @@ fn track_events<'a>(disable: impl IntoIterator<Item = &'a str>) -> Result<()> {
 
     disable_raw_mode()?;
 
+    Ok(())
+}
+
+pub fn show_scroll_region() -> Result<()> {
+    print!("{}", codes::CLEAR);
+    print!("{}", codes::scroll_region!(3, 10));
+    
+    let term = Terminal::stdio();
+    
+    let mut i = 0;
+    while !term.has_input() {
+        println!("{i}");
+        i += 1;
+        thread::sleep(Duration::from_millis(500));
+    }
+    
+    print!("{}", codes::RESET_SCROLL_REGION);
+    
     Ok(())
 }

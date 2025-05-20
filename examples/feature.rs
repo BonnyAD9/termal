@@ -182,6 +182,7 @@ fn single(name: &str) -> Result<()> {
         "codes::ENABLE_MOUSE_XY_PIX_EXT" => {
             codes::show_enable_mouse_xy_pix_ext()
         }
+        "codes::scroll_region!" => codes::show_scroll_region(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
