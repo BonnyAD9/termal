@@ -183,6 +183,9 @@ fn single(name: &str) -> Result<()> {
             codes::show_enable_mouse_xy_pix_ext()
         }
         "codes::scroll_region!" => codes::show_scroll_region(),
+        "codes::LIMIT_PRINT_TO_SCROLL_REGION" => {
+            codes::show_limit_print_to_scroll_region()
+        }
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -341,6 +344,8 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}ENABLE_MOUSE_XY_EXT{'_}
   {'c}codes{'y}::{'w bold}ENABLE_MOUSE_XY_URXVT_EXT{'_}
   {'c}codes{'y}::{'w bold}ENABLE_MOUSE_XY_PIX_EXT{'_}
+  {'c}codes{'y}::{'w bold}scroll_region!{'_}
+  {'c}codes{'y}::{'w bold}LIMIT_PRINT_TO_SCROLL_REGION{'_}
     "
     );
     Ok(())

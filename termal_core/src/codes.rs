@@ -4777,7 +4777,7 @@ pub const ENABLE_MOUSE_XY_PIX_EXT: &str = enable!(1016);
 ///
 /// equivalent to `csi ? 1 0 1 6 l`.
 ///
-/// see [`enable_mouse_xy_pix_ext`] for more info.
+/// see [`ENABLE_MOUSE_XY_PIX_EXT`] for more info.
 pub const DISABLE_MOUSE_XY_PIX_EXT: &str = disable!(1016);
 
 code_macro! { csi
@@ -4789,7 +4789,10 @@ equivalent to `csi pt ; pb r` where `pt` is the top index (starting from 1) and
 `pb` is the bottom index.
 
 ```no_run
-print!(\"{}\", codes::clear);
+use termal_core::{codes, raw::Terminal};
+use std::{thread, time::Duration};
+
+print!(\"{}\", codes::CLEAR);
 print!(\"{}\", codes::scroll_region!(3, 10));
 
 let term = Terminal::stdio();
@@ -4816,8 +4819,12 @@ print!(\"{}\", codes::RESET_SCROLL_REGION);
 /// See [`scroll_region!`] for more information.
 pub const RESET_SCROLL_REGION: &str = csi!('r');
 /// Don't limit the printing area.
+/// 
+/// Equivalent to `CSI ? 19 h`.
 pub const DONT_LIMIT_PRINT_TO_SCROLL_REGION: &str = enable!(19);
 /// Limit printing area only to scroll region.
+/// 
+/// Equivalent to `CSI ? 19 l`.
 pub const LIMIT_PRINT_TO_SCROLL_REGION: &str = disable!(19);
 
 /// Enables bracketed paste mode. In this mode, pasted text is treated

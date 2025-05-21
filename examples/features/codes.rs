@@ -1255,17 +1255,38 @@ fn track_events<'a>(disable: impl IntoIterator<Item = &'a str>) -> Result<()> {
 pub fn show_scroll_region() -> Result<()> {
     print!("{}", codes::CLEAR);
     print!("{}", codes::scroll_region!(3, 10));
-    
+
     let term = Terminal::stdio();
-    
+
     let mut i = 0;
     while !term.has_input() {
         println!("{i}");
         i += 1;
         thread::sleep(Duration::from_millis(500));
     }
-    
+
     print!("{}", codes::RESET_SCROLL_REGION);
-    
+
+    Ok(())
+}
+
+pub fn show_limit_print_to_scroll_region() -> Result<()> {
+    print!("{}", codes::CLEAR);
+    print!("{}", codes::scroll_region!(3, 10));
+    print!("{}", codes::LIMIT_PRINT_TO_SCROLL_REGION);
+    print!("{}", codes::move_to!(0, 999));
+
+    let term = Terminal::stdio();
+
+    let mut i = 0;
+    while !term.has_input() {
+        println!("{i}");
+        i += 1;
+        thread::sleep(Duration::from_millis(500));
+    }
+
+    print!("{}", codes::DONT_LIMIT_PRINT_TO_SCROLL_REGION);
+    print!("{}", codes::RESET_SCROLL_REGION);
+
     Ok(())
 }
