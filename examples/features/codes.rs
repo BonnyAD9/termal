@@ -5,7 +5,9 @@ use termal::{
     error::Result,
     formatc, printcln,
     raw::{
-        disable_raw_mode, enable_raw_mode, events::{Event, Key, KeyCode, Modifiers, StateChange}, term_size, TermSize, Terminal
+        TermSize, Terminal, disable_raw_mode, enable_raw_mode,
+        events::{Event, Key, KeyCode, Modifiers, StateChange},
+        term_size,
     },
     reset_terminal,
 };
@@ -1291,13 +1293,13 @@ pub fn show_limit_print_to_scroll_region() -> Result<()> {
 
 pub fn show_enable_bracketed_paste_mode() -> Result<()> {
     enable_raw_mode()?;
-    
+
     let mut term = Terminal::stdio();
-    
+
     print!("{}", codes::CLEAR);
     print!("{}", codes::ENABLE_BRACKETED_PASTE_MODE);
     term.println("With bracketed paste mode:")?;
-    
+
     loop {
         let e = term.read()?;
         term.println(format!("{e:?}"))?;
@@ -1305,18 +1307,18 @@ pub fn show_enable_bracketed_paste_mode() -> Result<()> {
             break;
         }
     }
-    
+
     term.flushed(format!("{}", codes::DISABLE_BRACKETED_PASTE_MODE))?;
     term.println("Without brakceted paste mode:")?;
-    
+
     let e = term.read()?;
     term.println(format!("{e:?}"))?;
     while term.has_input() {
         let e = term.read()?;
         term.println(format!("{e:?}"))?;
     }
-    
+
     disable_raw_mode()?;
-    
+
     Ok(())
 }

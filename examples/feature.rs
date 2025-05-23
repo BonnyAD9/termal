@@ -186,8 +186,12 @@ fn single(name: &str) -> Result<()> {
         "codes::LIMIT_PRINT_TO_SCROLL_REGION" => {
             codes::show_limit_print_to_scroll_region()
         }
-        "codes::ENABLE_BRACKETED_PASTE_MODE" => codes::show_enable_bracketed_paste_mode(),
-        "codes::DISABLE_BRACKETED_PASTE_MODE" => codes::show_enable_bracketed_paste_mode(),
+        "codes::ENABLE_BRACKETED_PASTE_MODE" => {
+            codes::show_enable_bracketed_paste_mode()
+        }
+        "codes::DISABLE_BRACKETED_PASTE_MODE" => {
+            codes::show_enable_bracketed_paste_mode()
+        }
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())

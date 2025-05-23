@@ -4813,36 +4813,36 @@ print!(\"{}\", codes::RESET_SCROLL_REGION);
 }
 
 /// Reset the scroll region.
-/// 
+///
 /// Equivalent to `CSI r`.
-/// 
+///
 /// See [`scroll_region!`] for more information.
 pub const RESET_SCROLL_REGION: &str = csi!('r');
 /// Don't limit the printing area.
-/// 
+///
 /// Equivalent to `CSI ? 19 h`.
 pub const DONT_LIMIT_PRINT_TO_SCROLL_REGION: &str = enable!(19);
 /// Limit printing area only to scroll region.
-/// 
+///
 /// Equivalent to `CSI ? 19 l`.
 pub const LIMIT_PRINT_TO_SCROLL_REGION: &str = disable!(19);
 
 /// Enables bracketed paste mode. In this mode, pasted text is treated
 /// verbatim.
-/// 
+///
 /// Equivalent to `CSI ? 2 0 0 4 h`.
-/// 
+///
 /// This mode may be disabled with [`DISABLE_BRACKETED_PASTE_MODE`].
-/// 
+///
 /// If this mode is enabled, pasted text will be prepended with `CSI 2 0 0 ~`
 /// ([`BRACKETED_PASTE_START`]) and appended with `CSI 2 0 1 ~`
 /// ([`BRACKETED_PASTE_END`]).
-/// 
+///
 /// Termal can parse these events as [`crate::raw::events::Event::StateChange`]
 /// with either [`crate::raw::events::StateChange::BracketedPasteStart`] and
 /// [`crate::raw::events::StateChange::BracketedPasteEnd`]. Terminal will treat
 /// all text in between these events verbatim.
-/// 
+///
 /// # Example
 /// ```no_run
 /// use termal_core::{
@@ -4852,15 +4852,15 @@ pub const LIMIT_PRINT_TO_SCROLL_REGION: &str = disable!(19);
 ///         events::{Event, StateChange},
 ///     }
 /// };
-/// 
+///
 /// enable_raw_mode()?;
-/// 
+///
 /// let mut term = Terminal::stdio();
-/// 
+///
 /// print!("{}", codes::CLEAR);
 /// print!("{}", codes::ENABLE_BRACKETED_PASTE_MODE);
 /// term.println("With bracketed paste mode:")?;
-/// 
+///
 /// loop {
 ///     let e = term.read()?;
 ///     term.println(format!("{e:?}"))?;
@@ -4868,20 +4868,20 @@ pub const LIMIT_PRINT_TO_SCROLL_REGION: &str = disable!(19);
 ///         break;
 ///     }
 /// }
-/// 
+///
 /// term.flushed(format!("{}", codes::DISABLE_BRACKETED_PASTE_MODE))?;
 /// term.println("Without brakceted paste mode:")?;
-/// 
+///
 /// let e = term.read()?;
 /// term.println(format!("{e:?}"))?;
 /// while term.has_input() {
 ///     let e = term.read()?;
 ///     term.println(format!("{e:?}"))?;
 /// }
-/// 
+///
 /// disable_raw_mode()?;
-/// 
-/// Ok(())
+///
+/// # Ok::<_, termal_core::error::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -4889,9 +4889,9 @@ pub const LIMIT_PRINT_TO_SCROLL_REGION: &str = disable!(19);
 pub const ENABLE_BRACKETED_PASTE_MODE: &str = enable!(2004);
 /// Disables bracketed paste mode that was enabled with
 /// [`ENABLE_BRACKETED_PASTE_MODE`].
-/// 
+///
 /// Equivalent to `CSI ? 2 0 0 4 l`.
-/// 
+///
 /// # Example
 /// ```no_run
 /// use termal_core::{
@@ -4901,15 +4901,15 @@ pub const ENABLE_BRACKETED_PASTE_MODE: &str = enable!(2004);
 ///         events::{Event, StateChange},
 ///     }
 /// };
-/// 
+///
 /// enable_raw_mode()?;
-/// 
+///
 /// let mut term = Terminal::stdio();
-/// 
+///
 /// print!("{}", codes::CLEAR);
 /// print!("{}", codes::ENABLE_BRACKETED_PASTE_MODE);
 /// term.println("With bracketed paste mode:")?;
-/// 
+///
 /// loop {
 ///     let e = term.read()?;
 ///     term.println(format!("{e:?}"))?;
@@ -4917,20 +4917,20 @@ pub const ENABLE_BRACKETED_PASTE_MODE: &str = enable!(2004);
 ///         break;
 ///     }
 /// }
-/// 
+///
 /// term.flushed(format!("{}", codes::DISABLE_BRACKETED_PASTE_MODE))?;
 /// term.println("Without brakceted paste mode:")?;
-/// 
+///
 /// let e = term.read()?;
 /// term.println(format!("{e:?}"))?;
 /// while term.has_input() {
 ///     let e = term.read()?;
 ///     term.println(format!("{e:?}"))?;
 /// }
-/// 
+///
 /// disable_raw_mode()?;
-/// 
-/// Ok(())
+///
+/// # Ok::<_, termal_core::error::Error>(())
 /// ```
 ///
 /// ## Result in terminal

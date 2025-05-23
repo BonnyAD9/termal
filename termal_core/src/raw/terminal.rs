@@ -180,7 +180,7 @@ impl<T: IoProvider> Terminal<T> {
         }
         Ok(())
     }
-    
+
     /// Prints to the output. Properly handles newlines if output is raw
     /// terminal. Appends newline to the output. Doesn't explicitly flush, but
     /// stdout usually flushes on newline.
@@ -211,7 +211,7 @@ impl<T: IoProvider> Terminal<T> {
         }
         Ok(())
     }
-    
+
     fn print_escaped(out: &mut T::Out, s: impl AsRef<str>) -> Result<()> {
         let mut spl = s.as_ref().split('\n');
         let Some(n) = spl.next() else {
