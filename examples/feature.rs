@@ -186,6 +186,8 @@ fn single(name: &str) -> Result<()> {
         "codes::LIMIT_PRINT_TO_SCROLL_REGION" => {
             codes::show_limit_print_to_scroll_region()
         }
+        "codes::ENABLE_BRACKETED_PASTE_MODE" => codes::show_enable_bracketed_paste_mode(),
+        "codes::DISABLE_BRACKETED_PASTE_MODE" => codes::show_enable_bracketed_paste_mode(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -346,6 +348,8 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}ENABLE_MOUSE_XY_PIX_EXT{'_}
   {'c}codes{'y}::{'w bold}scroll_region!{'_}
   {'c}codes{'y}::{'w bold}LIMIT_PRINT_TO_SCROLL_REGION{'_}
+  {'c}codes{'y}::{'w bold}ENABLE_BRACKETED_PASTE_MODE{'_}
+  {'c}codes{'y}::{'w bold}DISABLE_BRACKETED_PASTE_MODE{'_}
     "
     );
     Ok(())

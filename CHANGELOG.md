@@ -3,9 +3,12 @@
 ## future
 ### Features
 - Support more mouse button events.
+- Add `Terminal::println`.
 
 ### Changes
 - Improve documentation for some codes.
+- Make following methods on `Terminal` available without the feature `events`:
+  `is_out_terminal`, `is_in_terminal`, `print`, `flushed`.
 
 ### Breaking changes
 - Remove Rect and Rgb in favor of minlin data types.
@@ -13,6 +16,7 @@
 ### Fixes
 - Fix parsing of mouse scroll events.
 - Don't panic on unknown mouse button event.
+- Properly interpret newlines in print functions with raw terminal.
 
 ## v2.1.2
 ### New features

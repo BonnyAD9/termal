@@ -160,6 +160,70 @@ impl<T: IoProvider> Terminal<T> {
         }
     }
 
+    /// Checks if the output stream is terminal
+    pub fn is_out_terminal(&self) -> bool {
+        self.io.is_out_terminal()
+    }
+
+    /// Checks if the input stream is termainl
+    pub fn is_in_terminal(&self) -> bool {
+        self.io.is_in_terminal()
+    }
+
+    /// Prints to the output. Properly handles newlines if output is raw
+    /// terminal.
+    pub fn print(&mut self, s: impl AsRef<str>) -> Result<()> {
+        if !self.io.is_out_raw() || !self.is_out_terminal() {
+            self.write_all(s.as_ref().as_bytes())?;
+        } else {
+            Self::print_escaped(&mut self.io.get_out(), s)?;
+        }
+        Ok(())
+    }
+    
+    /// Prints to the output. Properly handles newlines if output is raw
+    /// terminal. Appends newline to the output. Doesn't explicitly flush, but
+    /// stdout usually flushes on newline.
+    pub fn println(&mut self, s: impl AsRef<str>) -> Result<()> {
+        if !self.io.is_out_raw() || !self.is_out_terminal() {
+            let mut out = self.io.get_out();
+            out.write_all(s.as_ref().as_bytes())?;
+            out.write_all(b"\n")?;
+        } else {
+            let mut out = self.io.get_out();
+            Self::print_escaped(&mut out, s)?;
+            out.write_all(b"\n\r")?;
+        }
+        Ok(())
+    }
+
+    /// Prints to the output and flushes. Properly handles newlines if output
+    /// is raw terminal.
+    pub fn flushed(&mut self, s: impl AsRef<str>) -> Result<()> {
+        if !self.io.is_out_raw() || !self.is_out_terminal() {
+            let mut out = self.io.get_out();
+            out.write_all(s.as_ref().as_bytes())?;
+            out.flush()?;
+        } else {
+            let mut out = self.io.get_out();
+            Self::print_escaped(&mut out, s)?;
+            out.flush()?;
+        }
+        Ok(())
+    }
+    
+    fn print_escaped(out: &mut T::Out, s: impl AsRef<str>) -> Result<()> {
+        let mut spl = s.as_ref().split('\n');
+        let Some(n) = spl.next() else {
+            return Ok(());
+        };
+        write!(out, "{n}")?;
+        for s in spl {
+            write!(out, "{s}\n\r")?;
+        }
+        Ok(())
+    }
+
     fn read_buffered(&mut self, mut res: &mut [u8]) -> Result<usize> {
         let (s1, s2) = self.buffer.as_slices();
 
@@ -292,38 +356,6 @@ impl<T: IoProvider> Terminal<T> {
         } else {
             Ok(None)
         }
-    }
-
-    /// Checks if the output stream is terminal
-    pub fn is_out_terminal(&self) -> bool {
-        self.io.is_out_terminal()
-    }
-
-    /// Checks if the input stream is termainl
-    pub fn is_in_terminal(&self) -> bool {
-        self.io.is_in_terminal()
-    }
-
-    /// Prints to the output. Properly handles newlines if output is raw
-    /// terminal.
-    pub fn print(&mut self, s: impl AsRef<str>) -> Result<()> {
-        if !self.io.is_out_raw() || !self.is_out_terminal() {
-            self.write_all(s.as_ref().as_bytes())?;
-        } else {
-            let mut out = self.io.get_out();
-            for s in s.as_ref().split('\n') {
-                write!(out, "{s}\n\r")?;
-            }
-        }
-        Ok(())
-    }
-
-    /// Prints to the output and flushes. Properly handles newlines if output
-    /// is raw terminal.
-    pub fn flushed(&mut self, s: impl AsRef<str>) -> Result<()> {
-        self.print(s)?;
-        self.flush()?;
-        Ok(())
     }
 
     /// Opens bracketed paste mode. It will start automatically with
