@@ -1,7 +1,7 @@
 use std::{io::Write, thread, time::Duration};
 
 use termal::{
-    codes,
+    codes::{self, CursorStyle},
     error::Result,
     formatc, printcln,
     raw::{
@@ -1319,6 +1319,14 @@ pub fn show_enable_bracketed_paste_mode() -> Result<()> {
     }
 
     disable_raw_mode()?;
+
+    Ok(())
+}
+
+pub fn show_set_cursor() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+    buf += codes::set_cursor(CursorStyle::Bar(false));
+    print!("{buf}");
 
     Ok(())
 }

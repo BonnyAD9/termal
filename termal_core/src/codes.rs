@@ -4937,23 +4937,37 @@ pub const ENABLE_BRACKETED_PASTE_MODE: &str = enable!(2004);
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/enable_bracketed_paste_mode.png)
 pub const DISABLE_BRACKETED_PASTE_MODE: &str = disable!(2004);
 
+/// Defines the cursor style.
 #[derive(Clone, Debug, Copy, Eq, PartialEq)]
 pub enum CursorStyle {
     /// Set cursor to block.
-    /// - `true` -> blink
-    /// - `false` -> don't blink
-    /// - [`None`] -> blink (default)
+    /// - `true` -> blink. Equivalent to `CSI 0 space q`.
+    /// - `false` -> don't blink. Equivalent to `CSI 2 space q`.
+    /// - [`None`] -> blink (default). Equivalent to `CSI 1 space q`.
     Block(Option<bool>),
     /// Set cursor to underline.
-    /// - `true` -> blink
-    /// - `false` -> don't blink
+    /// - `true` -> blink. Equivalent to `CSI 3 space q`.
+    /// - `false` -> don't blink. Equivalent to `CSI 4 space q`.
     Underline(bool),
     /// Set cursor vertical bar.
-    /// - `true` -> blink
-    /// - `false` -> don't blink
+    /// - `true` -> blink. Equivalent to `CSI 5 space q`.
+    /// - `false` -> don't blink. Equivalent to `CSI 6 space q`.
     Bar(bool),
 }
 
+/// Sets cursor to the given style.
+///
+/// # Example
+/// ```
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+/// buf += codes::set_cursor(codes::CursorStyle::Bar(false));
+/// print!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/set_cursor.png)
 pub fn set_cursor(style: CursorStyle) -> &'static str {
     match style {
         CursorStyle::Block(Some(true)) => csi!(" q", 0),
