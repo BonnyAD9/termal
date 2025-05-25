@@ -193,6 +193,7 @@ fn single(name: &str) -> Result<()> {
             codes::show_enable_bracketed_paste_mode()
         }
         "codes::set_cursor" => codes::show_set_cursor(),
+        "codes::request_color_code!" => codes::show_request_color_code(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -356,6 +357,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}ENABLE_BRACKETED_PASTE_MODE{'_}
   {'c}codes{'y}::{'w bold}DISABLE_BRACKETED_PASTE_MODE{'_}
   {'c}codes{'y}::{'w i}set_cursor{'_}
+  {'c}codes{'y}::{'m i}request_color_code!{'_}
     "
     );
     Ok(())

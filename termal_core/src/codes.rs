@@ -4984,7 +4984,61 @@ pub fn set_cursor(style: CursorStyle) -> &'static str {
 
 code_macro! {osc
     request_color_code, 4, code, "?";
-        ? "Requests the current color assigned to the given color code.",
+        ? "Requests the current color assigned to the given color code.
+
+Equivalent to `OSC ? 4 ; Ps ST` where `Ps` is the 256 color to request.
+
+Colors in range `0..16` corespond to the named colors in order black, red,
+green, yellow, blue, magenta, cyan and yellow. `0..8` are the dark variants and
+`8..16` are the bright variants.
+
+Colors in range `16..232` (216 color variants) are usually colors of the form
+16 + RGB in base 6. So for example if you want full green, that is `050` in
+base 6, in base 10 that is `30` and than we add 16. So the final number for
+full green is `46`.
+
+Colors in range `232..256` are usually 24 shades of gray from dark to bright
+not including full black and full white. (full black is 16 and full white is
+231).
+
+If the argument is literal, this expands to [`&'static str`]. Otherwise this
+expands to [`String`].
+
+The terminal will reply with `CSI ? 4 ; Ps Pc ST` where `Ps` is the requested
+color and `Pc` is the color either in format `rgb:R/G/B` or `#RGB` where `R`,
+`G` and `B` is red, green and blue component of color in hexadecimal with 1 to
+4 digits.
+
+Termal can parse the response as [`crate::raw::events::Event::Status`] with
+[`crate::raw::events::Status::ColorCodeColor(Rgb::<u16> { r, g, b })`]. So the
+read event will match `Event::Status(Status::SixelColors(Rgb::<u16> { .. }))`.
+
+# Example
+```no_run
+use termal_core::{
+    raw::{enable_raw_mode, disable_raw_mode, Terminal}, codes
+};
+use std::io::Write;
+
+enable_raw_mode()?;
+
+print!(\"{}\", codes::request_color_code!(11)); // 11 is yellow (bright)
+
+let mut term = Terminal::stdio();
+term.flush()?;
+
+let event = term.read()?;
+
+disable_raw_mode()?;
+
+println!(\"{}{event:#?}\", codes::CLEAR);
+
+# Ok::<_, termal_core::error::Error>(())
+```
+
+## Result in terminal
+![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/request_color_code.png)
+        ",
 
     reset_color_code, 104, code;
         ? "Resets the color definition for the given color code.",

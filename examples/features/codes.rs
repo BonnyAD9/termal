@@ -1330,3 +1330,7 @@ pub fn show_set_cursor() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_request_color_code() -> Result<()> {
+    request(codes::request_color_code!(11))
+}
