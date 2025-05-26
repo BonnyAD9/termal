@@ -5053,6 +5053,8 @@ See [`define_color_code`] for more info.
 
 /// Defines color for the given color code.
 ///
+/// This change will apply to all already printed text and to future text.
+///
 /// Equivalent to `OSC 4 ; Ps ; Pc` where `Ps` is the color code to define and
 /// `Pc` is the new color definition.
 ///
