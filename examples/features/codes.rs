@@ -1334,3 +1334,27 @@ pub fn show_set_cursor() -> Result<()> {
 pub fn show_request_color_code() -> Result<()> {
     request(codes::request_color_code!(11))
 }
+
+pub fn show_define_color_code() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+    buf += codes::YELLOW_FG;
+    buf += "yellow ";
+    buf += codes::RESET;
+    buf += codes::YELLOW_BG;
+    buf += "named";
+    buf += codes::RESET;
+    buf += "\n";
+    buf += codes::fg256!(11);
+    buf += "yellow ";
+    buf += codes::RESET;
+    buf += codes::bg256!(11);
+    buf += "code";
+    buf += codes::RESET;
+
+    println!("{buf}");
+
+    // Redefine the color code 11 that coresponds to yellow to color #00ff00
+    println!("{}", codes::define_color_code(11, (0_u8, 255, 0)));
+
+    Ok(())
+}

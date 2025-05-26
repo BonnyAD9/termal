@@ -5041,10 +5041,51 @@ println!(\"{}{event:#?}\", codes::CLEAR);
         ",
 
     reset_color_code, 104, code;
-        ? "Resets the color definition for the given color code.",
+        ? "Resets the color definition for the given color code.
+
+Equivalent to `OSC 1 0 4 ; Ps ST` where `Ps` is the color code to reset.
+
+To reset all the color codes you can use [`RESET_ALL_COLOR_CODES`].
+
+See [`define_color_code`] for more info.
+        ",
 }
 
 /// Defines color for the given color code.
+///
+/// Equivalent to `OSC 4 ; Ps ; Pc` where `Ps` is the color code to define and
+/// `Pc` is the new color definition.
+///
+/// Specific color code can be reset with [`reset_color_code!`]. All color
+/// codes can be resaet  with [`RESET_ALL_COLOR_CODES`].
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+/// buf += codes::YELLOW_FG;
+/// buf += "yellow ";
+/// buf += codes::RESET;
+/// buf += codes::YELLOW_BG;
+/// buf += "named";
+/// buf += codes::RESET;
+/// buf += "\n";
+/// buf += codes::fg256!(11);
+/// buf += "yellow ";
+/// buf += codes::RESET;
+/// buf += codes::bg256!(11);
+/// buf += "code";
+/// buf += codes::RESET;
+///
+/// println!("{buf}");
+///
+/// // Redefine the color code 11 that coresponds to yellow to color #00ff00
+/// println!("{}", codes::define_color_code(11, (0_u8, 255, 0)));
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/define_color_code.png)
 pub fn define_color_code<T>(code: u8, color: impl Into<Rgb<T>>) -> String
 where
     Rgb<T>: ToColorStr,
