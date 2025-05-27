@@ -5095,7 +5095,30 @@ where
     osc!(4, code, color.into().to_color_str())
 }
 
-/// Sets the default foreground color
+/// Sets the default foreground color.
+///
+/// The color can be reset with [`RESET_DEFAULT_FG_COLOR`].
+///
+/// The change will apply to all aleady printed text and to text that will be
+/// printed.
+///
+/// Equivalent to `OSC 1 0 ; Pc ST` where `Pc` is the color to set either as
+/// `#RGB` or `rgb:R/G/B` where R, G and B are red green and blue components in
+/// hex with 1 to 4 digits.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+/// 
+/// let mut buf = codes::CLEAR.to_string();
+/// buf += "hello there!";
+/// buf += &codes::set_default_fg_color((0xdd_u8, 0xdd, 0x55));
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/set_default_fg_color.png)
 pub fn set_default_fg_color<T>(color: impl Into<Rgb<T>>) -> String
 where
     Rgb<T>: ToColorStr,
@@ -5120,8 +5143,16 @@ where
 }
 
 /// Resets all the color codes to their default colors.
+///
+/// Equivalent to [`OSC 1 0 4 ST`]
+///
+/// The change will also apply to all already printed text.
 pub const RESET_ALL_COLOR_CODES: &str = osc!(104);
 /// Resets the default foreground color.
+///
+/// Equivalent to `OSC 1 1 0 ST`.
+///
+/// The change will also apply to all already printed text.
 pub const RESET_DEFAULT_FG_COLOR: &str = osc!(110);
 /// Resets the default background color.
 pub const RESET_DEFAULT_BG_COLOR: &str = osc!(111);
