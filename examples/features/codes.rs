@@ -1367,3 +1367,10 @@ pub fn show_set_default_fg_color() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_set_default_bg_color() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+    buf += &codes::set_default_bg_color((0xdd_u8, 0xdd, 0x55));
+    print!("{buf}");
+    Ok(())
+}

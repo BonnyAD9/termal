@@ -196,6 +196,7 @@ fn single(name: &str) -> Result<()> {
         "codes::request_color_code!" => codes::show_request_color_code(),
         "codes::define_color_code" => codes::show_define_color_code(),
         "codes::set_default_fg_color" => codes::show_set_default_fg_color(),
+        "codes::set_default_bg_color" => codes::show_set_default_bg_color(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -362,6 +363,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'m i}request_color_code!{'_}
   {'c}codes{'y}::{'w i}define_color_code{'_}
   {'c}codes{'y}::{'w i}set_default_fg_color{'_}
+  {'c}codes{'y}::{'w i}set_default_bg_color{'_}
     "
     );
     Ok(())
