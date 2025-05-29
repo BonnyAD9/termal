@@ -5137,7 +5137,7 @@ where
 /// # Example
 /// ```no_run
 /// use termal_core::codes;
-/// 
+///
 /// let mut buf = codes::CLEAR.to_string();
 /// buf += &codes::set_default_bg_color((0xdd_u8, 0xdd, 0x55));
 /// print!("{buf}");
@@ -5153,6 +5153,24 @@ where
 }
 
 /// Sets the color of the cursor.
+///
+/// Equivalent to `OSC 1 2 ; Pc ST` where `Pc` is the color to set either as
+/// `#RGB` or `rgb:R/G/B` where R, G and B are red green and blue components in
+/// hex with 1 to 4 digits.
+///
+/// Can be reset with [`RESET_CURSOR_COLOR`].
+///
+/// # Example
+/// ```no_run
+/// use termal_core::codes;
+///
+/// let mut buf = codes::CLEAR.to_string();
+/// buf += &codes::set_cursor_color((0xdd_u8, 0xdd, 0x55));
+/// print!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/set_cursor_color.png)
 pub fn set_cursor_color<T>(color: impl Into<Rgb<T>>) -> String
 where
     Rgb<T>: ToColorStr,

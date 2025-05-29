@@ -1374,3 +1374,10 @@ pub fn show_set_default_bg_color() -> Result<()> {
     print!("{buf}");
     Ok(())
 }
+
+pub fn show_set_cursor_color() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+    buf += &codes::set_cursor_color((0xdd_u8, 0xdd, 0x33));
+    print!("{buf}");
+    Ok(())
+}
