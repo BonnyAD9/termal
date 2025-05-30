@@ -5195,9 +5195,51 @@ pub const RESET_DEFAULT_FG_COLOR: &str = osc!(110);
 /// Equivalent to `OSC 1 1 1 ST`.
 pub const RESET_DEFAULT_BG_COLOR: &str = osc!(111);
 /// Resets the cursor color.
+///
+/// Equivalent to `OSC 1 1 2 ST`
 pub const RESET_CURSOR_COLOR: &str = osc!(112);
 
 /// Requests the default foreground color.
+///
+/// Equivalent to `OSC ? 1 0 ST`.
+///
+/// The terminal will reply with `CSI ? 4 ; Ps Pc ST` where `Ps` is the
+/// requested color and `Pc` is the color either in format `rgb:R/G/B` or
+/// `#RGB` where `R`, `G` and `B` is red, green and blue component of color in
+/// hexadecimal with 1 to 4 digits.
+///
+/// Termal can parse the response as [`crate::raw::events::Event::Status`] with
+/// [`crate::raw::events::Status::DefaultFgColor(Rgb::<u16> { r, g, b })`]. So
+/// the read event will match
+/// `Event::Status(Status::DefaultFgColor(Rgb::<u16> { .. }))`.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::{
+///     raw::{enable_raw_mode, disable_raw_mode, Terminal}, codes
+/// };
+/// use std::io::Write;
+///
+/// print!("{}", codes::move_to!(5, 2));
+///
+/// enable_raw_mode()?;
+///
+/// print!("{}", codes::REQUEST_DEFAULT_FG_COLOR);
+///
+/// let mut term = Terminal::stdio();
+/// term.flush()?;
+///
+/// let event = term.read()?;
+///
+/// disable_raw_mode()?;
+///
+/// println!("{}{event:#?}", codes::CLEAR);
+///
+/// # Ok::<_, termal_core::error::Error>(())
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/request_default_fg_color.png)
 pub const REQUEST_DEFAULT_FG_COLOR: &str = osc!(10, '?');
 /// Requests the default background color.
 pub const REQUEST_DEFAULT_BG_COLOR: &str = osc!(11, '?');

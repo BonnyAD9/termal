@@ -1381,3 +1381,7 @@ pub fn show_set_cursor_color() -> Result<()> {
     print!("{buf}");
     Ok(())
 }
+
+pub fn show_request_default_fg_color() -> Result<()> {
+    request(codes::REQUEST_DEFAULT_FG_COLOR)
+}
