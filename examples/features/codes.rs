@@ -1385,3 +1385,7 @@ pub fn show_set_cursor_color() -> Result<()> {
 pub fn show_request_default_fg_color() -> Result<()> {
     request(codes::REQUEST_DEFAULT_FG_COLOR)
 }
+
+pub fn show_request_default_bg_color() -> Result<()> {
+    request(codes::REQUEST_DEFAULT_BG_COLOR)
+}
