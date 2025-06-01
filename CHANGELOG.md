@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## future
+### Fixes
+- Fix blue tint in texels.
+
 ## v3.0.0
 ### Features
 - Support more mouse button events.
