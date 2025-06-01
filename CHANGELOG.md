@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## future
+## v3.0.0
 ### Features
 - Support more mouse button events.
 - Add `Terminal::println`.
