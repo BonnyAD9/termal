@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## future
+## v3.0.1
 ### Fixes
 - Fix blue tint in texels.
 
