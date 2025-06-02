@@ -1,2 +1,3 @@
+- Disallowed background color for texels.
 - Global terminal.
 - Erasure color mode see [here](https://unix.stackexchange.com/questions/586287/how-to-reverse-console-colours-to-have-black-letters-on-white-screen)
