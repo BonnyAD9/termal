@@ -1393,3 +1393,7 @@ pub fn show_request_default_bg_color() -> Result<()> {
 pub fn show_request_cursor_color() -> Result<()> {
     request(codes::REQUEST_CURSOR_COLOR)
 }
+
+pub fn show_request_selection() -> Result<()> {
+    request(codes::REQUEST_SELECTION)
+}

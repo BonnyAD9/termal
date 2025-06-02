@@ -205,6 +205,7 @@ fn single(name: &str) -> Result<()> {
             codes::show_request_default_bg_color()
         }
         "codes::REQUEST_CURSOR_COLOR" => codes::show_request_cursor_color(),
+        "codes::REQUEST_SELECTION" => codes::show_request_selection(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -376,6 +377,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}REQUEST_DEFAULT_FG_COLOR{'_}
   {'c}codes{'y}::{'w bold}REQUEST_DEFAULT_BG_COLOR{'_}
   {'c}codes{'y}::{'w bold}REQUEST_CURSOR_COLOR{'_}
+  {'c}codes{'y}::{'w bold}REQUEST_SELECTION{'_}
     "
     );
     Ok(())
