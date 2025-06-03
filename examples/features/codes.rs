@@ -1397,3 +1397,8 @@ pub fn show_request_cursor_color() -> Result<()> {
 pub fn show_request_selection() -> Result<()> {
     request(codes::REQUEST_SELECTION)
 }
+
+pub fn show_set_selection() -> Result<()> {
+    print!("{}", codes::set_selection([], "hello"));
+    request(codes::REQUEST_SELECTION)
+}

@@ -5219,8 +5219,6 @@ pub const RESET_CURSOR_COLOR: &str = osc!(112);
 /// };
 /// use std::io::Write;
 ///
-/// print!("{}", codes::move_to!(5, 2));
-///
 /// enable_raw_mode()?;
 ///
 /// print!("{}", codes::REQUEST_DEFAULT_FG_COLOR);
@@ -5259,8 +5257,6 @@ pub const REQUEST_DEFAULT_FG_COLOR: &str = osc!(10, '?');
 ///     raw::{enable_raw_mode, disable_raw_mode, Terminal}, codes
 /// };
 /// use std::io::Write;
-///
-/// print!("{}", codes::move_to!(5, 2));
 ///
 /// enable_raw_mode()?;
 ///
@@ -5301,8 +5297,6 @@ pub const REQUEST_DEFAULT_BG_COLOR: &str = osc!(11, '?');
 /// };
 /// use std::io::Write;
 ///
-/// print!("{}", codes::move_to!(5, 2));
-///
 /// enable_raw_mode()?;
 ///
 /// print!("{}", codes::REQUEST_CURSOR_COLOR);
@@ -5325,7 +5319,7 @@ pub const REQUEST_CURSOR_COLOR: &str = osc!(12, '?');
 
 /// Requests the copy/paste selection data from default buffer.
 ///
-/// Equivalent to `OSC ? 5 2 ; ; ST`.
+/// Equivalent to `OSC ? 5 2 ; ST`.
 ///
 /// The terminal will reply with `CSI 1 2 ; Pb ; Ps ST` where `Ps` is the the
 /// selection data in base64 and `Pb` is the requested selection buffer. (in
@@ -5342,8 +5336,6 @@ pub const REQUEST_CURSOR_COLOR: &str = osc!(12, '?');
 ///     raw::{enable_raw_mode, disable_raw_mode, Terminal}, codes
 /// };
 /// use std::io::Write;
-///
-/// print!("{}", codes::move_to!(5, 2));
 ///
 /// enable_raw_mode()?;
 ///
@@ -5413,12 +5405,63 @@ fn prepare_selection(sel: impl IntoIterator<Item = Selection>) -> String {
 
 /// Requests selection for the first available of the given selection buffers.
 /// If empty requests the default buffer selection.
+///
+/// Equivalent to `OSC ? 5 2 ; Pb ST` where `Pb` is all the buffers requested
+/// in precedence order. It is any number of the following characters:
+/// - `c`: clipboard
+/// - `p`: primary
+/// - `q`: secondary
+/// - `s`: select
+/// - `0` - `7`: cut 0 - cut 7
+///
+/// The terminal will reply with `CSI 1 2 ; Pb ; Ps ST` where `Ps` is the the
+/// selection data in base64 and `Pb` are the requested selection buffers.
+///
+/// Termal can parse the response as [`crate::raw::events::Event::Status`] with
+/// [`crate::raw::events::Status::SelectionData`] with bytes stored in the
+/// selection buffer. So the read event will match
+/// `Event::Status(Status::SelectionData(_))`.
+///
+/// Note that the response selection buffers are not in the response.
+///
+/// See [`REQUEST_SELECTION`] for more info.
 pub fn request_selection(sel: impl IntoIterator<Item = Selection>) -> String {
     prepare_selection(sel) + "?\x1b\\"
 }
 
 /// Sets the given selection buffers. If empty sets the default selection
 /// buffers.
+///
+/// Equivalent to `OSC 1 2 ; Pb ; Ps ST` where `Pb` are the selection buffers
+/// to select and `Ps` is the selection data in base64.
+///
+/// # Example
+/// ```no_run
+/// use termal_core::{
+///     raw::{enable_raw_mode, disable_raw_mode, Terminal}, codes
+/// };
+/// use std::io::Write;
+///
+/// print!("{}", codes::set_selection([], "hello"));
+///
+/// enable_raw_mode()?;
+///
+/// print!("{}", codes::REQUEST_SELECTION);
+///
+/// let mut term = Terminal::stdio();
+/// term.flush()?;
+///
+/// let event = term.read()?;
+///
+/// disable_raw_mode()?;
+///
+/// println!("{}{event:#?}", codes::CLEAR);
+///
+/// # Ok::<_, termal_core::error::Error>(())
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/set_selection.png)
 pub fn set_selection(
     sel: impl IntoIterator<Item = Selection>,
     data: impl AsRef<[u8]>,
