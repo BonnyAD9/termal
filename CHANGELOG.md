@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## future
+### Changes
+- Finalize documentation of the module `codes`.
+
 ## v3.0.1
 ### Fixes
 - Fix blue tint in texels.

@@ -1,8 +1,5 @@
 //! Module with ansi escape codes.
 //!
-//! Most of them are taken from:
-//! <https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797>
-//!
 //! There are several types of codes here:
 //! - **Sequences:** string/char used to introduce escape sequence, most of the
 //!   other codes use them
@@ -19,6 +16,24 @@
 //! - **String codes:** these codes are just strings that can be just printed
 //!   to terminal to do what they say they do. This is the majority of the
 //!   codes.
+//! - **Function codes:** These codes have too complicated input to be used in
+//!   a macro.
+//!
+//! # Sources
+//!
+//! Terminal escape codes go back to terminals in 1970. The basic codes are
+//! taken from
+//! [here](https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797). Some
+//! other codes are shown at
+//! [wikipedia](https://en.wikipedia.org/wiki/ANSI_escape_code). Xterm has also
+//! good documentation on many codes
+//! [here](https://invisible-island.net/xterm/ctlseqs/ctlseqs.html). Codes are
+//! also documented in terminal documentation
+//! [here](https://manx-docs.org/details.php/1,3012).
+//!
+//! Modern terminals add their own extensions to the old codes. The new codes
+//! are in the terminal documentation. Many terminals support codes added by
+//! [kitty](https://sw.kovidgoyal.net/kitty/protocol-extensions/).
 
 use base64::Engine;
 use place_macro::place;
@@ -5358,20 +5373,36 @@ pub const REQUEST_CURSOR_COLOR: &str = osc!(12, '?');
 pub const REQUEST_SELECTION: &str = osc!(52, "", '?');
 
 /// Specifies the selection buffer.
+///
+/// See [`request_selection`] or [`REQUEST_SELECTION`] for more info.
 #[derive(Clone, Debug, Copy, Eq, PartialEq)]
 pub enum Selection {
+    /// Corresponds to `c`.
     Clipboard,
+    /// Corresponds to `p`.
     Primary,
+    /// Corresponds to `q`.
     Secondary,
-    // Either [`Primary`] or [`Clipboard`] (what is the configured default)
+    /// Either [`Selection::Primary`] or [`Selection::Clipboard`] (what is the
+    /// configured default)
+    ///
+    /// Corresponds to `s`.
     Select,
+    /// Corresponds to `0`.
     Cut0,
+    /// Corresponds to `1`.
     Cut1,
+    /// Corresponds to `2`.
     Cut2,
+    /// Corresponds to `3`.
     Cut3,
+    /// Corresponds to `4`.
     Cut4,
+    /// Corresponds to `5`.
     Cut5,
+    /// Corresponds to `6`.
     Cut6,
+    /// Corresponds to `7`.
     Cut7,
 }
 
@@ -5433,7 +5464,13 @@ pub fn request_selection(sel: impl IntoIterator<Item = Selection>) -> String {
 /// buffers.
 ///
 /// Equivalent to `OSC 1 2 ; Pb ; Ps ST` where `Pb` are the selection buffers
-/// to select and `Ps` is the selection data in base64.
+/// to select and `Ps` is the selection data in base64. The buffers may be any
+/// of the following characters:
+/// - `c`: clipboard
+/// - `p`: primary
+/// - `q`: secondary
+/// - `s`: select
+/// - `0` - `7`: cut 0 - cut 7
 ///
 /// # Example
 /// ```no_run
@@ -5475,15 +5512,29 @@ pub fn set_selection(
 
 // Internal
 
-/// Input code for bracketed paste start. Used internally.
+/// Input code for bracketed paste start.
+///
+/// Equivalent to `CSI [ 2 0 0 ~`.
+///
+/// See [`ENABLE_BRACKETED_PASTE_MODE`] for more info.
 pub const BRACKETED_PASTE_START: &str = "\x1b[200~";
-/// Input code for bracketed paste end. Used internally.
+/// Input code for bracketed paste end.
+///
+/// Equivalent to `CSI [ 2 0 1 ~`.
+///
+/// See [`ENABLE_BRACKETED_PASTE_MODE`] for more info.
 pub const BRACKETED_PASTE_END: &str = "\x1b[201~";
 
-/// Trait for getting string from &str and String
+/// Trait for getting string from &str and String.
+///
+/// This is useful for the macros that may produce either `&'static str` or
+/// [`String`].
 pub trait GetString {
     /// If [`self`] is `&str` uses `.to_owned()`, if [`self`] is [`String`] returns
-    /// [`self`]
+    /// [`self`].
+    ///
+    /// This is useful for the macros that may produce either `&'static str` or
+    /// [`String`].
     fn get_string(self) -> String;
 }
 
