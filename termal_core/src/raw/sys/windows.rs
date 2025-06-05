@@ -28,10 +28,7 @@ use winapi::{
     },
 };
 
-use crate::{
-    error::{Error, Result},
-    raw::TermSize,
-};
+use crate::{Error, Result, raw::TermSize};
 
 const NO_RAW_BITS: DWORD =
     ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT | ENABLE_PROCESSED_INPUT;

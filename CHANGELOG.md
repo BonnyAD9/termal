@@ -3,6 +3,10 @@
 ## future
 ### Changes
 - Finalize documentation of the module `codes`.
+- Document the module `error`.
+- Move the module `error` directly into the root of the crate. There is still
+  alias to the original module to retain backwards compatibility. This may be
+  removed in future major version.
 
 ## v3.0.1
 ### Fixes

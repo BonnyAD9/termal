@@ -10,7 +10,7 @@ use libc::{
     tcgetattr, tcsetattr, termios as Termios, winsize,
 };
 
-use crate::{error::Result, raw::TermSize};
+use crate::{Result, raw::TermSize};
 
 static ORIGINAL_TERMINAL_MODE: Mutex<Option<Termios>> = Mutex::new(None);
 

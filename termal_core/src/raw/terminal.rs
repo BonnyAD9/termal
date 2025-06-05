@@ -4,7 +4,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-use crate::error::{Error, Result};
+use crate::{Error, Result};
 
 use super::{IoProvider, StdioProvider, WaitForIn};
 

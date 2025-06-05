@@ -1,6 +1,6 @@
 use minlin::Vec3;
 
-use crate::error::Error;
+use crate::Error;
 
 /// Single RGB pixel.
 pub type Rgb<T = u8> = Vec3<T>;

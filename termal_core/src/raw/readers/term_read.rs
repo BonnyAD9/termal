@@ -3,8 +3,7 @@ use std::{
 };
 
 use crate::{
-    codes,
-    error::{Error, Result},
+    Error, Result, codes,
     raw::{
         IoProvider, StdioProvider, Terminal,
         events::{

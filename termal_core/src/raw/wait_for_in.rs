@@ -3,7 +3,7 @@ use std::{
     time::Duration,
 };
 
-use crate::error::Result;
+use crate::Result;
 
 use super::wait_for_stdin;
 

@@ -9,10 +9,10 @@ use std::{
     panic,
 };
 
-pub use rgb::*;
+pub use self::{err::*, rgb::*};
 
 pub mod codes;
-pub mod error;
+mod err;
 #[cfg(feature = "term_image")]
 pub mod image;
 #[cfg(feature = "proc")]
@@ -21,6 +21,11 @@ pub mod proc;
 pub mod raw;
 #[cfg(feature = "term_text")]
 pub mod term_text;
+
+#[deprecated(note = "use directly `termal::Error` or `termal::Result`.")]
+pub mod error {
+    pub use crate::err::*;
+}
 
 /// Appends linear gradient to the given string
 pub fn write_gradient(

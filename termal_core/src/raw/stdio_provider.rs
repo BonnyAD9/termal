@@ -1,6 +1,6 @@
 use std::io::{IsTerminal, StdinLock, StdoutLock, stdin, stdout};
 
-use crate::error::Result;
+use crate::Result;
 
 use super::{
     IoProvider, ValueOrMut, WaitForIn, is_raw_mode_enabled, wait_for_stdin,

@@ -5,7 +5,7 @@ mod vec2;
 
 use std::io::{self, Write};
 
-use crate::error::Result;
+use crate::Result;
 
 pub(crate) use self::vec2::*;
 
