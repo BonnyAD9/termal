@@ -3,6 +3,8 @@
 ## future
 ### New Features
 - Add option to disallow certain background color for texels.
+- Add functions `raw::request` and `raw::request_ambiguous` with feature
+  `events`.
 
 ### Changes
 - Finalize documentation of the module `codes`.
