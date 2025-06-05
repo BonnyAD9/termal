@@ -1,6 +1,9 @@
 # CHANGELOG
 
 ## future
+### New Features
+- Add option to disallow certain background color for texels.
+
 ### Changes
 - Finalize documentation of the module `codes`.
 - Document the module `error`.

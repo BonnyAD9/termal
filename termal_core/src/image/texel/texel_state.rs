@@ -15,6 +15,7 @@ where
     texh: f32,
     w: usize,
     h: usize,
+    disallowed_bg: Option<Rgb>,
 }
 
 impl<'a, I> TexelState<'a, I>
@@ -31,7 +32,12 @@ where
             texh,
             w,
             h,
+            disallowed_bg: None,
         }
+    }
+
+    pub fn disallowed_bg(&mut self, v: Option<Rgb>) {
+        self.disallowed_bg = v;
     }
 
     /// Append texel image with half chars to the string `res`.
@@ -52,15 +58,29 @@ where
     ) {
         for y in 0..self.h - 1 {
             for x in 0..self.w {
-                get_texel(self, x, y).append_to(res);
+                self.append_texel(res, &get_texel, x, y);
             }
             *res += codes::RESET;
             *res += nl;
         }
 
         for x in 0..self.w {
-            get_texel(self, x, self.h - 1).append_to(res);
+            self.append_texel(res, &get_texel, x, self.h - 1);
         }
+    }
+
+    fn append_texel(
+        &self,
+        res: &mut String,
+        get_texel: impl Fn(&Self, usize, usize) -> Texel,
+        x: usize,
+        y: usize,
+    ) {
+        let mut tex = get_texel(self, x, y);
+        if let Some(bg) = self.disallowed_bg {
+            tex.disallowed_bg(bg);
+        }
+        tex.append_to(res);
     }
 
     fn get_half_texel(&self, x: usize, y: usize) -> Texel {
