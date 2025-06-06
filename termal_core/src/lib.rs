@@ -27,7 +27,29 @@ pub mod error {
     pub use crate::err::*;
 }
 
-/// Appends linear gradient to the given string
+/// Appends linear gradient to the given string.
+///
+/// The gradient consists of characters given by `s`. `s_len` is the length of
+/// `s` in characters. The result is written to `res`. `start` and `end` are
+/// the starting and ending colors of the gradient.
+///
+/// If you don't know the length of the string and you would like to allocate
+/// new string for the resulting gradient, consider using [`gradient`].
+///
+/// # Example
+/// ```no_run
+/// use termal_core::{codes, write_gradient};
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// let text = "gradient";
+/// write_gradient(&mut buf, text, text.len(), (0xFD, 0xB9, 0x75), (0x57, 0x9B, 0xDF));
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/write_gradient.png)
 pub fn write_gradient(
     res: &mut String,
     s: impl AsRef<str>,
