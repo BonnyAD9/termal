@@ -43,7 +43,13 @@ pub mod error {
 /// let mut buf = codes::CLEAR.to_string();
 ///
 /// let text = "gradient";
-/// write_gradient(&mut buf, text, text.len(), (0xFD, 0xB9, 0x75), (0x57, 0x9B, 0xDF));
+/// write_gradient(
+///     &mut buf,
+///     text,
+///     text.len(),
+///     (0xFD, 0xB9, 0x75),
+///     (0x57, 0x9B, 0xDF)
+/// );
 ///
 /// println!("{buf}");
 /// ```
