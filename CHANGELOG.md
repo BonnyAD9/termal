@@ -5,6 +5,8 @@
 - Add option to disallow certain background color for texels.
 - Add functions `raw::request` and `raw::request_ambiguous` with feature
   `events`.
+- Add module `raw::request` which handles requests and response to specific
+  codes.
 
 ### Changes
 - Finalize documentation of the module `codes`.

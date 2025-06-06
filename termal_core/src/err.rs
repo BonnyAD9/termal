@@ -20,6 +20,12 @@ pub type Result<T> = std::result::Result<T, Error>;
 /// Error type of termal. It is the only runtime error type used in termal.
 #[derive(Debug, Error)]
 pub enum Error {
+    /// Received no response with the given data.
+    ///
+    /// This error is returned by functions in the module [`raw::request`] if
+    /// the terminal doesn't repond to the request.
+    #[error("Received no response from terminal.")]
+    NoResponse,
     /// Eof was reached on stdin.
     ///
     /// This special error is returned when you try

@@ -24,6 +24,8 @@ pub use self::{
 pub mod events;
 #[cfg(feature = "readers")]
 pub mod readers;
+#[cfg(feature = "events")]
+pub mod request;
 
 pub(crate) fn raw_guard<T>(
     raw: bool,
@@ -67,13 +69,13 @@ pub(crate) fn raw_guard<T>(
 /// timeout values).
 #[cfg(feature = "events")]
 pub fn request_ambiguous<T>(
-    code: &str,
+    code: impl AsRef<str>,
     timeout: Duration,
     mut m: impl FnMut(AmbigousEvent) -> Option<T>,
 ) -> Result<Option<T>> {
     raw_guard(true, || {
         let mut term = Terminal::stdio();
-        term.write_all(code.as_bytes())?;
+        term.write_all(code.as_ref().as_bytes())?;
         term.write_all(codes::REQUEST_STATUS_REPORT.as_bytes())?;
         term.flush()?;
 
@@ -122,7 +124,7 @@ pub fn request_ambiguous<T>(
 /// timeout values).
 #[cfg(feature = "events")]
 pub fn request<T>(
-    code: &str,
+    code: impl AsRef<str>,
     timeout: Duration,
     mut m: impl FnMut(Event) -> Option<T>,
 ) -> Result<Option<T>> {
