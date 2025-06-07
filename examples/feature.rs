@@ -208,6 +208,7 @@ fn single(name: &str) -> Result<()> {
         "codes::REQUEST_SELECTION" => codes::show_request_selection(),
         "codes::set_selection" => codes::show_set_selection(),
         "write_gradient" => show_write_gradient(),
+        "gradient" => show_gradient(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -382,6 +383,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}REQUEST_SELECTION{'_}
   {'c}codes{'y}::{'w i}set_selection{'_}
   {'w i}write_gradient{'_}
+  {'w i}gradient{'_}
     "
     );
     Ok(())

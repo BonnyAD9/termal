@@ -1,4 +1,4 @@
-use termal::{Result, codes as code, write_gradient};
+use termal::{Result, codes as code, gradient, write_gradient};
 
 pub mod codes;
 
@@ -14,6 +14,14 @@ pub fn show_write_gradient() -> Result<()> {
         (0x57, 0x9B, 0xDF),
     );
 
+    println!("{buf}");
+
+    Ok(())
+}
+
+pub fn show_gradient() -> Result<()> {
+    let mut buf = code::CLEAR.to_string();
+    buf += &gradient("gradient", (0xFD, 0xB9, 0x75), (0x57, 0x9B, 0xDF));
     println!("{buf}");
 
     Ok(())

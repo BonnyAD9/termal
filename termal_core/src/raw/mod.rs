@@ -56,8 +56,8 @@ pub(crate) fn raw_guard<T>(
 /// Request response from the terminal. The response must match with the given
 /// matching function `m`.
 ///
-/// The argument to `m` is [`AmbiguousEvent`]. If you would like to skip
-/// ambiguous and unknown events, use [`request`].
+/// The argument to `m` is [`AmbigousEvent`]. If you would like to skip
+/// ambigous and unknown events, use [`request()`].
 ///
 /// This function will automatically enable raw mode for its duration.
 ///

@@ -80,7 +80,25 @@ pub fn write_gradient(
     }
 }
 
-/// Generates linear color gradient with the given text
+/// Generates linear color gradient with the given text.
+///
+/// The gradient will be generated with characters in the string `s` and its
+/// color will start with `start` and end with `end`.
+///
+/// If you want more granular control and possibly more efficient results in
+/// some usecases, you can use [`write_gradient`].
+///
+/// # Example
+/// ```no_run
+/// use termal_core::{codes, gradient};
+///
+/// let mut buf = codes::CLEAR.to_string();
+/// buf += &gradient("gradient", (0xFD, 0xB9, 0x75), (0x57, 0x9B, 0xDF));
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/write_gradient.png)
 pub fn gradient(
     s: impl AsRef<str>,
     start: impl Into<Rgb>,

@@ -14,7 +14,7 @@ use thiserror::Error;
 /// Result type for termal.
 ///
 /// It is [`std::result::Result`] where error is
-/// [`Error`].
+/// [`enum@Error`].
 pub type Result<T> = std::result::Result<T, Error>;
 
 /// Error type of termal. It is the only runtime error type used in termal.
@@ -22,8 +22,9 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub enum Error {
     /// Received no response with the given data.
     ///
-    /// This error is returned by functions in the module [`raw::request`] if
-    /// the terminal doesn't repond to the request.
+    /// This error is returned by functions in the module
+    /// [`mod@crate::raw::request`] if the terminal doesn't repond to the
+    /// request.
     #[error("Received no response from terminal.")]
     NoResponse,
     /// Eof was reached on stdin.
@@ -36,8 +37,8 @@ pub enum Error {
     #[error("End of file was reached on stdin")]
     StdInEof,
     /// The given action is not supported on this platform. This may be
-    /// returned by any function in the module [`crate::raw::sys`]. The
-    /// functions are mostly implemented only for unix and windows.
+    /// returned by some functions in the module [`crate::raw`]. The functions
+    /// are mostly implemented only for unix and windows.
     #[error("{0} is not supported on this platform.")]
     NotSupportedOnPlatform(&'static str),
     /// Failed to wait for stdin (on windows).

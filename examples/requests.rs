@@ -1,25 +1,11 @@
 use std::time::Duration;
 
-use termal::{
-    Result, Rgb, codes,
-    raw::events::{Event, Status},
-};
+use termal::{Result, raw::request};
 
 pub fn main() -> Result<()> {
-    let color: Option<Rgb<u16>> = termal::raw::request(
-        codes::REQUEST_DEFAULT_BG_COLOR,
-        Duration::from_millis(100),
-        |e| match e {
-            Event::Status(Status::DefaultBgColor(c)) => Some(c),
-            _ => None,
-        },
-    )?;
+    let c = request::default_bg_color(Duration::from_millis(100))?;
 
-    if let Some(c) = color {
-        println!("#{:02X}{:02X}{:02X}", c.r() >> 8, c.g() >> 8, c.b() >> 8);
-    } else {
-        println!("No response.");
-    }
+    println!("#{:02X}{:02X}{:02X}", c.r() >> 8, c.g() >> 8, c.b() >> 8);
 
     Ok(())
 }
