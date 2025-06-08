@@ -116,6 +116,26 @@ pub fn gradient(
 /// The reset works on best-effort bases - it may not be fully reliable in all
 /// cases, but it should work in most cases as long as you use this crate to
 /// enable the terminal features.
+///
+/// What this doesn't do:
+/// - Doesn't clear the screen and buffer.
+/// - Doesn't move the cursor (it will be at the same position after this
+///   call).
+///
+/// What this does:
+/// - Disable raw mode (if feature `raw` is enabled on this crate).
+/// - Reset text modes.
+/// - Show cursor.
+/// - Disable mouse tracking and extensions.
+/// - Disable focus events.
+/// - Reset scroll region.
+/// - Disable alternative buffer.
+/// - Disable reverse color mode.
+/// - Disable bracketed paste.
+/// - Reset colors to their defaults (codes, fg, bg, cursor).
+///
+/// Note that this function internally uses codes [`codes::CUR_SAVE`] and
+/// [`codes::CUR_LOAD`] so the last saved position will not be preserved.
 pub fn reset_terminal() {
     #[cfg(feature = "raw")]
     if raw::is_raw_mode_enabled() {
@@ -155,6 +175,8 @@ pub fn reset_terminal() {
 ///
 /// This will make sure that the terminal is set to reasonable state even when
 /// your app panics.
+///
+/// It will use the function [`reset_terminal`]. See that for more info.
 pub fn register_reset_on_panic() {
     let hook = panic::take_hook();
     panic::set_hook(Box::new(move |pci| {
