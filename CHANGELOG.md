@@ -10,10 +10,11 @@
 
 ### Changes
 - Finalize documentation of the module `codes`.
-- Document the module `error`.
+- Document the modules `error` and `proc::err`.
 - Move the module `error` directly into the root of the crate. There is still
   alias to the original module to retain backwards compatibility. This may be
   removed in future major version.
+- Document items in the root of the crate.
 
 ## v3.0.1
 ### Fixes
