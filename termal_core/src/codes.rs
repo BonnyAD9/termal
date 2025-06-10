@@ -342,7 +342,7 @@ macro_rules! move_to {
 
 pub use move_to;
 
-use crate::{Rgb, ToColorStr};
+use crate::{Rgb, ToAnsiColorStr};
 
 code_macro!(csi != 0 =>
     move_up, n; 'A'
@@ -5105,9 +5105,9 @@ See [`define_color_code`] for more info.
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/define_color_code.png)
 pub fn define_color_code<T>(code: u8, color: impl Into<Rgb<T>>) -> String
 where
-    Rgb<T>: ToColorStr,
+    Rgb<T>: ToAnsiColorStr,
 {
-    osc!(4, code, color.into().to_color_str())
+    osc!(4, code, color.into().to_ansi_color_str())
 }
 
 /// Sets the default foreground color.
@@ -5136,9 +5136,9 @@ where
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/set_default_fg_color.png)
 pub fn set_default_fg_color<T>(color: impl Into<Rgb<T>>) -> String
 where
-    Rgb<T>: ToColorStr,
+    Rgb<T>: ToAnsiColorStr,
 {
-    osc!(10, color.into().to_color_str())
+    osc!(10, color.into().to_ansi_color_str())
 }
 
 /// Sets the background color of terminal.
@@ -5162,9 +5162,9 @@ where
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/set_default_bg_color.png)
 pub fn set_default_bg_color<T>(color: impl Into<Rgb<T>>) -> String
 where
-    Rgb<T>: ToColorStr,
+    Rgb<T>: ToAnsiColorStr,
 {
-    osc!(11, color.into().to_color_str())
+    osc!(11, color.into().to_ansi_color_str())
 }
 
 /// Sets the color of the cursor.
@@ -5188,9 +5188,9 @@ where
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/set_cursor_color.png)
 pub fn set_cursor_color<T>(color: impl Into<Rgb<T>>) -> String
 where
-    Rgb<T>: ToColorStr,
+    Rgb<T>: ToAnsiColorStr,
 {
-    osc!(12, color.into().to_color_str())
+    osc!(12, color.into().to_ansi_color_str())
 }
 
 /// Resets all the color codes to their default colors.

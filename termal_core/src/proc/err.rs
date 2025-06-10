@@ -1,8 +1,10 @@
 use std::{borrow::Cow, fmt::Display};
 
-use proc_macro2::{Delimiter, Group, Ident, Literal, Punct, Spacing, Span, TokenStream, TokenTree};
+use proc_macro2::{
+    Delimiter, Group, Ident, Literal, Punct, Spacing, Span, TokenStream,
+    TokenTree,
+};
 use thiserror::Error;
-
 
 /// Error of termal procedural macro. Can be converted to a [`TokenStream`]
 /// that produces the error message or the message can be printed with the
@@ -55,7 +57,7 @@ impl ProcError {
     }
 
     /// Gets the [`Span`] of the error message.
-    /// 
+    ///
     /// This is the span that will be asociated with the compile time error.
     pub fn span(&self) -> Span {
         self.span

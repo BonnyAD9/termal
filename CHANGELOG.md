@@ -8,13 +8,17 @@
 - Add module `raw::request` which handles requests and response to specific
   codes.
 
+### Breaking changes
+- Move the module `error` directly into the root of the crate.
+- Rename `ToColorStr` to `ToAnsiColorStr` and its method to `to_ansi_color_str`
+  and rename `FromColorStr` to `FromAnsiColorStr` and its method to
+  `from_ansi_color_str`.
+
 ### Changes
 - Finalize documentation of the module `codes`.
 - Document the modules `error` and `proc::err`.
-- Move the module `error` directly into the root of the crate. There is still
-  alias to the original module to retain backwards compatibility. This may be
-  removed in future major version.
 - Document items in the root of the crate.
+- Partially document the module `rgb`.
 
 ## v3.0.1
 ### Fixes

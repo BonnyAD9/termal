@@ -5,16 +5,44 @@ use crate::Error;
 /// Single RGB pixel.
 pub type Rgb<T = u8> = Vec3<T>;
 
-pub trait ToColorStr {
-    fn to_color_str(&self) -> String;
+/// Extension trait for [`Rgb`] to convert it to ansi color string.
+/// 
+/// The ansi color string has the format `rgb:R/G/B` where `R`, `G` and `B`
+/// are Red, Green and Blue components in hex with 1 to 4 digits (depending
+/// on the size of the type).
+pub trait ToAnsiColorStr {
+    /// Convert the color to ansi color string.
+    /// 
+    /// The ansi color string has the format `rgb:R/G/B` where `R`, `G` and `B`
+    /// are Red, Green and Blue components in hex with 1 to 4 digits (depending
+    /// on the size of the type).
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use termal_core::{Rgb, ToAnsiColorStr};
+    ///
+    /// let rgb: Rgb = (0x11, 0x33, 0x55).into();
+    /// assert_eq!(rgb.to_ansi_color_str(), "rgb:1/3/5");
+    ///
+    /// let rgb: Rgb = (0x12, 0x34, 0x56).into();
+    /// assert_eq!(rgb.to_ansi_color_str(), "rgb:12/34/56");
+    ///
+    /// let rgb: Rgb<u16> = (0x1231, 0x3453, 0x5675).into();
+    /// assert_eq!(rgb.to_ansi_color_str(), "rgb:123/345/567");
+    ///
+    /// let rgb: Rgb<u16> = (0x1234, 0x3456, 0x5678).into();
+    /// assert_eq!(rgb.to_ansi_color_str(), "rgb:1234/3456/5678");
+    /// ```
+    fn to_ansi_color_str(&self) -> String;
 }
 
-pub trait FromColorStr: Sized {
-    fn from_color_str(s: &str) -> Result<Self, Error>;
+pub trait FromAnsiColorStr: Sized {
+    fn from_ansi_color_str(s: &str) -> Result<Self, Error>;
 }
 
-impl ToColorStr for Rgb {
-    fn to_color_str(&self) -> String {
+impl ToAnsiColorStr for Rgb {
+    fn to_ansi_color_str(&self) -> String {
         let (r, g, b) = (*self).into();
         if self.are_all(|c| c.overflowing_shr(4).0 == (c & 0xf)) {
             format!(
@@ -29,11 +57,11 @@ impl ToColorStr for Rgb {
     }
 }
 
-impl ToColorStr for Rgb<u16> {
-    fn to_color_str(&self) -> String {
+impl ToAnsiColorStr for Rgb<u16> {
+    fn to_ansi_color_str(&self) -> String {
         let (r, g, b) = (*self).into();
         if self.are_all(|c| c.overflowing_shr(8).0 == (c & 0xff)) {
-            self.cast::<u8>().to_color_str()
+            self.cast::<u8>().to_ansi_color_str()
         } else if self.are_all(|c| c.overflowing_shr(12).0 == (c & 0xf)) {
             format!(
                 "rgb:{:03x}/{:03x}/{:03x}",
@@ -47,8 +75,8 @@ impl ToColorStr for Rgb<u16> {
     }
 }
 
-impl FromColorStr for Rgb<u16> {
-    fn from_color_str(s: &str) -> Result<Self, Error> {
+impl FromAnsiColorStr for Rgb<u16> {
+    fn from_ansi_color_str(s: &str) -> Result<Self, Error> {
         fn interpolate(col: &str) -> Result<u16, Error> {
             let c = u16::from_str_radix(col, 16)?;
             match col.len() {

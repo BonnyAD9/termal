@@ -22,11 +22,6 @@ pub mod raw;
 #[cfg(feature = "term_text")]
 pub mod term_text;
 
-#[deprecated(note = "use directly `termal::Error` or `termal::Result`.")]
-pub mod error {
-    pub use crate::err::*;
-}
-
 /// Appends linear gradient to the given string.
 ///
 /// The gradient consists of characters given by `s`. `s_len` is the length of
