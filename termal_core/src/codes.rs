@@ -184,7 +184,7 @@ pub const HTAB: char = '\t';
 ///
 /// reset_terminal();
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -328,7 +328,7 @@ macro_rules! code_macro {
 ///
 /// println!("{}", buf);
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -797,7 +797,7 @@ pub const CUR_LOAD: &str = "\x1b8";
 ///
 /// # Example
 /// ```no_run
-/// use termal_core::{codes, error::Error, raw::{
+/// use termal_core::{codes, Error, raw::{
 ///     TermSize, Terminal, term_size
 /// }};
 ///
@@ -829,7 +829,7 @@ pub const ERASE_TO_END: &str = csi!('J');
 ///
 /// # Example
 /// ```no_run
-/// use termal_core::{codes, error::Error, raw::{
+/// use termal_core::{codes, Error, raw::{
 ///     TermSize, Terminal, term_size
 /// }};
 ///
@@ -862,7 +862,7 @@ pub const ERASE_FROM_START: &str = csi!('J', 1);
 ///
 /// # Example
 /// ```no_run
-/// use termal_core::{codes, error::Error, raw::{
+/// use termal_core::{codes, Error, raw::{
 ///     TermSize, Terminal, term_size
 /// }};
 ///
@@ -895,7 +895,7 @@ pub const ERASE_SCREEN: &str = csi!('J', 2);
 ///
 /// # Example
 /// ```no_run
-/// use termal_core::{codes, error::Error, raw::{
+/// use termal_core::{codes, Error, raw::{
 ///     TermSize, Terminal, term_size
 /// }};
 ///
@@ -930,7 +930,7 @@ pub const ERASE_BUFFER: &str = csi!('J', 3);
 ///
 /// # Example
 /// ```no_run
-/// use termal_core::{codes, error::Error, raw::{
+/// use termal_core::{codes, Error, raw::{
 ///     TermSize, Terminal, term_size
 /// }};
 ///
@@ -962,7 +962,7 @@ pub const ERASE_TO_LN_END: &str = csi!('K');
 ///
 /// # Example
 /// ```no_run
-/// use termal_core::{codes, error::Error, raw::{
+/// use termal_core::{codes, Error, raw::{
 ///     TermSize, Terminal, term_size
 /// }};
 ///
@@ -991,7 +991,7 @@ pub const ERASE_FROM_LN_START: &str = csi!('K', 1);
 ///
 /// # Example
 /// ```no_run
-/// use termal_core::{codes, error::Error, raw::{
+/// use termal_core::{codes, Error, raw::{
 ///     TermSize, Terminal, term_size
 /// }};
 ///
@@ -1022,7 +1022,7 @@ pub const ERASE_LINE: &str = csi!('K', 2);
 ///
 /// # Example
 /// ```no_run
-/// use termal_core::{codes, error::Error, raw::{
+/// use termal_core::{codes, Error, raw::{
 ///     TermSize, Terminal, term_size
 /// }};
 ///
@@ -1058,7 +1058,7 @@ pub const ERASE_ALL: &str = "\x1b[2J\x1b[3J";
 ///
 /// # Example
 /// ```no_run
-/// use termal_core::{codes, error::Error, raw::{
+/// use termal_core::{codes, Error, raw::{
 ///     TermSize, Terminal, term_size
 /// }};
 ///
@@ -2853,7 +2853,7 @@ Foreground color can be reset with [`RESET_FG`] or [`RESET`]. Note that
 
 # Example
 ```no_run
-use termal_core::{codes, raw::term_size, error::Error};
+use termal_core::{codes, raw::term_size, Error};
 
 let mut buf = codes::CLEAR.to_string();
 let size = term_size()?;
@@ -2900,7 +2900,7 @@ color before printing newline.
 
 # Example
 ```no_run
-use termal_core::{codes, raw::term_size, error::Error};
+use termal_core::{codes, raw::term_size, Error};
 
 let mut buf = codes::CLEAR.to_string();
 let size = term_size()?;
@@ -2945,7 +2945,7 @@ that [`RESET`] will also reset all text modes (uncluding [`UNDERLINE`] and
 
 # Example
 ```no_run
-use termal_core::{codes, raw::term_size, error::Error};
+use termal_core::{codes, raw::term_size, Error};
 
 const ULS: &[&str] = &[codes::UNDERLINE, codes::DOUBLE_UNDERLINE];
 
@@ -3555,7 +3555,7 @@ pub const FULL_RESET: &str = "\x1bc";
 ///
 /// println!("{}{event:#?}", codes::CLEAR);
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -3593,7 +3593,7 @@ pub const REQUEST_DEVICE_ATTRIBUTES: &str = csi!('c');
 ///
 /// println!("{}{event:#?}", codes::CLEAR);
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -3641,7 +3641,7 @@ pub const REQUEST_STATUS_REPORT: &str = csi!('n', 5);
 ///
 /// println!("{}{event:#?}", codes::CLEAR);
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -3682,7 +3682,7 @@ pub const REQUEST_CURSOR_POSITION: &str = csi!('n', 6);
 ///
 /// println!("{}{event:#?}", codes::CLEAR);
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -3719,7 +3719,7 @@ pub const REQUEST_CURSOR_POSITION2: &str = "\x1b[?6n";
 ///
 /// println!("{}{event:#?}", codes::CLEAR);
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -3759,7 +3759,7 @@ pub const REQUEST_TERMINAL_NAME: &str = "\x1b[>0q";
 ///
 /// println!("{}{event:#?}", codes::CLEAR);
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -3800,7 +3800,7 @@ pub const REQUEST_TEXT_AREA_SIZE_PX: &str = csi!('t', 14);
 ///
 /// println!("{}{event:#?}", codes::CLEAR);
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -3839,7 +3839,7 @@ pub const REQUEST_CHAR_SIZE: &str = csi!('t', 16);
 ///
 /// println!("{}{event:#?}", codes::CLEAR);
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -3878,7 +3878,7 @@ pub const REQUEST_TEXT_AREA_SIZE: &str = csi!('t', 18);
 ///
 /// println!("{}{event:#?}", codes::CLEAR);
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -3959,7 +3959,7 @@ pub const REQUEST_SIXEL_COLORS: &str = "\x1b[?1;1;1S";
 ///
 /// disable_raw_mode()?;
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -4070,7 +4070,7 @@ pub const DISABLE_MOUSE_XY_TRACKING: &str = disable!(9);
 ///
 /// disable_raw_mode()?;
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -4182,7 +4182,7 @@ pub const DISABLE_MOUSE_XY_PR_TRACKING: &str = disable!(1000);
 ///
 /// disable_raw_mode()?;
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -4294,7 +4294,7 @@ pub const DISABLE_MOUSE_XY_DRAG_TRACKING: &str = disable!(1002);
 ///
 /// disable_raw_mode()?;
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -4354,7 +4354,7 @@ pub const DISABLE_MOUSE_XY_ALL_TRACKING: &str = disable!(1003);
 ///
 /// disable_raw_mode()?;
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -4461,7 +4461,7 @@ pub const DISABLE_FOCUS_EVENT: &str = disable!(1004);
 ///
 /// disable_raw_mode()?;
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -4569,7 +4569,7 @@ pub const DISABLE_MOUSE_XY_UTF8_EXT: &str = disable!(1005);
 ///
 /// disable_raw_mode()?;
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -4672,7 +4672,7 @@ pub const DISABLE_MOUSE_XY_EXT: &str = disable!(1006);
 ///
 /// disable_raw_mode()?;
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -4781,7 +4781,7 @@ pub const DISABLE_MOUSE_XY_URXVT_EXT: &str = disable!(1015);
 ///
 /// disable_raw_mode()?;
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -4896,7 +4896,7 @@ pub const LIMIT_PRINT_TO_SCROLL_REGION: &str = disable!(19);
 ///
 /// disable_raw_mode()?;
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -4945,7 +4945,7 @@ pub const ENABLE_BRACKETED_PASTE_MODE: &str = enable!(2004);
 ///
 /// disable_raw_mode()?;
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -5048,7 +5048,7 @@ disable_raw_mode()?;
 
 println!(\"{}{event:#?}\", codes::CLEAR);
 
-# Ok::<_, termal_core::error::Error>(())
+# Ok::<_, termal_core::Error>(())
 ```
 
 ## Result in terminal
@@ -5247,7 +5247,7 @@ pub const RESET_CURSOR_COLOR: &str = osc!(112);
 ///
 /// println!("{}{event:#?}", codes::CLEAR);
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -5286,7 +5286,7 @@ pub const REQUEST_DEFAULT_FG_COLOR: &str = osc!(10, '?');
 ///
 /// println!("{}{event:#?}", codes::CLEAR);
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -5325,7 +5325,7 @@ pub const REQUEST_DEFAULT_BG_COLOR: &str = osc!(11, '?');
 ///
 /// println!("{}{event:#?}", codes::CLEAR);
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -5365,7 +5365,7 @@ pub const REQUEST_CURSOR_COLOR: &str = osc!(12, '?');
 ///
 /// println!("{}{event:#?}", codes::CLEAR);
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal
@@ -5494,7 +5494,7 @@ pub fn request_selection(sel: impl IntoIterator<Item = Selection>) -> String {
 ///
 /// println!("{}{event:#?}", codes::CLEAR);
 ///
-/// # Ok::<_, termal_core::error::Error>(())
+/// # Ok::<_, termal_core::Error>(())
 /// ```
 ///
 /// ## Result in terminal

@@ -2,7 +2,7 @@ use std::{io::Write, thread, time::Duration};
 
 use termal::{
     codes::{self, CursorStyle},
-    error::Result,
+    Result,
     formatc, printcln,
     raw::{
         TermSize, Terminal, disable_raw_mode, enable_raw_mode,

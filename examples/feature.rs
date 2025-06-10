@@ -6,7 +6,7 @@ use std::{
 
 use features::*;
 use termal::{
-    eprintacln, error::Result, gradient, printacln, register_reset_on_panic,
+    eprintacln, Result, gradient, printacln, register_reset_on_panic,
 };
 
 mod features;

@@ -1,6 +1,6 @@
 use termal::{
     codes,
-    error::Result,
+    Result,
     raw::{enable_raw_mode, readers::prompt},
     reset_terminal,
 };

@@ -1,5 +1,5 @@
 use termal::{
-    error::Result,
+    Result,
     image::{self, RawImg},
 };
 

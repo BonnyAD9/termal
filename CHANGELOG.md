@@ -7,6 +7,8 @@
   `events`.
 - Add module `raw::request` which handles requests and response to specific
   codes.
+- Add method `Terminal::consume_available` that consumes all available input
+  without blocking.
 
 ### Breaking changes
 - Move the module `error` directly into the root of the crate.

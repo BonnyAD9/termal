@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use common::BufProvider;
 use termal::{
-    error::Error,
+    Error,
     raw::{Terminal, events::AmbigousEvent},
 };
 

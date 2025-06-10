@@ -211,6 +211,17 @@ impl<T: IoProvider> Terminal<T> {
         }
         Ok(())
     }
+    
+    /// Consumes all available data in the input stream. Doesn't block.
+    pub fn consume_available(&mut self) -> Result<()> {
+        self.buffer.clear();
+        while self.has_input() {
+            let mut stdin = self.io.get_in();
+            let b = stdin.fill_buf()?.len();
+            stdin.consume(b);
+        }
+        Ok(())
+    }
 
     fn print_escaped(out: &mut T::Out, s: impl AsRef<str>) -> Result<()> {
         let mut spl = s.as_ref().split('\n');

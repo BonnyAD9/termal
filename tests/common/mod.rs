@@ -1,7 +1,7 @@
 use std::io::{BufRead, Read, Write};
 
 use termal::{
-    error::Result,
+    Result,
     raw::{IoProvider, ValueOrMut, WaitForIn},
 };
 
