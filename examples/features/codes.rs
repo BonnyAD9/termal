@@ -1,8 +1,8 @@
 use std::{io::Write, thread, time::Duration};
 
 use termal::{
-    codes::{self, CursorStyle},
     Result,
+    codes::{self, CursorStyle},
     formatc, printcln,
     raw::{
         TermSize, Terminal, disable_raw_mode, enable_raw_mode,

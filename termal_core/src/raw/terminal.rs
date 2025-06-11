@@ -211,7 +211,7 @@ impl<T: IoProvider> Terminal<T> {
         }
         Ok(())
     }
-    
+
     /// Consumes all available data in the input stream. Doesn't block.
     pub fn consume_available(&mut self) -> Result<()> {
         self.buffer.clear();

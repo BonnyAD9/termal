@@ -1,9 +1,7 @@
 use std::io::{Write, stdout};
 
 use termal::{
-    codes,
-    Result,
-    formatc,
+    Result, codes, formatc,
     raw::{
         StdioProvider, Terminal, disable_raw_mode, enable_raw_mode,
         events::{Event, Key, KeyCode},

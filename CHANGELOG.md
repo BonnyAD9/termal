@@ -18,9 +18,11 @@
 
 ### Changes
 - Finalize documentation of the module `codes`.
-- Document the modules `error` and `proc::err`.
+- Document the modules `error`, `proc::err` and `rgb`.
 - Document items in the root of the crate.
-- Partially document the module `rgb`.
+
+### Fixes
+- Fix parsing with `from_ansi_color_str` for the format `rgb:` with 3 digits.
 
 ## v3.0.1
 ### Fixes

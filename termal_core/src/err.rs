@@ -55,8 +55,8 @@ pub enum Error {
     /// Failed to parse rgb string.
     ///
     /// This error is returned by the function
-    /// [`crate::FromColorStr::from_color_str`]. If the parse fails when
-    /// parsing event, it is considered as unkown event.
+    /// [`crate::FromAnsiColorStr::from_ansi_color_str`]. If the parse fails
+    /// when parsing event, it is considered as unkown event.
     #[error("Failed to parse rgb.")]
     InvalidRgbFormat,
     /// Any IO error.

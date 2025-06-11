@@ -1,8 +1,7 @@
 use std::io::{self, Write};
 
 use termal::{
-    codes,
-    Result,
+    Result, codes,
     raw::{
         StdioProvider, Terminal, disable_raw_mode, enable_raw_mode,
         events::{AmbigousEvent, AnyEvent, Event, Key, KeyCode, Modifiers},
