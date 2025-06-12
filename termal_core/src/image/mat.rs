@@ -4,7 +4,10 @@ use crate::Rgb;
 
 use super::Image;
 
-/// Fixed size matrix. Wrapper around [`Vec`]
+/// Fixed size matrix. Wrapper around [`Vec`].
+/// 
+/// This may be useful because it implements [`Image`] for `Matrix<Rgb>`.
+#[derive(Clone, Debug)]
 pub struct Mat<T> {
     width: usize,
     height: usize,
@@ -13,6 +16,8 @@ pub struct Mat<T> {
 
 impl<T> Mat<T> {
     /// Create new matrix with the given size.
+    /// 
+    /// The matrix will be filled with the default value of the type.
     pub fn new(width: usize, height: usize) -> Self
     where
         T: Default,
