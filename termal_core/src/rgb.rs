@@ -5,6 +5,25 @@ use crate::Error;
 /// Single RGB pixel.
 pub type Rgb<T = u8> = Vec3<T>;
 
+/// Generate rgb value from hex.
+///
+/// `rgb` is hex number representing the hex color. Note that it must be all
+/// six digits. The MSB is ignored.
+///
+/// # Examples
+/// ```
+/// use termal_core::{Rgb, rgb};
+///
+/// assert_eq!(rgb(0x123456), Rgb::new(0x12, 0x34, 0x56));
+/// ```
+pub fn rgb(rgb: u32) -> Rgb {
+    Rgb::new(
+        ((rgb & 0xff0000) >> 16) as u8,
+        ((rgb & 0xff00) >> 8) as u8,
+        (rgb & 0xff) as u8,
+    )
+}
+
 /// Extension trait for [`Rgb`] to convert it to ansi color string.
 ///
 /// The ansi color string has the format `rgb:R/G/B` where `R`, `G` and `B`
