@@ -1,3 +1,17 @@
+//! This module allows generating images that can be displayed in teminal.
+//! Images may be displayed either with sixels ([`push_sixel`]) or texels
+//! (e.g. [`push_texel_quater`]).
+//! 
+//! Sixels draw the image using special protocol that will draw the image so
+//! that one pixel = one pixel on screen. This method is supported only by few
+//! terminals. Simple terminals don't support it because it is complicated and
+//! new terminals use different protocols for drawing images.
+//! 
+//! Texels use block characters and set the background and foreground color to
+//! aproximate the image. They are like low resolution image where single
+//! character is ~2-4 pixels. This method is supported in almost every modern
+//! terminal, because it is just colored text printing.
+
 mod img_nearest;
 mod mat;
 mod raw_img;
