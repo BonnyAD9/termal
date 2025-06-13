@@ -22,6 +22,11 @@ pub trait Image {
     /// Gets pixel at the given coordinates.
     fn get_pixel(&self, x: usize, y: usize) -> Rgb;
 
+    /// Gets color representing the given rectangle. The implementation may
+    /// use any method to get the color.
+    /// 
+    /// The default implementation takes the average over all the pixels in the
+    /// given area.
     fn get_avg(&self, rect: Rect) -> Rgb<f32> {
         let mut color_sum: Rgb<usize> = Rgb::default();
 
