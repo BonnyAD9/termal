@@ -66,6 +66,33 @@ impl Texel {
 ///
 /// When calculating `w` or `h` it is expected that each character is twice as
 /// tall as wide.
+///
+/// This method of printing images is supported by any terminal that supports
+/// printing with ansi colors. If you would like a little better resolution,
+/// you can use [`push_texel_quater`] which uses more types of characters to
+/// better approximate the image but may be a little slower to calculate.
+///
+/// Some terminals (e.g. kitty) will treat background color same as the
+/// logical background color as if there was no backgroun color. This may be
+/// issue when the terminal background is set to image or transparent. To avoid
+/// using some specific color as backgroun color use [`push_texel_half_no_bg`].
+///
+/// # Example
+/// ```no_run
+/// use termal_core::{codes, image::{RawImg, push_texel_half}};
+///
+/// let mut buf = codes::CLEAR.to_string();
+///
+/// let img_data = include_bytes!("../../../../examples/img2_256.data");
+/// let img = RawImg::from_rgb(img_data.into(), 256, 256);
+///
+/// push_texel_half(&img, &mut buf, "\n", Some(60), None);
+///
+/// println!("{buf}");
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/image/push_texel_half.png)
 pub fn push_texel_half(
     img: &impl Image,
     res: &mut String,
