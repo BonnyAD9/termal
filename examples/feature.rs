@@ -211,6 +211,7 @@ fn single(name: &str) -> Result<()> {
         "gradient" => show_gradient(),
         "image::push_sixel" => image::show_push_sixel(),
         "image::push_texel_half" => image::show_push_texel_half(),
+        "image::push_texel_quater" => image::show_push_texel_quater(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -388,6 +389,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'w i}gradient{'_}
   {'c}image{'y}::{'w i}push_sixel{'_}
   {'c}image{'y}::{'w i}push_texel_half{'_}
+  {'c}image{'y}::{'w i}push_texel_quater{'_}
     "
     );
     Ok(())
