@@ -1,5 +1,6 @@
 use termal::{
-    codes, image::{push_sixel, push_texel_half, push_texel_quater, RawImg}, Result
+    Result, codes,
+    image::{RawImg, push_sixel, push_texel_half, push_texel_quater},
 };
 
 pub fn show_push_sixel() -> Result<()> {
