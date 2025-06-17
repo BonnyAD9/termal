@@ -156,6 +156,47 @@ pub fn push_texel_quater(
 /// tall as wide.
 ///
 /// The given color will not be used as background color.
+///
+/// This method of printing images is supported by any terminal that supports
+/// printing with ansi colors. If you would like a little better resolution,
+/// you can use [`push_texel_quater`] which uses more types of characters to
+/// better approximate the image but may be a little slower to calculate.
+///
+/// Some terminals (e.g. kitty) will treat background color same as the
+/// logical background color as if there was no backgroun color. This may be
+/// issue when the terminal background is set to image or transparent. This is
+/// why it is useful to forbid some color to be a background color.
+///
+/// # Example
+/// ```no_run
+/// use std::time::Duration;
+///
+/// use termal_core::{
+///     Result, codes, raw::request,
+///     image::{RawImg, push_texel_half, push_texel_half_no_bg}
+/// };
+///
+/// let mut buf = codes::CLEAR.to_string();
+/// buf += "any_bg:\n";
+///
+/// let img_data = include_bytes!("../../../../examples/img3_256.data");
+/// let img = RawImg::from_rgb(img_data.into(), 256, 256);
+///
+/// push_texel_half(&img, &mut buf, "\n", Some(60), None);
+///
+/// let bg = request::default_bg_color(Duration::from_millis(100))?;
+/// buf += codes::RESET;
+/// buf += "\nwithout default bg:\n";
+///
+/// push_texel_half_no_bg(&img, &mut buf, "\n", Some(60), None, bg.scale());
+///
+/// println!("{buf}");
+///
+/// Result::Ok(())
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/image/push_texel_half_no_bg.png)
 pub fn push_texel_half_no_bg(
     img: &impl Image,
     res: &mut String,
@@ -164,7 +205,7 @@ pub fn push_texel_half_no_bg(
     h: Option<usize>,
     bg: impl Into<Rgb>,
 ) {
-    push_texel_quater_inner(img, res, nl, w, h, Some(bg.into()));
+    push_texel_half_inner(img, res, nl, w, h, Some(bg.into()));
 }
 
 /// Append image `img` from quater block characters (`▄`, `▖`, `▗`, `▘`, `▝`,
