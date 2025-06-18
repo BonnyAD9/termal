@@ -4,7 +4,7 @@ use termal::{
     Result, codes,
     image::{
         RawImg, push_sixel, push_texel_half, push_texel_half_no_bg,
-        push_texel_quater,
+        push_texel_quater, push_texel_quater_no_bg,
     },
     raw::request,
 };
@@ -62,6 +62,26 @@ pub fn show_push_texel_half_no_bg() -> Result<()> {
     buf += "\nwithout default bg:\n";
 
     push_texel_half_no_bg(&img, &mut buf, "\n", Some(60), None, bg.scale());
+
+    println!("{buf}");
+
+    Ok(())
+}
+
+pub fn show_push_texel_quater_no_bg() -> Result<()> {
+    let mut buf = codes::CLEAR.to_string();
+    buf += "any_bg:\n";
+
+    let img_data = include_bytes!("../img3_256.data");
+    let img = RawImg::from_rgb(img_data.into(), 256, 256);
+
+    push_texel_quater(&img, &mut buf, "\n", Some(60), None);
+
+    let bg = request::default_bg_color(Duration::from_millis(100))?;
+    buf += codes::RESET;
+    buf += "\nwithout default bg:\n";
+
+    push_texel_quater_no_bg(&img, &mut buf, "\n", Some(60), None, bg.scale());
 
     println!("{buf}");
 

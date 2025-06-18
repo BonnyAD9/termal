@@ -218,6 +218,46 @@ pub fn push_texel_half_no_bg(
 /// tall as wide.
 ///
 /// The given color will not be used as background color.
+///
+/// This method of printing images is supported by any terminal that supports
+/// printing with ansi colors.
+///
+/// Some terminals (e.g. kitty) will treat background color same as the
+/// logical background color as if there was no backgroun color. This may be
+/// issue when the terminal background is set to image or transparent. To avoid
+/// using some specific color as backgroun color use
+/// [`push_texel_quater_no_bg`].
+///
+/// # Example
+/// ```no_run
+/// use std::time::Duration;
+///
+/// use termal_core::{
+///     Result, codes, raw::request,
+///     image::{RawImg, push_texel_quater, push_texel_quater_no_bg}
+/// };
+///
+/// let mut buf = codes::CLEAR.to_string();
+/// buf += "any_bg:\n";
+///
+/// let img_data = include_bytes!("../../../../examples/img3_256.data");
+/// let img = RawImg::from_rgb(img_data.into(), 256, 256);
+///
+/// push_texel_quater(&img, &mut buf, "\n", Some(60), None);
+///
+/// let bg = request::default_bg_color(Duration::from_millis(100))?;
+/// buf += codes::RESET;
+/// buf += "\nwithout default bg:\n";
+///
+/// push_texel_quater_no_bg(&img, &mut buf, "\n", Some(60), None, bg.scale());
+///
+/// println!("{buf}");
+///
+/// Result::Ok(())
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/image/push_texel_quater_no_bg.png)
 pub fn push_texel_quater_no_bg(
     img: &impl Image,
     res: &mut String,
