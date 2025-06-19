@@ -19,8 +19,8 @@
 
 ### Changes
 - Finalize documentation of the module `codes`.
-- Document the modules `error`, `proc::err`, `rgb`, `image::mat` and the root
-  of the module `image`.
+- Document the modules `error`, `proc::err`, `rgb`, `raw::io_provider` and
+  `image`.
 - Document items in the root of the crate.
 
 ### Fixes

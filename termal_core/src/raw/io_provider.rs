@@ -6,20 +6,26 @@ use std::{
 use super::WaitForIn;
 
 /// Represents mutable value that is either owned or borrowed.
+///
+/// It is similar to [`std::borrow::Cow`] with mutable reference.
 pub enum ValueOrMut<'a, T> {
     Value(T),
     Mut(&'a mut T),
 }
 
 /// Proveder of input and output stream.
+///
+/// This is the base trait on which operates [`crate::raw::Terminal`].
 pub trait IoProvider: WaitForIn {
+    /// Output stream.
     type Out: Write;
+    /// Input stream.
     type In: BufRead + WaitForIn;
 
-    /// Gets the output writer.
+    /// Gets the output writer (stream).
     fn get_out(&mut self) -> ValueOrMut<'_, Self::Out>;
 
-    /// Gets the input writer.
+    /// Gets the input writer (stream).
     fn get_in(&mut self) -> ValueOrMut<'_, Self::In>;
 
     /// Checks if the output stream is terminal.
@@ -27,12 +33,12 @@ pub trait IoProvider: WaitForIn {
         false
     }
 
-    /// Checks if the input stream is terminal
+    /// Checks if the input stream is terminal.
     fn is_in_terminal(&self) -> bool {
         false
     }
 
-    /// Checks if the output is raw.
+    /// Checks if the output is in raw mode.
     fn is_out_raw(&self) -> bool {
         false
     }
