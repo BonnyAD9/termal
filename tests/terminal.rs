@@ -3,7 +3,7 @@ use std::time::Duration;
 use common::BufProvider;
 use termal::{
     Error,
-    raw::{Terminal, events::AmbigousEvent},
+    raw::{Terminal, events::AmbiguousEvent},
 };
 
 mod common;
@@ -90,52 +90,52 @@ fn test_events() {
         b"\x1b\x1b\x1bc\xc5\xa1\x1b[1;5H\r\x1b[200~\x1b\rh\x1b[201~",
         b"h\x1b[>>H\x1b[M\x20\x28\x2F\x1b]52;;aGVsbG8gdGhlcmU=\x1b\\l",
     ]));
-    assert_eq!(t.read_ambigous().unwrap(), AmbigousEvent::from_code(b"h"));
+    assert_eq!(t.read_ambiguous().unwrap(), AmbiguousEvent::from_code(b"h"));
     assert_eq!(
-        t.read_ambigous().unwrap(),
-        AmbigousEvent::from_code(b"\x1b")
+        t.read_ambiguous().unwrap(),
+        AmbiguousEvent::from_code(b"\x1b")
     );
     assert_eq!(
-        t.read_ambigous().unwrap(),
-        AmbigousEvent::from_code(b"\x1b\x1b")
+        t.read_ambiguous().unwrap(),
+        AmbiguousEvent::from_code(b"\x1b\x1b")
     );
     assert_eq!(
-        t.read_ambigous().unwrap(),
-        AmbigousEvent::from_code(b"\x1bc")
+        t.read_ambiguous().unwrap(),
+        AmbiguousEvent::from_code(b"\x1bc")
     );
     assert_eq!(
-        t.read_ambigous().unwrap(),
-        AmbigousEvent::from_code("š".as_bytes())
+        t.read_ambiguous().unwrap(),
+        AmbiguousEvent::from_code("š".as_bytes())
     );
     assert_eq!(
-        t.read_ambigous().unwrap(),
-        AmbigousEvent::from_code(b"\x1b[1;5H")
+        t.read_ambiguous().unwrap(),
+        AmbiguousEvent::from_code(b"\x1b[1;5H")
     );
-    assert_eq!(t.read_ambigous().unwrap(), AmbigousEvent::from_code(b"\r"));
+    assert_eq!(t.read_ambiguous().unwrap(), AmbiguousEvent::from_code(b"\r"));
     assert_eq!(
-        t.read_ambigous().unwrap(),
-        AmbigousEvent::from_code(b"\x1b[200~")
+        t.read_ambiguous().unwrap(),
+        AmbiguousEvent::from_code(b"\x1b[200~")
     );
-    assert_eq!(t.read_ambigous().unwrap(), AmbigousEvent::verbatim('\x1b'));
-    assert_eq!(t.read_ambigous().unwrap(), AmbigousEvent::verbatim('\n'));
-    assert_eq!(t.read_ambigous().unwrap(), AmbigousEvent::verbatim('h'));
+    assert_eq!(t.read_ambiguous().unwrap(), AmbiguousEvent::verbatim('\x1b'));
+    assert_eq!(t.read_ambiguous().unwrap(), AmbiguousEvent::verbatim('\n'));
+    assert_eq!(t.read_ambiguous().unwrap(), AmbiguousEvent::verbatim('h'));
     assert_eq!(
-        t.read_ambigous().unwrap(),
-        AmbigousEvent::from_code(b"\x1b[201~")
+        t.read_ambiguous().unwrap(),
+        AmbiguousEvent::from_code(b"\x1b[201~")
     );
-    assert_eq!(t.read_ambigous().unwrap(), AmbigousEvent::from_code(b"h"));
+    assert_eq!(t.read_ambiguous().unwrap(), AmbiguousEvent::from_code(b"h"));
     assert_eq!(
-        t.read_ambigous().unwrap(),
-        AmbigousEvent::from_code(b"\x1b[>>H")
-    );
-    assert_eq!(
-        t.read_ambigous().unwrap(),
-        AmbigousEvent::from_code(b"\x1b[M\x20\x28\x2F")
+        t.read_ambiguous().unwrap(),
+        AmbiguousEvent::from_code(b"\x1b[>>H")
     );
     assert_eq!(
-        t.read_ambigous().unwrap(),
-        AmbigousEvent::from_code(b"\x1b]52;;aGVsbG8gdGhlcmU=\x1b\\")
+        t.read_ambiguous().unwrap(),
+        AmbiguousEvent::from_code(b"\x1b[M\x20\x28\x2F")
     );
-    assert_eq!(t.read_ambigous().unwrap(), AmbigousEvent::from_code(b"l"));
-    assert!(matches!(t.read_ambigous(), Err(Error::StdInEof)));
+    assert_eq!(
+        t.read_ambiguous().unwrap(),
+        AmbiguousEvent::from_code(b"\x1b]52;;aGVsbG8gdGhlcmU=\x1b\\")
+    );
+    assert_eq!(t.read_ambiguous().unwrap(), AmbiguousEvent::from_code(b"l"));
+    assert!(matches!(t.read_ambiguous(), Err(Error::StdInEof)));
 }

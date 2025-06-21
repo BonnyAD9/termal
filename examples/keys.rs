@@ -4,7 +4,7 @@ use termal::{
     Result, codes,
     raw::{
         StdioProvider, Terminal, disable_raw_mode, enable_raw_mode,
-        events::{AmbigousEvent, AnyEvent, Event, Key, KeyCode, Modifiers},
+        events::{AmbiguousEvent, AnyEvent, Event, Key, KeyCode, Modifiers},
     },
 };
 
@@ -27,10 +27,10 @@ fn start() -> Result<()> {
     let mut term = Terminal::<StdioProvider>::default();
 
     loop {
-        let key = term.read_ambigous()?;
+        let key = term.read_ambiguous()?;
         if matches!(
             key,
-            AmbigousEvent {
+            AmbiguousEvent {
                 event: AnyEvent::Known(Event::KeyPress(Key {
                     code: KeyCode::Char('c'),
                     modifiers: Modifiers::CONTROL,

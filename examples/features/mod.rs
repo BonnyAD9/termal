@@ -2,6 +2,7 @@ use termal::{Result, codes as code, gradient, write_gradient};
 
 pub mod codes;
 pub mod image;
+pub mod raw;
 
 pub fn show_write_gradient() -> Result<()> {
     let mut buf = code::CLEAR.to_string();

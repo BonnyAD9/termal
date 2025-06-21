@@ -13,7 +13,7 @@ use std::{
 #[cfg(feature = "events")]
 use crate::{
     Result, codes,
-    raw::events::{AmbigousEvent, AnyEvent, Event, Status},
+    raw::events::{AmbiguousEvent, AnyEvent, Event, Status},
 };
 
 pub use self::{
@@ -56,8 +56,11 @@ pub(crate) fn raw_guard<T>(
 /// Request response from the terminal. The response must match with the given
 /// matching function `m`.
 ///
-/// The argument to `m` is [`AmbigousEvent`]. If you would like to skip
-/// ambigous and unknown events, use [`request()`].
+/// Many types of requests are directly implemented as functions in the module
+/// [`mod@request`]. That should be suitable for most cases.
+///
+/// The argument to `m` is [`AmbiguousEvent`]. If you would like to skip
+/// ambiguous and unknown events, use [`request()`].
 ///
 /// This function will automatically enable raw mode for its duration.
 ///
@@ -67,11 +70,49 @@ pub(crate) fn raw_guard<T>(
 /// doesn't support the given code but supports status report, this function
 /// will block until it receives the response (generally less than useful
 /// timeout values).
+///
+/// # Example
+/// ```no_run
+/// use std::time::Duration;
+///
+/// use termal_core::{codes, Result, raw::{
+///     request_ambiguous, Terminal,
+///     events::{AmbiguousEvent, Event, Status, AnyEvent}
+/// }};
+///
+/// let mut term = Terminal::stdio();
+/// term.flushed(codes::CLEAR)?;
+///
+/// let evt = request_ambiguous(
+///     codes::REQUEST_TERMINAL_NAME,
+///     Duration::from_millis(100),
+///     |e| {
+///         if let AmbiguousEvent {
+///             event: AnyEvent::Known(Event::Status(Status::TerminalName(n))),
+///             ..
+///         } = e
+///         {
+///             Some(n)
+///         } else {
+///             None
+///         }
+///     },
+/// )?;
+///
+/// term.consume_available()?;
+///
+/// println!("{evt:#?}");
+///
+/// Result::Ok(())
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/raw/request_ambiguous.png)
 #[cfg(feature = "events")]
 pub fn request_ambiguous<T>(
     code: impl AsRef<str>,
     timeout: Duration,
-    mut m: impl FnMut(AmbigousEvent) -> Option<T>,
+    mut m: impl FnMut(AmbiguousEvent) -> Option<T>,
 ) -> Result<Option<T>> {
     raw_guard(true, || {
         let mut term = Terminal::stdio();
@@ -82,13 +123,13 @@ pub fn request_ambiguous<T>(
         let mut now = Instant::now();
         let end_time = now + timeout;
         loop {
-            let Some(evt) = term.read_ambigous_timeout(end_time - now)? else {
+            let Some(evt) = term.read_ambiguous_timeout(end_time - now)? else {
                 return Ok(None);
             };
 
             if matches!(
                 evt,
-                AmbigousEvent {
+                AmbiguousEvent {
                     event: AnyEvent::Known(Event::Status(Status::Ok)),
                     ..
                 }
@@ -129,7 +170,7 @@ pub fn request<T>(
     mut m: impl FnMut(Event) -> Option<T>,
 ) -> Result<Option<T>> {
     request_ambiguous(code, timeout, move |evt| match evt {
-        AmbigousEvent {
+        AmbiguousEvent {
             event: AnyEvent::Known(evt),
             ..
         } => m(evt),

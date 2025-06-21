@@ -1,7 +1,7 @@
 use termal::{
     Rgb,
     raw::events::{
-        AmbigousEvent, AnyEvent, Event, Key, KeyCode, Modifiers, StateChange,
+        AmbiguousEvent, AnyEvent, Event, Key, KeyCode, Modifiers, StateChange,
         Status, TermAttr, TermFeatures, TermType,
         mouse::{self, Mouse},
     },
@@ -38,35 +38,35 @@ fn test_constructors() {
     );
 
     assert_eq!(
-        AmbigousEvent::unknown("\x1b[2;2H"),
-        AmbigousEvent {
+        AmbiguousEvent::unknown("\x1b[2;2H"),
+        AmbiguousEvent {
             event: AnyEvent::Unknown("\x1b[2;2H".into()),
             other: vec![],
         }
     );
 
     assert_eq!(
-        AmbigousEvent::event(Event::Focus),
-        AmbigousEvent {
+        AmbiguousEvent::event(Event::Focus),
+        AmbiguousEvent {
             event: AnyEvent::Known(Event::Focus),
             other: vec![],
         }
     );
 
     assert_eq!(
-        AmbigousEvent::key(Key::code(KeyCode::Esc)),
-        AmbigousEvent::event(Event::KeyPress(Key::code(KeyCode::Esc)))
+        AmbiguousEvent::key(Key::code(KeyCode::Esc)),
+        AmbiguousEvent::event(Event::KeyPress(Key::code(KeyCode::Esc)))
     );
 
     assert_eq!(
-        AmbigousEvent::mouse(Mouse {
+        AmbiguousEvent::mouse(Mouse {
             button: mouse::Button::Left,
             event: mouse::Event::Up,
             modifiers: Modifiers::ALT,
             x: 5,
             y: 7
         }),
-        AmbigousEvent::event(Event::Mouse(Mouse {
+        AmbiguousEvent::event(Event::Mouse(Mouse {
             button: mouse::Button::Left,
             event: mouse::Event::Up,
             modifiers: Modifiers::ALT,
@@ -76,18 +76,18 @@ fn test_constructors() {
     );
 
     assert_eq!(
-        AmbigousEvent::status(Status::Ok),
-        AmbigousEvent::event(Event::Status(Status::Ok)),
+        AmbiguousEvent::status(Status::Ok),
+        AmbiguousEvent::event(Event::Status(Status::Ok)),
     );
 
     assert_eq!(
-        AmbigousEvent::verbatim('\x1b'),
-        AmbigousEvent::key(Key::verbatim('\x1b')),
+        AmbiguousEvent::verbatim('\x1b'),
+        AmbiguousEvent::key(Key::verbatim('\x1b')),
     );
 
     assert_eq!(
-        AmbigousEvent::state_change(StateChange::BracketedPasteStart),
-        AmbigousEvent::event(Event::StateChange(
+        AmbiguousEvent::state_change(StateChange::BracketedPasteStart),
+        AmbiguousEvent::event(Event::StateChange(
             StateChange::BracketedPasteStart
         )),
     );
@@ -96,16 +96,16 @@ fn test_constructors() {
 #[test]
 fn test_unknown() {
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b;;"),
-        AmbigousEvent::unknown(b"\x1b;;")
+        AmbiguousEvent::from_code(b"\x1b;;"),
+        AmbiguousEvent::unknown(b"\x1b;;")
     );
 }
 
 #[test]
 fn test_key() {
     assert_eq!(
-        AmbigousEvent::from_char_code('K'),
-        AmbigousEvent::key(Key::new(
+        AmbiguousEvent::from_char_code('K'),
+        AmbiguousEvent::key(Key::new(
             KeyCode::Char('k'),
             Modifiers::SHIFT,
             'K'
@@ -113,90 +113,97 @@ fn test_key() {
     );
 
     assert_eq!(
-        AmbigousEvent::from_char_code('\x03'),
-        AmbigousEvent::key(Key::mcode(KeyCode::Char('c'), Modifiers::CONTROL)),
+        AmbiguousEvent::from_char_code('\x03'),
+        AmbiguousEvent::key(Key::mcode(
+            KeyCode::Char('c'),
+            Modifiers::CONTROL
+        )),
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"K"),
-        AmbigousEvent::from_char_code('K'),
+        AmbiguousEvent::from_code(b"K"),
+        AmbiguousEvent::from_char_code('K'),
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1bJ"),
-        AmbigousEvent::key(Key::mcode(
+        AmbiguousEvent::from_code(b"\x1bJ"),
+        AmbiguousEvent::key(Key::mcode(
             KeyCode::Char('j'),
             Modifiers::ALT | Modifiers::SHIFT
         )),
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b"),
-        AmbigousEvent::key(Key::code(KeyCode::Esc)),
+        AmbiguousEvent::from_code(b"\x1b"),
+        AmbiguousEvent::key(Key::code(KeyCode::Esc)),
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b\x1b"),
-        AmbigousEvent::key(Key::mcode(KeyCode::Esc, Modifiers::ALT)),
+        AmbiguousEvent::from_code(b"\x1b\x1b"),
+        AmbiguousEvent::key(Key::mcode(KeyCode::Esc, Modifiers::ALT)),
     );
 
     assert_eq!(
-        AmbigousEvent::from_code("š".as_bytes()),
-        AmbigousEvent::key(Key::new(KeyCode::Char('š'), Modifiers::NONE, 'š')),
+        AmbiguousEvent::from_code("š".as_bytes()),
+        AmbiguousEvent::key(Key::new(
+            KeyCode::Char('š'),
+            Modifiers::NONE,
+            'š'
+        )),
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b["),
-        AmbigousEvent::key(Key::mcode(KeyCode::Char('['), Modifiers::ALT)),
+        AmbiguousEvent::from_code(b"\x1b["),
+        AmbiguousEvent::key(Key::mcode(KeyCode::Char('['), Modifiers::ALT)),
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[1;5H"),
-        AmbigousEvent::key(Key::mcode(KeyCode::Home, Modifiers::CONTROL))
+        AmbiguousEvent::from_code(b"\x1b[1;5H"),
+        AmbiguousEvent::key(Key::mcode(KeyCode::Home, Modifiers::CONTROL))
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[1;13G"),
-        AmbigousEvent::key(Key::mcode(
+        AmbiguousEvent::from_code(b"\x1b[1;13G"),
+        AmbiguousEvent::key(Key::mcode(
             KeyCode::Char('5'),
             Modifiers::CONTROL | Modifiers::META
         )),
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[A"),
-        AmbigousEvent::key(Key::code(KeyCode::Up)),
+        AmbiguousEvent::from_code(b"\x1b[A"),
+        AmbiguousEvent::key(Key::code(KeyCode::Up)),
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[18;4~"),
-        AmbigousEvent::key(Key::mcode(
+        AmbiguousEvent::from_code(b"\x1b[18;4~"),
+        AmbiguousEvent::key(Key::mcode(
             KeyCode::F7,
             Modifiers::SHIFT | Modifiers::ALT
         )),
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1bO1;2Q"),
-        AmbigousEvent::key(Key::mcode(KeyCode::F2, Modifiers::SHIFT)),
+        AmbiguousEvent::from_code(b"\x1bO1;2Q"),
+        AmbiguousEvent::key(Key::mcode(KeyCode::F2, Modifiers::SHIFT)),
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[1R"),
-        AmbigousEvent::key(Key::code(KeyCode::F3)),
+        AmbiguousEvent::from_code(b"\x1b[1R"),
+        AmbiguousEvent::key(Key::code(KeyCode::F3)),
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[1;9P"),
-        AmbigousEvent::key(Key::mcode(KeyCode::F1, Modifiers::META)),
+        AmbiguousEvent::from_code(b"\x1b[1;9P"),
+        AmbiguousEvent::key(Key::mcode(KeyCode::F1, Modifiers::META)),
     );
 }
 
 #[test]
 fn test_ambiguous() {
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[1;2R"),
-        AmbigousEvent {
+        AmbiguousEvent::from_code(b"\x1b[1;2R"),
+        AmbiguousEvent {
             event: AnyEvent::Known(Event::KeyPress(Key::mcode(
                 KeyCode::F3,
                 Modifiers::SHIFT
@@ -206,8 +213,8 @@ fn test_ambiguous() {
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1bd"),
-        AmbigousEvent {
+        AmbiguousEvent::from_code(b"\x1bd"),
+        AmbiguousEvent {
             event: AnyEvent::Known(Event::KeyPress(Key::mcode(
                 KeyCode::Char('d'),
                 Modifiers::ALT
@@ -225,8 +232,8 @@ fn test_mouse() {
     // Normal mode
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[M\x20\x28\x2F"),
-        AmbigousEvent::mouse(Mouse {
+        AmbiguousEvent::from_code(b"\x1b[M\x20\x28\x2F"),
+        AmbiguousEvent::mouse(Mouse {
             button: mouse::Button::Left,
             modifiers: Modifiers::NONE,
             event: mouse::Event::Down,
@@ -236,8 +243,8 @@ fn test_mouse() {
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[M\x36\x28\x2F"),
-        AmbigousEvent::mouse(Mouse {
+        AmbiguousEvent::from_code(b"\x1b[M\x36\x28\x2F"),
+        AmbiguousEvent::mouse(Mouse {
             button: mouse::Button::Right,
             modifiers: Modifiers::CONTROL | Modifiers::SHIFT,
             event: mouse::Event::Down,
@@ -247,8 +254,8 @@ fn test_mouse() {
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[M\x71\x28\x2F"),
-        AmbigousEvent::mouse(Mouse {
+        AmbiguousEvent::from_code(b"\x1b[M\x71\x28\x2F"),
+        AmbiguousEvent::mouse(Mouse {
             button: mouse::Button::Middle,
             modifiers: Modifiers::CONTROL,
             event: mouse::Event::ScrollDown,
@@ -258,8 +265,8 @@ fn test_mouse() {
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[M\x45\x28\x2F"),
-        AmbigousEvent::mouse(Mouse {
+        AmbiguousEvent::from_code(b"\x1b[M\x45\x28\x2F"),
+        AmbiguousEvent::mouse(Mouse {
             button: mouse::Button::Middle,
             modifiers: Modifiers::SHIFT,
             event: mouse::Event::Move,
@@ -271,8 +278,8 @@ fn test_mouse() {
     // UTF-8
 
     assert_eq!(
-        AmbigousEvent::from_code("\x1b[M\x47\u{5fc}\x2F".as_bytes()),
-        AmbigousEvent::mouse(Mouse {
+        AmbiguousEvent::from_code("\x1b[M\x47\u{5fc}\x2F".as_bytes()),
+        AmbiguousEvent::mouse(Mouse {
             button: mouse::Button::None,
             modifiers: Modifiers::SHIFT,
             event: mouse::Event::Move,
@@ -284,8 +291,8 @@ fn test_mouse() {
     // SGR
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[<0;8;15m"),
-        AmbigousEvent::mouse(Mouse {
+        AmbiguousEvent::from_code(b"\x1b[<0;8;15m"),
+        AmbiguousEvent::mouse(Mouse {
             button: mouse::Button::Left,
             modifiers: Modifiers::NONE,
             event: mouse::Event::Up,
@@ -295,8 +302,8 @@ fn test_mouse() {
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[<22;8;15M"),
-        AmbigousEvent::mouse(Mouse {
+        AmbiguousEvent::from_code(b"\x1b[<22;8;15M"),
+        AmbiguousEvent::mouse(Mouse {
             button: mouse::Button::Right,
             modifiers: Modifiers::CONTROL | Modifiers::SHIFT,
             event: mouse::Event::Down,
@@ -306,8 +313,8 @@ fn test_mouse() {
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[<81;8;15M"),
-        AmbigousEvent::mouse(Mouse {
+        AmbiguousEvent::from_code(b"\x1b[<81;8;15M"),
+        AmbiguousEvent::mouse(Mouse {
             button: mouse::Button::Middle,
             modifiers: Modifiers::CONTROL,
             event: mouse::Event::ScrollDown,
@@ -317,8 +324,8 @@ fn test_mouse() {
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[<37;8;15M"),
-        AmbigousEvent::mouse(Mouse {
+        AmbiguousEvent::from_code(b"\x1b[<37;8;15M"),
+        AmbiguousEvent::mouse(Mouse {
             button: mouse::Button::Middle,
             modifiers: Modifiers::SHIFT,
             event: mouse::Event::Move,
@@ -330,8 +337,8 @@ fn test_mouse() {
     // URXVT
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[32;8;15M"),
-        AmbigousEvent::mouse(Mouse {
+        AmbiguousEvent::from_code(b"\x1b[32;8;15M"),
+        AmbiguousEvent::mouse(Mouse {
             button: mouse::Button::Left,
             modifiers: Modifiers::NONE,
             event: mouse::Event::Down,
@@ -341,8 +348,8 @@ fn test_mouse() {
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[54;8;15M"),
-        AmbigousEvent::mouse(Mouse {
+        AmbiguousEvent::from_code(b"\x1b[54;8;15M"),
+        AmbiguousEvent::mouse(Mouse {
             button: mouse::Button::Right,
             modifiers: Modifiers::CONTROL | Modifiers::SHIFT,
             event: mouse::Event::Down,
@@ -352,8 +359,8 @@ fn test_mouse() {
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[113;8;15M"),
-        AmbigousEvent::mouse(Mouse {
+        AmbiguousEvent::from_code(b"\x1b[113;8;15M"),
+        AmbiguousEvent::mouse(Mouse {
             button: mouse::Button::Middle,
             modifiers: Modifiers::CONTROL,
             event: mouse::Event::ScrollDown,
@@ -363,8 +370,8 @@ fn test_mouse() {
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[69;8;15M"),
-        AmbigousEvent::mouse(Mouse {
+        AmbiguousEvent::from_code(b"\x1b[69;8;15M"),
+        AmbiguousEvent::mouse(Mouse {
             button: mouse::Button::Middle,
             modifiers: Modifiers::SHIFT,
             event: mouse::Event::Move,
@@ -377,8 +384,8 @@ fn test_mouse() {
 #[test]
 fn test_status() {
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[?62;1;4;21;22c"),
-        AmbigousEvent::status(Status::Attributes(TermAttr {
+        AmbiguousEvent::from_code(b"\x1b[?62;1;4;21;22c"),
+        AmbiguousEvent::status(Status::Attributes(TermAttr {
             typ: TermType::Vt220,
             features: TermFeatures::COLUMNS132
                 | TermFeatures::SIXEL_GRAPHICS
@@ -388,94 +395,96 @@ fn test_status() {
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[0n"),
-        AmbigousEvent::status(Status::Ok),
+        AmbiguousEvent::from_code(b"\x1b[0n"),
+        AmbiguousEvent::status(Status::Ok),
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[?10;17R"),
-        AmbigousEvent::status(Status::CursorPosition { x: 17, y: 10 }),
+        AmbiguousEvent::from_code(b"\x1b[?10;17R"),
+        AmbiguousEvent::status(Status::CursorPosition { x: 17, y: 10 }),
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1bP>|My Terminal\x1b\\"),
-        AmbigousEvent::status(Status::TerminalName("My Terminal".to_string())),
+        AmbiguousEvent::from_code(b"\x1bP>|My Terminal\x1b\\"),
+        AmbiguousEvent::status(Status::TerminalName(
+            "My Terminal".to_string()
+        )),
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[4;17;10t"),
-        AmbigousEvent::status(Status::TextAreaSizePx { w: 10, h: 17 }),
+        AmbiguousEvent::from_code(b"\x1b[4;17;10t"),
+        AmbiguousEvent::status(Status::TextAreaSizePx { w: 10, h: 17 }),
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[8;17;10t"),
-        AmbigousEvent::status(Status::TextAreaSize { w: 10, h: 17 }),
+        AmbiguousEvent::from_code(b"\x1b[8;17;10t"),
+        AmbiguousEvent::status(Status::TextAreaSize { w: 10, h: 17 }),
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[6;17;10t"),
-        AmbigousEvent::status(Status::CharSize { w: 10, h: 17 }),
+        AmbiguousEvent::from_code(b"\x1b[6;17;10t"),
+        AmbiguousEvent::status(Status::CharSize { w: 10, h: 17 }),
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[?1;0;256S"),
-        AmbigousEvent::status(Status::SixelColors(256)),
+        AmbiguousEvent::from_code(b"\x1b[?1;0;256S"),
+        AmbiguousEvent::status(Status::SixelColors(256)),
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[?1;0;256S"),
-        AmbigousEvent::status(Status::SixelColors(256)),
+        AmbiguousEvent::from_code(b"\x1b[?1;0;256S"),
+        AmbiguousEvent::status(Status::SixelColors(256)),
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b]10;rgb:12/34/56\x1b\\"),
-        AmbigousEvent::status(Status::DefaultFgColor(Rgb::<u16>::new(
+        AmbiguousEvent::from_code(b"\x1b]10;rgb:12/34/56\x1b\\"),
+        AmbiguousEvent::status(Status::DefaultFgColor(Rgb::<u16>::new(
             0x1212, 0x3434, 0x5656
         ))),
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b]11;rgb:12/34/56\x1b\\"),
-        AmbigousEvent::status(Status::DefaultBgColor(Rgb::<u16>::new(
+        AmbiguousEvent::from_code(b"\x1b]11;rgb:12/34/56\x1b\\"),
+        AmbiguousEvent::status(Status::DefaultBgColor(Rgb::<u16>::new(
             0x1212, 0x3434, 0x5656
         ))),
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b]12;rgb:12/34/56\x1b\\"),
-        AmbigousEvent::status(Status::CursorColor(Rgb::<u16>::new(
+        AmbiguousEvent::from_code(b"\x1b]12;rgb:12/34/56\x1b\\"),
+        AmbiguousEvent::status(Status::CursorColor(Rgb::<u16>::new(
             0x1212, 0x3434, 0x5656
         ))),
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b]52;;aGVsbG8gdGhlcmU=\x1b\\"),
-        AmbigousEvent::status(Status::SelectionData(b"hello there".into())),
+        AmbiguousEvent::from_code(b"\x1b]52;;aGVsbG8gdGhlcmU=\x1b\\"),
+        AmbiguousEvent::status(Status::SelectionData(b"hello there".into())),
     );
 }
 
 #[test]
 fn test_state_change() {
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[200~"),
-        AmbigousEvent::state_change(StateChange::BracketedPasteStart),
+        AmbiguousEvent::from_code(b"\x1b[200~"),
+        AmbiguousEvent::state_change(StateChange::BracketedPasteStart),
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[201~"),
-        AmbigousEvent::state_change(StateChange::BracketedPasteEnd),
+        AmbiguousEvent::from_code(b"\x1b[201~"),
+        AmbiguousEvent::state_change(StateChange::BracketedPasteEnd),
     );
 }
 
 #[test]
 fn test_other() {
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[I"),
-        AmbigousEvent::event(Event::Focus),
+        AmbiguousEvent::from_code(b"\x1b[I"),
+        AmbiguousEvent::event(Event::Focus),
     );
 
     assert_eq!(
-        AmbigousEvent::from_code(b"\x1b[O"),
-        AmbigousEvent::event(Event::FocusLost),
+        AmbiguousEvent::from_code(b"\x1b[O"),
+        AmbiguousEvent::event(Event::FocusLost),
     );
 }

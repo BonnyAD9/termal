@@ -16,12 +16,14 @@
 - Rename `ToColorStr` to `ToAnsiColorStr` and its method to `to_ansi_color_str`
   and rename `FromColorStr` to `FromAnsiColorStr` and its method to
   `from_ansi_color_str`.
+- Fix all typos of `ambigous` to `ambiguous`.
 
 ### Changes
 - Finalize documentation of the module `codes`.
 - Document the modules `error`, `proc::err`, `rgb`, `raw::io_provider` and
   `image`.
 - Document items in the root of the crate.
+- Partially document the root of the module `raw`.
 
 ### Fixes
 - Fix parsing with `from_ansi_color_str` for the format `rgb:` with 3 digits.

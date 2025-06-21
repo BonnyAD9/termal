@@ -12,7 +12,7 @@ use super::{
 /// Some terminal events are amiguous. This will contain all sensible
 /// possibilities.
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct AmbigousEvent {
+pub struct AmbiguousEvent {
     /// The main (most propable) event.
     pub event: AnyEvent,
     /// Other amiguous events.
@@ -44,13 +44,13 @@ pub enum Event {
     StateChange(StateChange),
 }
 
-impl AmbigousEvent {
+impl AmbiguousEvent {
     /// Create unknown event from the given data.
     pub fn unknown<B>(data: B) -> Self
     where
         B: Into<Vec<u8>>,
     {
-        AmbigousEvent {
+        AmbiguousEvent {
             event: AnyEvent::Unknown(data.into()),
             other: vec![],
         }
@@ -107,7 +107,7 @@ impl AmbigousEvent {
 
     fn mouse_code(code: &[u8]) -> Self {
         if code.len() == 6 && code.starts_with(b"\x1b[M") {
-            return AmbigousEvent::mouse(Mouse::from_data(
+            return AmbiguousEvent::mouse(Mouse::from_data(
                 code[3] as u32 - 32,
                 code[4] as usize - 32,
                 code[5] as usize - 32,
@@ -119,7 +119,7 @@ impl AmbigousEvent {
         let Ok([s, x, y]) = utf_code.as_deref() else {
             return Self::unknown(code);
         };
-        AmbigousEvent::mouse(Mouse::from_data(
+        AmbiguousEvent::mouse(Mouse::from_data(
             *s as u32 - 32,
             *x as usize - 32,
             *y as usize - 32,
@@ -382,7 +382,7 @@ impl AmbigousEvent {
             _ => {}
         }
 
-        AmbigousEvent {
+        AmbiguousEvent {
             event: AnyEvent::Known(event),
             other: amb,
         }

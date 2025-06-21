@@ -7,7 +7,7 @@ use crate::{
     raw::{
         IoProvider, StdioProvider, Terminal,
         events::{
-            AmbigousEvent, AnyEvent, Event, Key, KeyCode, Modifiers, Status,
+            AmbiguousEvent, AnyEvent, Event, Key, KeyCode, Modifiers, Status,
         },
         term_size,
     },
@@ -307,10 +307,10 @@ where
 
     fn read_next(&mut self) -> Result<bool> {
         if let Some(evt) = self.queue.pop_front() {
-            return self.handle_event(AmbigousEvent::event(evt));
+            return self.handle_event(AmbiguousEvent::event(evt));
         }
 
-        let evt = match self.term.read_ambigous() {
+        let evt = match self.term.read_ambiguous() {
             Ok(e) => e,
             Err(Error::StdInEof) => {
                 self.end();
@@ -323,7 +323,7 @@ where
         self.handle_event(evt)
     }
 
-    fn handle_event(&mut self, evt: AmbigousEvent) -> Result<bool> {
+    fn handle_event(&mut self, evt: AmbiguousEvent) -> Result<bool> {
         let AnyEvent::Known(known) = evt.event else {
             return Ok(false);
         };

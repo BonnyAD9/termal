@@ -11,7 +11,7 @@ use super::{IoProvider, StdioProvider, WaitForIn};
 #[cfg(feature = "events")]
 use crate::{
     codes,
-    raw::events::{AmbigousEvent, AnyEvent, Event, StateChange},
+    raw::events::{AmbiguousEvent, AnyEvent, Event, StateChange},
 };
 #[cfg(feature = "readers")]
 use crate::{raw::readers::TermRead, term_text::TermText};
@@ -326,7 +326,7 @@ impl<T: IoProvider> Terminal<T> {
     /// Read the next known event on stdin. May block.
     pub fn read(&mut self) -> Result<Event> {
         loop {
-            if let AnyEvent::Known(ev) = self.read_ambigous()?.event {
+            if let AnyEvent::Known(ev) = self.read_ambiguous()?.event {
                 return Ok(ev);
             }
         }
@@ -346,7 +346,7 @@ impl<T: IoProvider> Terminal<T> {
     }
 
     /// Read the next event on stdin. May block.
-    pub fn read_ambigous(&mut self) -> Result<AmbigousEvent> {
+    pub fn read_ambiguous(&mut self) -> Result<AmbiguousEvent> {
         if self.bracketed_paste_open {
             self.read_bracketed()
         } else if self.cur()? == 0x1b && self.buffer.len() != 1 {
@@ -358,12 +358,12 @@ impl<T: IoProvider> Terminal<T> {
     }
 
     /// Read the next event on terminal. Block for at most the given duration.
-    pub fn read_ambigous_timeout(
+    pub fn read_ambiguous_timeout(
         &mut self,
         timeout: Duration,
-    ) -> Result<Option<AmbigousEvent>> {
+    ) -> Result<Option<AmbiguousEvent>> {
         if self.wait_for_input(timeout)? {
-            Ok(Some(self.read_ambigous()?))
+            Ok(Some(self.read_ambiguous()?))
         } else {
             Ok(None)
         }
@@ -389,7 +389,7 @@ impl<T: IoProvider> Terminal<T> {
         self.bracketed_paste_open
     }
 
-    fn read_escape(&mut self) -> Result<AmbigousEvent> {
+    fn read_escape(&mut self) -> Result<AmbiguousEvent> {
         self.read_byte()?;
         let cur = self.cur()?;
         match cur {
@@ -401,11 +401,11 @@ impl<T: IoProvider> Terminal<T> {
         }
     }
 
-    fn read_csi(&mut self) -> Result<AmbigousEvent> {
+    fn read_csi(&mut self) -> Result<AmbiguousEvent> {
         let mut code: Vec<_> = b"\x1b[".into();
         self.read_byte()?;
         if self.buffer.is_empty() {
-            return Ok(AmbigousEvent::from_code(&code));
+            return Ok(AmbiguousEvent::from_code(&code));
         }
         let mut cur = self.read_byte()?;
 
@@ -415,15 +415,15 @@ impl<T: IoProvider> Terminal<T> {
             code.push(cur);
             for _ in 0..3 {
                 if self.buffer.is_empty() {
-                    return Ok(AmbigousEvent::from_code(&code));
+                    return Ok(AmbiguousEvent::from_code(&code));
                 }
                 let Some(b) = self.read_byte_if(|b| b >= 32)? else {
-                    return Ok(AmbigousEvent::from_code(&code));
+                    return Ok(AmbiguousEvent::from_code(&code));
                 };
                 code.push(b);
             }
             if self.buffer.is_empty() {
-                return Ok(AmbigousEvent::from_code(&code));
+                return Ok(AmbiguousEvent::from_code(&code));
             }
             // UTF-8 extension
             for i in (1..=3).rev() {
@@ -431,12 +431,12 @@ impl<T: IoProvider> Terminal<T> {
                     && utf8_code_len(code[code.len() - i]) != 2
                 {
                     let Some(b) = self.read_byte_if(|b| b >= 32)? else {
-                        return Ok(AmbigousEvent::from_code(&code));
+                        return Ok(AmbiguousEvent::from_code(&code));
                     };
                     code.push(b);
                 }
             }
-            return Ok(AmbigousEvent::from_code(&code));
+            return Ok(AmbiguousEvent::from_code(&code));
         }
 
         while (0x30..=0x3F).contains(&cur) {
@@ -452,19 +452,19 @@ impl<T: IoProvider> Terminal<T> {
         code.push(cur);
         if code == codes::BRACKETED_PASTE_START.as_bytes() {
             self.bracketed_paste_open = true;
-            Ok(AmbigousEvent::state_change(
+            Ok(AmbiguousEvent::state_change(
                 StateChange::BracketedPasteStart,
             ))
         } else {
-            Ok(AmbigousEvent::from_code(&code))
+            Ok(AmbiguousEvent::from_code(&code))
         }
     }
 
-    fn read_ss3(&mut self) -> Result<AmbigousEvent> {
+    fn read_ss3(&mut self) -> Result<AmbiguousEvent> {
         let mut code: Vec<_> = b"\x1bO".into();
         self.read_byte()?;
         if self.buffer.is_empty() {
-            return Ok(AmbigousEvent::from_code(&code));
+            return Ok(AmbiguousEvent::from_code(&code));
         }
         let mut cur = self.read_byte()?;
 
@@ -479,34 +479,34 @@ impl<T: IoProvider> Terminal<T> {
         }
 
         code.push(cur);
-        Ok(AmbigousEvent::from_code(&code))
+        Ok(AmbiguousEvent::from_code(&code))
     }
 
-    fn read_alt(&mut self) -> Result<AmbigousEvent> {
+    fn read_alt(&mut self) -> Result<AmbiguousEvent> {
         let mut buf: [u8; 5] = [0x1b, 0, 0, 0, 0];
         let chr = self.read_utf8((&mut buf[1..]).try_into().unwrap())?;
-        Ok(AmbigousEvent::from_code(&buf[..=chr.len_utf8()]))
+        Ok(AmbiguousEvent::from_code(&buf[..=chr.len_utf8()]))
     }
 
-    fn read_dcs(&mut self) -> Result<AmbigousEvent> {
+    fn read_dcs(&mut self) -> Result<AmbiguousEvent> {
         self.read_byte()?;
         let mut code: Vec<_> = b"\x1bP".into();
         while !self.buffer.is_empty() && !code.ends_with(codes::ST.as_bytes())
         {
             code.push(self.read_byte()?);
         }
-        Ok(AmbigousEvent::from_code(&code))
+        Ok(AmbiguousEvent::from_code(&code))
     }
 
-    fn read_osc(&mut self) -> Result<AmbigousEvent> {
+    fn read_osc(&mut self) -> Result<AmbiguousEvent> {
         self.read_byte()?;
         let mut code: Vec<_> = b"\x1b]".into();
         // TODO: don't hang if no further data.
         let r = self.read_until_st(&mut code);
         if matches!(r, Err(Error::StdInEof)) {
-            Ok(AmbigousEvent::from_code(&code))
+            Ok(AmbiguousEvent::from_code(&code))
         } else {
-            r.map(|_| AmbigousEvent::from_code(&code))
+            r.map(|_| AmbiguousEvent::from_code(&code))
         }
     }
 
@@ -517,32 +517,32 @@ impl<T: IoProvider> Terminal<T> {
         Ok(())
     }
 
-    fn read_char(&mut self) -> Result<AmbigousEvent> {
+    fn read_char(&mut self) -> Result<AmbiguousEvent> {
         if !self.cur()?.is_ascii() {
             let mut buf: [u8; 4] = [0; 4];
-            Ok(AmbigousEvent::from_char_code(self.read_utf8(&mut buf)?))
+            Ok(AmbiguousEvent::from_char_code(self.read_utf8(&mut buf)?))
         } else {
             let chr = self.read_byte()? as char;
-            Ok(AmbigousEvent::from_char_code(chr))
+            Ok(AmbiguousEvent::from_char_code(chr))
         }
     }
 
-    fn read_bracketed(&mut self) -> Result<AmbigousEvent> {
+    fn read_bracketed(&mut self) -> Result<AmbiguousEvent> {
         let c = self.cur()?;
         if self.buffer_starts_with(codes::BRACKETED_PASTE_END.as_bytes()) {
             self.buffer.consume(codes::BRACKETED_PASTE_END.len());
             self.bracketed_paste_open = false;
-            Ok(AmbigousEvent::state_change(StateChange::BracketedPasteEnd))
+            Ok(AmbiguousEvent::state_change(StateChange::BracketedPasteEnd))
         } else if c.is_ascii() {
             self.buffer.consume(1);
             if c == 0xD {
-                Ok(AmbigousEvent::verbatim('\n'))
+                Ok(AmbiguousEvent::verbatim('\n'))
             } else {
-                Ok(AmbigousEvent::verbatim(c as char))
+                Ok(AmbiguousEvent::verbatim(c as char))
             }
         } else {
             let mut buf: [u8; 4] = [0; 4];
-            Ok(AmbigousEvent::verbatim(self.read_utf8(&mut buf)?))
+            Ok(AmbiguousEvent::verbatim(self.read_utf8(&mut buf)?))
         }
     }
 
