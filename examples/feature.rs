@@ -217,6 +217,7 @@ fn single(name: &str) -> Result<()> {
             image::show_push_texel_quater_no_bg()
         }
         "raw::request_ambiguous" => raw::show_request_ambiguous(),
+        "raw::request" => raw::show_request(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -398,6 +399,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}image{'y}::{'w i}push_texel_half_no_bg{'_}
   {'c}image{'y}::{'w i}push_texel_quater_no_bg{'_}
   {'c}raw{'y}::{'w i}request_ambiguous{'_}
+  {'c}raw{'y}::{'w i}request{'_}
     "
     );
     Ok(())

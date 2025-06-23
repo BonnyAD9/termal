@@ -111,12 +111,18 @@ fn test_events() {
         t.read_ambiguous().unwrap(),
         AmbiguousEvent::from_code(b"\x1b[1;5H")
     );
-    assert_eq!(t.read_ambiguous().unwrap(), AmbiguousEvent::from_code(b"\r"));
+    assert_eq!(
+        t.read_ambiguous().unwrap(),
+        AmbiguousEvent::from_code(b"\r")
+    );
     assert_eq!(
         t.read_ambiguous().unwrap(),
         AmbiguousEvent::from_code(b"\x1b[200~")
     );
-    assert_eq!(t.read_ambiguous().unwrap(), AmbiguousEvent::verbatim('\x1b'));
+    assert_eq!(
+        t.read_ambiguous().unwrap(),
+        AmbiguousEvent::verbatim('\x1b')
+    );
     assert_eq!(t.read_ambiguous().unwrap(), AmbiguousEvent::verbatim('\n'));
     assert_eq!(t.read_ambiguous().unwrap(), AmbiguousEvent::verbatim('h'));
     assert_eq!(

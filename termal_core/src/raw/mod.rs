@@ -123,7 +123,8 @@ pub fn request_ambiguous<T>(
         let mut now = Instant::now();
         let end_time = now + timeout;
         loop {
-            let Some(evt) = term.read_ambiguous_timeout(end_time - now)? else {
+            let Some(evt) = term.read_ambiguous_timeout(end_time - now)?
+            else {
                 return Ok(None);
             };
 
@@ -152,6 +153,9 @@ pub fn request_ambiguous<T>(
 /// Request response from the terminal. The response must match with the given
 /// matching function `m`.
 ///
+/// Many types of requests are directly implemented as functions in the module
+/// [`mod@request`]. That should be suitable for most cases.
+///
 /// The argument to `m` is [`Event`]. If you don't want to skip ambiguous and
 /// unknown events, use [`request_ambiguous`].
 ///
@@ -163,6 +167,40 @@ pub fn request_ambiguous<T>(
 /// doesn't support the given code but supports status report, this function
 /// will block until it receives the response (generally less than useful
 /// timeout values).
+///
+/// # Example
+/// ```no_run
+/// use std::time::Duration;
+///
+/// use termal_core::{codes, Result, raw::{
+///     request, Terminal,
+///     events::{AmbiguousEvent, Event, Status, AnyEvent}
+/// }};
+///
+/// let mut term = Terminal::stdio();
+/// term.flushed(codes::CLEAR)?;
+///
+/// let evt = request(
+///     codes::REQUEST_TERMINAL_NAME,
+///     Duration::from_millis(100),
+///     |e| {
+///         if let Event::Status(Status::TerminalName(n)) = e {
+///             Some(n)
+///         } else {
+///             None
+///         }
+///     },
+/// )?;
+///
+/// term.consume_available()?;
+///
+/// println!("{evt:#?}");
+///
+/// Result::Ok(())
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/raw/request_ambiguous.png)
 #[cfg(feature = "events")]
 pub fn request<T>(
     code: impl AsRef<str>,
