@@ -1,3 +1,19 @@
+//! This module contains tools that make use of raw terminal.
+//!
+//! Raw terminal can be enabled with [`enable_raw_mode`] and disabled with
+//! [`disable_raw_mode`].
+//!
+//! Terminal in raw mode doesn't read input line by line, but all characters
+//! are available as they are typed. On the other hand the interaction with the
+//! user is no longer handled by the terminal, but needs to be handled manualy
+//! in program (e.g. backspace, printing what is typed, ...). These codes can
+//! be parsed with [`Terminal`] and the input can be handled with functions in
+//! the module [`readers`].
+//!
+//! Raw mode is also useful when you need to request information from the
+//! terminal with ansi codes. This can be handled with functions in the module
+//! [`mod@request`].
+
 mod io_provider;
 mod stdio_provider;
 mod sys;

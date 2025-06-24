@@ -20,10 +20,9 @@
 
 ### Changes
 - Finalize documentation of the module `codes`.
-- Document the modules `error`, `proc::err`, `rgb`, `raw::io_provider` and
-  `image`.
+- Document the modules `error`, `proc::err`, `rgb`, `raw::io_provider`, `image`
+  and the root of the module `raw`.
 - Document items in the root of the crate.
-- Partially document the root of the module `raw`.
 
 ### Fixes
 - Fix parsing with `from_ansi_color_str` for the format `rgb:` with 3 digits.
