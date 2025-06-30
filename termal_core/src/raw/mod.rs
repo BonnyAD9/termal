@@ -87,6 +87,12 @@ pub(crate) fn raw_guard<T>(
 /// will block until it receives the response (generally less than useful
 /// timeout values).
 ///
+/// # Errors
+/// - [`crate::Error::Io`] io error when working with stdin and stdout.
+/// - [`crate::Error::NotSupportedOnPlatform`] if raw mode is not supported on
+///   this platform. It is supported on windows and unix (linux).
+/// - [`crate::Error::WaitAbandoned`] on windows when fails to wait for stdin.
+///
 /// # Example
 /// ```no_run
 /// use std::time::Duration;
@@ -183,6 +189,12 @@ pub fn request_ambiguous<T>(
 /// doesn't support the given code but supports status report, this function
 /// will block until it receives the response (generally less than useful
 /// timeout values).
+///
+/// # Errors
+/// - [`crate::Error::Io`] io error when working with stdin and stdout.
+/// - [`crate::Error::NotSupportedOnPlatform`] if raw mode is not supported on
+///   this platform. It is supported on windows and unix (linux).
+/// - [`crate::Error::WaitAbandoned`] on windows when fails to wait for stdin.
 ///
 /// # Example
 /// ```no_run

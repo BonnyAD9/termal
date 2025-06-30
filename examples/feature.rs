@@ -218,6 +218,9 @@ fn single(name: &str) -> Result<()> {
         }
         "raw::request_ambiguous" => raw::show_request_ambiguous(),
         "raw::request" => raw::show_request(),
+        "raw::request::device_attributes" => {
+            raw::request::show_device_attributes()
+        }
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -400,6 +403,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}image{'y}::{'w i}push_texel_quater_no_bg{'_}
   {'c}raw{'y}::{'w i}request_ambiguous{'_}
   {'c}raw{'y}::{'w i}request{'_}
+  {'c}raw{'y}::{'c}request{'y}::{'w i}device_attributes{'_}
     "
     );
     Ok(())

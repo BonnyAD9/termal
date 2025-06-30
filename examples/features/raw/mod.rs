@@ -1,3 +1,5 @@
+pub mod request;
+
 use std::time::Duration;
 
 use termal::{
@@ -5,7 +7,7 @@ use termal::{
     raw::{
         Terminal,
         events::{AmbiguousEvent, AnyEvent, Event, Status},
-        request, request_ambiguous,
+        request as requests, request_ambiguous,
     },
 };
 
@@ -40,7 +42,7 @@ pub fn show_request() -> Result<()> {
     let mut term = Terminal::stdio();
     term.flushed(codes::CLEAR)?;
 
-    let evt = request(
+    let evt = requests(
         codes::REQUEST_TERMINAL_NAME,
         Duration::from_millis(100),
         |e| {
