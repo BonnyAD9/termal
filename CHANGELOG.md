@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## future
+## v4.0.0
 ### New Features
 - Add option to disallow certain background color for texels.
 - Add functions `raw::request` and `raw::request_ambiguous` with feature

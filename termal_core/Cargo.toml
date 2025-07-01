@@ -1,6 +1,6 @@
 [package]
 name = "termal_core"
-version = "3.0.1"
+version = "4.0.0"
 edition = "2024"
 license-file = "../LICENSE"
 description = "This library contains implementation for the termal library"
