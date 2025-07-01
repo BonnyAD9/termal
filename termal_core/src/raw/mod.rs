@@ -28,7 +28,7 @@ use std::{
 
 #[cfg(feature = "events")]
 use crate::{
-    codes,
+    Result, codes,
     raw::events::{AmbiguousEvent, AnyEvent, Event, Status},
 };
 
