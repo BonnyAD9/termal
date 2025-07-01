@@ -28,7 +28,7 @@ use std::{
 
 #[cfg(feature = "events")]
 use crate::{
-    Result, codes,
+    codes,
     raw::events::{AmbiguousEvent, AnyEvent, Event, Status},
 };
 
@@ -43,6 +43,7 @@ pub mod readers;
 #[cfg(feature = "events")]
 pub mod request;
 
+#[cfg(feature = "events")]
 pub(crate) fn raw_guard<T>(
     raw: bool,
     f: impl FnOnce() -> Result<T>,

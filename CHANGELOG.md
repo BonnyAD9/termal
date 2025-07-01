@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## v4.0.1
+- Fix using in certain feature combinations.
+
 ## v4.0.0
 ### New Features
 - Add option to disallow certain background color for texels.
