@@ -221,6 +221,9 @@ fn single(name: &str) -> Result<()> {
         "raw::request::device_attributes" => {
             raw::request::show_device_attributes()
         }
+        "raw::request::status_report" => {
+            raw::request::show_status_report()
+        }
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -404,6 +407,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}raw{'y}::{'w i}request_ambiguous{'_}
   {'c}raw{'y}::{'w i}request{'_}
   {'c}raw{'y}::{'c}request{'y}::{'w i}device_attributes{'_}
+  {'c}raw{'y}::{'c}request{'y}::{'w i}status_report{'_}
     "
     );
     Ok(())
