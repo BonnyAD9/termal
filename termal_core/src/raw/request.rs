@@ -1,12 +1,15 @@
 use std::time::{Duration, Instant};
 
-use libc::ALG_SET_KEY_BY_KEY_SERIAL;
 use minlin::Vec2;
 
 use crate::{
-    codes::{self, Selection}, raw::{
-        events::{Event, Status, TermAttr}, raw_guard, request, Terminal
-    }, Error, Result, Rgb
+    Error, Result, Rgb,
+    codes::{self, Selection},
+    raw::{
+        Terminal,
+        events::{Event, Status, TermAttr},
+        raw_guard, request,
+    },
 };
 
 macro_rules! impl_request {
@@ -140,39 +143,39 @@ impl_request!(
 );
 
 /// Request status report. Returns without error on success (duh :).
-/// 
+///
 /// Uses the code [`codes::REQUEST_STATUS_REPORT`].
-/// 
+///
 /// This will guard the response with timeout. It will wait for the expected
 /// response. This will return error if the timeout passes before receiving
 /// response.
-/// 
+///
 /// If `req` is true, it will request the status report. If it is false, the
 /// status report will not be requested. This may be useful to consume status
 /// report.
-/// 
+///
 /// # Errors
 /// - [`Error::NoResponse`] if the timeout passes.
 /// - [`Error::Io`] on io error when working with stdin and stdout.
 /// - [`Error::NotSupportedOnPlatform`] if raw mode is not supported on this
 ///   platform. It is supported on windows and unix (linux).
 /// - [`Error::StdInEof`] when stdin reaches eof.
-/// 
+///
 /// ## Windows
 /// - [`Error::WaitAbandoned`] when fails to wait for stdin. See the error
 ///   documentation for more info.
-/// 
+///
 /// # Example
 /// ```no_run
 /// use std::time::Duration;
 /// use termal_core::{codes, raw::{Terminal, request}, Result};
-/// 
+///
 /// let mut term = Terminal::stdio();
 /// term.flushed(codes::CLEAR)?;
-/// 
+///
 /// let res = request::status_report(Duration::from_millis(100), true)?;
 /// println!("{res:#?}");
-/// 
+///
 /// Result::Ok(())
 /// ```
 pub fn status_report(timeout: Duration, req: bool) -> Result<()> {
@@ -181,18 +184,18 @@ pub fn status_report(timeout: Duration, req: bool) -> Result<()> {
         if req {
             term.flushed(codes::REQUEST_STATUS_REPORT)?;
         }
-        
+
         let mut now = Instant::now();
         let end_time = now + timeout;
         loop {
             let Some(evt) = term.read_timeout(end_time - now)? else {
                 return Err(Error::NoResponse);
             };
-            
+
             if matches!(evt, Event::Status(Status::Ok)) {
                 return Ok(());
             }
-            
+
             now = Instant::now();
             if now >= end_time {
                 return Err(Error::NoResponse);

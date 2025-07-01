@@ -161,7 +161,7 @@ pub fn reset_terminal() {
         codes::RESET_CURSOR_COLOR,
     ]
     .concat();
-    print!("{}", s);
+    print!("{s}");
     _ = io::stdout().flush();
 }
 

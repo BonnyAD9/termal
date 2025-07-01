@@ -185,8 +185,7 @@ where
             ' ' => _ = i.next(),
             _ => {
                 return Err(ProcError::msg(format!(
-                    "Invalid color format, didn't expect character '{}'",
-                    c
+                    "Invalid color format, didn't expect character '{c}'"
                 )));
             }
         }
@@ -211,8 +210,7 @@ where
             c if c.is_ascii_digit() || *c == ',' => break,
             _ => {
                 return Err(ProcError::msg(format!(
-                    "Invalid color format, didn't expect character '{}'",
-                    c
+                    "Invalid color format, didn't expect character '{c}'"
                 )));
             }
         }
@@ -244,8 +242,7 @@ where
                 i.next();
             } else if x.is_some() {
                 return Err(ProcError::msg(format!(
-                    "'{}', takes two arguments",
-                    s
+                    "'{s}', takes two arguments"
                 )));
             }
             let y = maybe_read_num(i);
@@ -345,8 +342,8 @@ where
                 Some(c) if (0..256).contains(&c) => c,
                 _ => {
                     return Err(ProcError::msg(format!(
-                        "The '{}' in color format expects value in range 0..256",
-                        s,
+                        "The '{s}' in color format expects value in range \
+                        0..256"
                     )));
                 }
             };
@@ -358,8 +355,8 @@ where
                 Some(c) if (0..256).contains(&c) => c,
                 _ => {
                     return Err(ProcError::msg(format!(
-                        "The '{}' in color format expects value in range 0..256",
-                        s,
+                        "The '{s}' in color format expects value in range \
+                        0..256"
                     )));
                 }
             };
@@ -371,8 +368,8 @@ where
                 Some(c) if (0..256).contains(&c) => c,
                 _ => {
                     return Err(ProcError::msg(format!(
-                        "The '{}' in color format expects value in range 0..256",
-                        s,
+                        "The '{s}' in color format expects value in range \
+                        0..256"
                     )));
                 }
             };
@@ -395,8 +392,7 @@ where
         "clear" | "cls" => codes::CLEAR,
         _ => {
             return Err(ProcError::msg(format!(
-                "Unknown color format variable {}",
-                s
+                "Unknown color format variable {s}"
             )));
         }
     };
@@ -405,8 +401,7 @@ where
         Some(' ' | '}') => {}
         Some(c) => {
             return Err(ProcError::msg(format!(
-                "Invalid character '{}', expected ' ' or '}}'",
-                c
+                "Invalid character '{c}', expected ' ' or '}}'"
             )));
         }
         None => {
@@ -437,8 +432,7 @@ where
             '}' | ' ' | '_' | 'u' => break,
             _ => {
                 return Err(ProcError::msg(format!(
-                    "Invalid hex color, didn't expect character '{}'",
-                    c
+                    "Invalid hex color, didn't expect character '{c}'"
                 )));
             }
         }
@@ -486,8 +480,7 @@ where
             Ok(())
         }
         Some(c) => Err(ProcError::msg(format!(
-            "Invalid character, didn't expect '{}'",
-            c
+            "Invalid character, didn't expect '{c}'"
         ))),
         None => Err(ProcError::msg(
             "color format not ended with '}}'".to_owned(),

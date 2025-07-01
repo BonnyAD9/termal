@@ -221,9 +221,7 @@ fn single(name: &str) -> Result<()> {
         "raw::request::device_attributes" => {
             raw::request::show_device_attributes()
         }
-        "raw::request::status_report" => {
-            raw::request::show_status_report()
-        }
+        "raw::request::status_report" => raw::request::show_status_report(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
