@@ -24,7 +24,7 @@
   `image`
 - Document items in the root of the crate.
 - Document the root of the module `raw`.
-- Document `raw::request::device_attributes`.
+- Document some functions in `raw::request`.
 
 ### Fixes
 - Fix parsing with `from_ansi_color_str` for the format `rgb:` with 3 digits.
