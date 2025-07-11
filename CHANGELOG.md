@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## future
+### Changes
+- Document module `raw::stdio_provider`.
+
 ## v4.0.1
 - Fix using in certain feature combinations.
 

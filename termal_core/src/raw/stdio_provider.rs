@@ -7,8 +7,13 @@ use super::{
 };
 
 /// Zero size IoProvider with stdin and stdout.
+///
+/// This is the default io provider for [`crate::raw::Terminal`]. It implements
+/// [`WaitForIn`] and [`IoProvider`].
+///
+/// To create terminal with this provider use [`crate::raw::Terminal::stdio`].
 #[derive(Copy, Clone, Default, Debug)]
-pub struct StdioProvider();
+pub struct StdioProvider;
 
 impl WaitForIn for StdioProvider {
     fn wait_for_in(&self, timeout: std::time::Duration) -> Result<bool> {
