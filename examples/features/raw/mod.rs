@@ -1,4 +1,5 @@
 pub mod request;
+pub mod terminal;
 
 use std::time::Duration;
 

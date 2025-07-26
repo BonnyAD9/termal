@@ -16,8 +16,12 @@ use crate::{
 #[cfg(feature = "readers")]
 use crate::{raw::readers::TermRead, term_text::TermText};
 
-/// Terminal reader. Abstracts reading from terminal and parsing inputs. Works
-/// properly only if raw mode is enabled.
+/// Terminal reader. Abstracts reading from terminal and parsing inputs.
+///
+/// Some functionality might work properly only with raw mode enabled.
+///
+/// It is especially useful for reading terminal events, but may be used for
+/// other things such as non blocking reading from stdin.
 #[derive(Debug, Default)]
 pub struct Terminal<T: IoProvider = StdioProvider> {
     buffer: VecDeque<u8>,
@@ -27,6 +31,29 @@ pub struct Terminal<T: IoProvider = StdioProvider> {
 }
 
 impl Terminal<StdioProvider> {
+    /// Creates terminal that reads from stdin and writes to stdout.
+    ///
+    /// # Example
+    /// ```no_run
+    /// use termal_core::{
+    ///     codes, Result,
+    ///     raw::{disable_raw_mode, enable_raw_mode, Terminal},
+    /// };
+    ///
+    /// let mut term = Terminal::stdio();
+    ///
+    /// term.flushed(codes::CLEAR)?;
+    /// term.println("This will print to stdout.")?;
+    /// enable_raw_mode()?;
+    /// let data = term.prompt("Enter data to stdin: ")?;
+    /// disable_raw_mode()?;
+    /// term.println(format!("\nData you entered to stdin: {data}"))?;
+    ///
+    /// Result::Ok(())
+    /// ```
+    ///
+    /// ## Result in terminal
+    /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/raw/terminal/stdio.png)
     pub fn stdio() -> Self {
         Self::default()
     }
