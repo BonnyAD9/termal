@@ -60,7 +60,7 @@ impl Terminal<StdioProvider> {
 }
 
 impl<T: IoProvider> Terminal<T> {
-    /// Create new terminal.
+    /// Create new terminal with the given input and output streams.
     pub fn new(io: T) -> Self {
         Terminal {
             buffer: VecDeque::new(),
@@ -70,7 +70,47 @@ impl<T: IoProvider> Terminal<T> {
         }
     }
 
-    /// Read next byte from stdin. May block.
+    /// Read next byte from stdin. May block if there is no buffered data.
+    ///
+    /// This will wait for whole line to be buffered if there is no buffered
+    /// input and raw mode is not enabled.
+    ///
+    /// Note that if raw mode is not enabled, the byte will not be written back
+    /// to stdout.
+    ///
+    /// # Errors
+    /// - [`Error::Io`] if there were no buffered data and read failed.
+    /// - [`Error::StdInEof`] if EOF was reached and there is no more data.
+    ///
+    /// # Example
+    /// ```no_run
+    /// use termal_core::{
+    ///     codes, Result,
+    ///     raw::{Terminal, enable_raw_mode, disable_raw_mode}
+    /// };
+    ///
+    /// let mut term = Terminal::stdio();
+    ///
+    /// term.flushed(codes::CLEAR)?;
+    /// term.flushed("Enter single byte: ")?;
+    /// enable_raw_mode()?;
+    ///
+    /// // Read the byte
+    /// let byte = term.read_byte()?;
+    ///
+    /// disable_raw_mode()?;
+    ///
+    /// term.println(format!("\nYou entered byte `0x{byte:2x}`."))?;
+    /// term.println(format!(
+    ///     "It coresponds to the character `{}`.",
+    ///     byte as char
+    /// ))?;
+    ///
+    /// Result::Ok(())
+    /// ```
+    ///
+    /// ## Result in terminal
+    /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/raw/terminal/read_byte.png)
     pub fn read_byte(&mut self) -> Result<u8> {
         if let Some(b) = self.buffer.pop_front() {
             return Ok(b);

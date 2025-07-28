@@ -15,3 +15,20 @@ pub fn show_stdio() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_read_byte() -> Result<()> {
+    let mut term = Terminal::stdio();
+
+    term.flushed(codes::CLEAR)?;
+    term.flushed("Enter single byte: ")?;
+    enable_raw_mode()?;
+    let byte = term.read_byte()?;
+    disable_raw_mode()?;
+    term.println(format!("\nYou entered byte `0x{byte:2x}`."))?;
+    term.println(format!(
+        "It coresponds to the character `{}`.",
+        byte as char
+    ))?;
+
+    Ok(())
+}
