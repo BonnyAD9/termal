@@ -119,12 +119,156 @@ impl<T: IoProvider> Terminal<T> {
         self.buffer.pop_front().ok_or(Error::StdInEof)
     }
 
-    /// Checks whether there is any buffered input in [`Terminal`]
+    /// Checks whether there is any buffered input in [`Terminal`].
+    ///
+    /// Doesn't block.
+    ///
+    /// This doesn't check the buffer from the underlaying input stream
+    /// (stdin). If you would also like to check the underlaying stream, use
+    /// [`Self::has_input`].
+    ///
+    /// # Returns
+    /// `true` if there is buffered input. Otherwise `false`.
+    ///
+    /// # Example
+    /// ```no_run
+    /// use std::time::Duration;
+    ///
+    /// use termal_core::{
+    ///     codes, Result,
+    ///     raw::{Terminal, wait_for_stdin},
+    /// };
+    ///
+    /// let mut term = Terminal::stdio();
+    /// term.flushed(codes::CLEAR)?;
+    ///
+    /// println!("Before entering:");
+    /// println!("has_input: {}", term.has_input());
+    /// println!("has_buffered_input: {}", term.has_buffered_input());
+    /// println!(
+    ///     "wait_for_stdin(ZERO): {}\n",
+    ///     wait_for_stdin(Duration::ZERO)?
+    /// );
+    ///
+    /// term.flushed("Please enter something: ")?;
+    /// // Wait for the user to type something.
+    /// term.wait_for_input(Duration::MAX)?;
+    /// println!();
+    ///
+    /// // Now there should be input but it is only buffered in the underlaying
+    /// // input stream.
+    /// println!("After entering, before reading:");
+    /// println!("has_input: {}", term.has_input());
+    /// println!("has_buffered_input: {}", term.has_buffered_input());
+    /// println!("wait_for_stdin(ZERO): {}\n", wait_for_stdin(Duration::ZERO)?);
+    ///
+    /// term.read_byte()?;
+    ///
+    /// // Now there is also buffered input in the terminal if there was more
+    /// // than one byte.
+    /// println!("After reading single byte:");
+    /// println!("has_input: {}", term.has_input());
+    /// println!("has_buffered_input: {}", term.has_buffered_input());
+    /// println!(
+    ///     "wait_for_stdin(ZERO): {}\n",
+    ///     wait_for_stdin(Duration::ZERO)?
+    /// );
+    ///
+    /// // Wait for next input on stdin (not counting what is buffered in
+    /// // term).
+    /// term.flushed("Enter something more: ")?;
+    /// wait_for_stdin(Duration::MAX)?;
+    /// println!();
+    ///
+    /// println!("After next input before consuming previous:");
+    /// println!("has_input: {}", term.has_input());
+    /// println!("has_buffered_input: {}", term.has_buffered_input());
+    /// println!("wait_for_stdin(ZERO): {}", wait_for_stdin(Duration::ZERO)?);
+    ///
+    /// term.consume_available()?; // Consume all the input
+    ///
+    /// Result::Ok(())
+    /// ```
+    ///
+    /// ## Result in terminal
+    /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/raw/terminal/has_input.png)
     pub fn has_buffered_input(&self) -> bool {
         !self.buffer.is_empty()
     }
 
     /// Checks whether the next input is available immidietely.
+    ///
+    /// Doesn't block.
+    ///
+    /// Unlike [`Self::has_buffered_input`] this also checks the buffer of the
+    /// underlaying stream.
+    ///
+    /// # Returns
+    /// `true` if there is available input. If there is no input or it is
+    /// unknown, returns `false`.
+    ///
+    /// # Example
+    /// ```no_run
+    /// use std::time::Duration;
+    ///
+    /// use termal_core::{
+    ///     codes, Result,
+    ///     raw::{Terminal, wait_for_stdin},
+    /// };
+    ///
+    /// let mut term = Terminal::stdio();
+    /// term.flushed(codes::CLEAR)?;
+    ///
+    /// println!("Before entering:");
+    /// println!("has_input: {}", term.has_input());
+    /// println!("has_buffered_input: {}", term.has_buffered_input());
+    /// println!(
+    ///     "wait_for_stdin(ZERO): {}\n",
+    ///     wait_for_stdin(Duration::ZERO)?
+    /// );
+    ///
+    /// term.flushed("Please enter something: ")?;
+    /// // Wait for the user to type something.
+    /// term.wait_for_input(Duration::MAX)?;
+    /// println!();
+    ///
+    /// // Now there should be input but it is only buffered in the underlaying
+    /// // input stream.
+    /// println!("After entering, before reading:");
+    /// println!("has_input: {}", term.has_input());
+    /// println!("has_buffered_input: {}", term.has_buffered_input());
+    /// println!("wait_for_stdin(ZERO): {}\n", wait_for_stdin(Duration::ZERO)?);
+    ///
+    /// term.read_byte()?;
+    ///
+    /// // Now there is also buffered input in the terminal if there was more
+    /// // than one byte.
+    /// println!("After reading single byte:");
+    /// println!("has_input: {}", term.has_input());
+    /// println!("has_buffered_input: {}", term.has_buffered_input());
+    /// println!(
+    ///     "wait_for_stdin(ZERO): {}\n",
+    ///     wait_for_stdin(Duration::ZERO)?
+    /// );
+    ///
+    /// // Wait for next input on stdin (not counting what is buffered in
+    /// // term).
+    /// term.flushed("Enter something more: ")?;
+    /// wait_for_stdin(Duration::MAX)?;
+    /// println!();
+    ///
+    /// println!("After next input before consuming previous:");
+    /// println!("has_input: {}", term.has_input());
+    /// println!("has_buffered_input: {}", term.has_buffered_input());
+    /// println!("wait_for_stdin(ZERO): {}", wait_for_stdin(Duration::ZERO)?);
+    ///
+    /// term.consume_available()?; // Consume all the input
+    ///
+    /// Result::Ok(())
+    /// ```
+    ///
+    /// ## Result in terminal
+    /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/raw/terminal/has_input.png)
     pub fn has_input(&self) -> bool {
         self.has_buffered_input()
             || self.io.wait_for_in(Duration::ZERO).unwrap_or_default()

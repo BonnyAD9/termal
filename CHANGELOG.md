@@ -3,6 +3,7 @@
 ## future
 ### Changes
 - Document module `raw::stdio_provider`.
+- Partially document `raw::Terminal`.
 - Terminal reader methods will now guard raw mode.
 
 ## v4.0.1
