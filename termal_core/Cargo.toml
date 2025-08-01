@@ -21,7 +21,7 @@ readers = ["raw", "term_text", "events"]
 
 [dependencies]
 image =  { version = "0.25.6", optional = true }
-litrs = { version = "0.4.1", optional = true }
+litrs = { version = "0.5.0", features = ["proc-macro2"], optional = true }
 place_macro = "1.0.0"
 proc-macro2 = { version = "1.0.95", optional = true }
 thiserror = "2.0.12"
