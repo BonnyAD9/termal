@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## future
+## v4.0.2
 ### Changes
 - Document module `raw::stdio_provider`.
 - Partially document `raw::Terminal`.

@@ -16,12 +16,12 @@ members = [
 
 [dependencies.termal_core]
 path = "termal_core"
-version = "4.0.1"
+version = "4.0.2"
 default-features = false
 
 [dependencies.termal_proc]
 path = "termal_proc"
-version = "4.0.1"
+version = "4.0.2"
 default-features = false
 
 [features]
