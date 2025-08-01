@@ -1,6 +1,6 @@
 [package]
 name = "termal"
-version = "4.0.1"
+version = "4.0.2"
 edition = "2024"
 license-file = "LICENSE"
 description = "Rust library for fancy colored cli using ansi codes"
