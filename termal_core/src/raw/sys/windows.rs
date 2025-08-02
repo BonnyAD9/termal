@@ -11,7 +11,7 @@ use winapi::{
         handleapi::{CloseHandle, INVALID_HANDLE_VALUE},
         processenv::GetStdHandle,
         winbase::{
-            STD_INPUT_HANDLE, WAIT_ABANDONED, WAIT_IO_COMPLETION,
+            INFINITE, STD_INPUT_HANDLE, WAIT_ABANDONED, WAIT_IO_COMPLETION,
             WAIT_OBJECT_0,
         },
         wincon::{
@@ -32,6 +32,12 @@ use crate::{Error, Result, raw::TermSize};
 
 const NO_RAW_BITS: DWORD =
     ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT | ENABLE_PROCESSED_INPUT;
+
+/// The maximum time that you can wait for stdin. Larger values will return
+/// errors.
+///
+/// This is for windows and thus the max is `u32::MAX` milliseconds.
+pub const MAX_STDIN_WAIT: Duration = Duration::from_millis(u32::MAX as u64);
 
 struct Handle {
     handle: HANDLE,
@@ -71,12 +77,19 @@ pub fn term_size() -> Result<TermSize> {
 /// Wait for stdin on windows with the given timeout. If timeout is zero
 /// returns immidietely whether there is data on stdin.
 pub fn wait_for_stdin(timeout: Duration) -> Result<bool> {
+    let wait = if timeout == Duration::MAX {
+        INFINITE
+    } else if timeout > MAX_STDIN_WAIT {
+        return Err(Error::IntConvert);
+    } else {
+        timeout.as_millis() as DWORD
+    };
     let stdin = handle_result(unsafe { GetStdHandle(STD_INPUT_HANDLE) })?;
     let r = unsafe {
         MsgWaitForMultipleObjectsEx(
             1,
             &stdin,
-            timeout.as_millis() as DWORD,
+            timeout,
             QS_ALLINPUT,
             MWMO_INPUTAVAILABLE,
         )

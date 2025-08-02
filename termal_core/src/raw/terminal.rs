@@ -275,6 +275,67 @@ impl<T: IoProvider> Terminal<T> {
     }
 
     /// Wait for input on the terminal. Block for at most the given duration.
+    ///
+    /// Using this with [`Duration::ZERO`] will just check if there is input
+    /// available without blocking.
+    ///
+    /// Using this with [`Duration::MAX`] will wait indefinitely.
+    ///
+    /// If terminal is in raw mode, this will wait for any available input. If
+    /// not and stdin is tty, this will wait for whole line because in this
+    /// case stdin is line buffered.
+    ///
+    /// # Returns
+    /// `true` input arrived whithn the given duration.
+    ///
+    /// # Errors
+    /// - If unerlaying buffer failed to wait for input. For
+    ///   [`Terminal::stdio`] this is:
+    ///     - On unix (linux):
+    ///         - [`Error::IntConvert`] if `timeout` is larger than
+    ///           [`crate::raw::MAX_STDIN_WAIT`].
+    ///         - [`Error::Io`] on io error.
+    ///         - [`Error::WaitAbandoned`] if the wait otherwise fails.
+    ///     - On windows:
+    ///         - [`Error::IntConvert`] if `timeout` is larger than
+    ///           [`crate::raw::MAX_STDIN_WAIT`].
+    ///         - [`Error::Io`] on io error.
+    ///         - [`Error::WaitAbandoned`] if the wait otherwise fails.
+    ///     - [`Error::NotSupportedOnPlatform`] on other platforms.
+    ///
+    /// # Example
+    /// ```no_run
+    /// use std::{io::stdin, time::Duration};
+    ///
+    /// use termal_core::{
+    ///     codes, Result,
+    ///     raw::{Terminal, raw_guard},
+    /// };
+    ///
+    /// let mut term = Terminal::stdio();
+    /// term.flushed(codes::CLEAR)?;
+    ///
+    /// term.flushed("You have one second to enter \"wait for input\"\n> ")?;
+    /// if term.wait_for_input(Duration::from_secs(1))? {
+    ///     let mut data = String::new();
+    ///     // Using the standart blocking read_line without raw mode. It won't
+    ///     // block because there is input ready and stdin is line buffered.
+    ///     stdin().read_line(&mut data)?;
+    ///     if data != "wait for input\n" {
+    ///         println!("You misspelled it!");
+    ///     } else {
+    ///         println!("Good work!");
+    ///     }
+    /// } else {
+    ///     println!("\nOoops! Too late!");
+    /// }
+    ///
+    /// // Consume the data that has already been typed but not consumed because of
+    /// // line buffering.
+    /// raw_guard(true, || term.consume_available())?;
+    ///
+    /// Result::Ok(())
+    /// ```
     pub fn wait_for_input(&self, timeout: Duration) -> Result<bool> {
         if self.has_buffered_input() {
             Ok(true)

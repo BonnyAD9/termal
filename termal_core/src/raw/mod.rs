@@ -26,6 +26,7 @@ use std::{
     time::{Duration, Instant},
 };
 
+use crate::Error;
 #[cfg(feature = "events")]
 use crate::{
     Result, codes,
@@ -43,11 +44,18 @@ pub mod readers;
 #[cfg(feature = "events")]
 pub mod request;
 
-#[cfg(feature = "events")]
-pub(crate) fn raw_guard<T>(
+/// Guards raw mode for the duration of the given function.
+///
+/// If `raw` is true raw mode will be enabled for the duration and if it is
+/// `false` it will be disabled. After the function ends, raw mode will be
+/// restored to its previous state.
+///
+/// This is useful because it ensures that the raw mode will be restored even
+/// if the function returns error.
+pub fn raw_guard<T, E: From<Error>>(
     raw: bool,
-    f: impl FnOnce() -> Result<T>,
-) -> Result<T> {
+    f: impl FnOnce() -> std::result::Result<T, E>,
+) -> std::result::Result<T, E> {
     let is_raw = is_raw_mode_enabled();
     if raw != is_raw {
         if raw {

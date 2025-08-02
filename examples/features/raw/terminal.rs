@@ -1,8 +1,10 @@
-use std::time::Duration;
+use std::{io::stdin, time::Duration};
 
 use termal::{
     Result, codes,
-    raw::{Terminal, disable_raw_mode, enable_raw_mode, wait_for_stdin},
+    raw::{
+        Terminal, disable_raw_mode, enable_raw_mode, raw_guard, wait_for_stdin,
+    },
 };
 
 pub fn show_stdio() -> Result<()> {
@@ -85,6 +87,32 @@ pub fn show_has_input() -> Result<()> {
     println!("wait_for_stdin(ZERO): {}", wait_for_stdin(Duration::ZERO)?);
 
     term.consume_available()?; // Consume all the input
+
+    Ok(())
+}
+
+pub fn show_wait_for_input() -> Result<()> {
+    let mut term = Terminal::stdio();
+    term.flushed(codes::CLEAR)?;
+
+    term.flushed("You have one second to enter \"wait for input\"\n> ")?;
+    if term.wait_for_input(Duration::from_secs(1))? {
+        let mut data = String::new();
+        // Using the standart blocking read_line without raw mode. It won't
+        // block because there is input ready and stdin is line buffered.
+        stdin().read_line(&mut data)?;
+        if data != "wait for input\n" {
+            println!("You misspelled it!");
+        } else {
+            println!("Good work!");
+        }
+    } else {
+        println!("\nOoops! Too late!");
+    }
+
+    // Consume the data that has already been typed but not consumed because of
+    // line buffering.
+    raw_guard(true, || term.consume_available())?;
 
     Ok(())
 }

@@ -41,8 +41,12 @@ pub enum Error {
     /// are mostly implemented only for unix and windows.
     #[error("{0} is not supported on this platform.")]
     NotSupportedOnPlatform(&'static str),
-    /// Failed to wait for stdin (on windows).
+    /// Failed to wait for stdin.
     ///
+    /// # Linux
+    /// When poll returns successfuly in a unexpected way.
+    ///
+    /// # Windows
     /// This may happen on windows if
     /// the thread that locked stdin exited without releasing the stdin handle.
     ///
@@ -64,6 +68,12 @@ pub enum Error {
     /// For example when reading from terminal.
     #[error(transparent)]
     Io(#[from] std::io::Error),
+    /// Failed to convert int.
+    ///
+    /// This error is returned by [`crate::raw::wait_for_stdin`] if the passed
+    /// duration was too large.
+    #[error("Failed to convert integer types.")]
+    IntConvert,
     /// Failed to parse int.
     ///
     /// Not returned by any termal function. It is used internaly when parsing

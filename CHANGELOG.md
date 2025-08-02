@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## future
+### New features
+- Add `raw::raw_guard`.
+
+## Changes
+- Add `raw::MAX_STDIN_WAIT` with the maximum allowed duration for waiting.
+- Add new error `Error::IntConvert`.
+- Document more of methods on `raw::Terminal`.
+
+### Fixes
+- `raw::wait_for_stdin` now properly handles all error cases.
+- `raw::wait_for_stdin` now properly interprets `Duration::MAX` as infinte
+  timeout.
+
 ## v4.0.2
 ### Changes
 - Document module `raw::stdio_provider`.

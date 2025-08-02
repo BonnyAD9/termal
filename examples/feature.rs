@@ -226,6 +226,9 @@ fn single(name: &str) -> Result<()> {
         "raw::Terminal::read_byte" => raw::terminal::show_read_byte(),
         "raw::Terminal::has_buffered_input" => raw::terminal::show_has_input(),
         "raw::Terminal::has_input" => raw::terminal::show_has_input(),
+        "raw::Terminal::wait_for_input" => {
+            raw::terminal::show_wait_for_input()
+        }
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -414,6 +417,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}raw{'y}::{'g}Terminal{'y}::{'w i}read_byte{'_}
   {'c}raw{'y}::{'g}Terminal{'y}::{'w i}has_buffered_input{'_}
   {'c}raw{'y}::{'g}Terminal{'y}::{'w i}has_input{'_}
+  {'c}raw{'y}::{'g}Terminal{'y}::{'w i}wait_for_input{'_}
     "
     );
     Ok(())

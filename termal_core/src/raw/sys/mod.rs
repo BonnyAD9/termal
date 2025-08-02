@@ -7,6 +7,14 @@ mod unix;
 #[cfg(windows)]
 mod windows;
 
+#[cfg(unix)]
+pub use unix::MAX_STDIN_WAIT;
+#[cfg(windows)]
+pub use windows::MAX_STDIN_WAIT;
+/// Waiting for stdin is not supported on this plarform so this is `0`.
+#[cfg(all(not(unix), not(windows)))]
+pub const MAX_STDIN_WAIT: Duration = Duration::ZERO;
+
 /// Size of terminal.
 #[derive(Clone, Debug)]
 pub struct TermSize {
@@ -84,6 +92,8 @@ pub fn term_size() -> Result<TermSize> {
 }
 
 /// Wait for any event on stdin, but not longer than the timeout.
+///
+/// If timeout is [`Duration::MAX`], this will wait indefinitely.
 ///
 /// # Returns
 /// `true` if there is event on stdin. If this returns due to timeout or
