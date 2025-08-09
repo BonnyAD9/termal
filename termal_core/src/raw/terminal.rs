@@ -336,6 +336,9 @@ impl<T: IoProvider> Terminal<T> {
     ///
     /// Result::Ok(())
     /// ```
+    ///
+    /// ## Result in terminal
+    /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/raw/terminal/wait_for_input.png)
     pub fn wait_for_input(&self, timeout: Duration) -> Result<bool> {
         if self.has_buffered_input() {
             Ok(true)
@@ -346,8 +349,52 @@ impl<T: IoProvider> Terminal<T> {
 
     /// Read raw bytes from the terminal to `res`. Returns the number of readed
     /// bytes. Returns [`Error::StdInEof`] when reaches eof. May block.
+    ///
+    /// If encounters EOF it returns successfully if there are any read bytes,
+    /// but with shorter length. If the eof is encountered before any bytes
+    /// were read, it returns the [`Error::StdInEof`]. Note that it is possible
+    /// that there will be more data after eof.
+    ///
+    /// # Errors
+    /// - [`Error::StdInEof`] when eof is encountered before any bytes are
+    ///   read.
+    /// - [`Error::Io`] when error occurs while reading from stdin.
+    ///
+    /// # Example
+    /// ```no_run
+    /// use termal_core::{raw::Terminal, codes, Result};
+    ///
+    /// const TARGET: usize = 404;
+    /// const COUNT: usize = 5;
+    ///
+    /// let mut term = Terminal::stdio();
+    /// term.flushed(codes::CLEAR)?;
+    ///
+    /// term.flushed(format!("Enter byte sum of {TARGET} with {COUNT} bytes: "))?;
+    /// let mut buf = [0;COUNT];
+    /// let len = term.read_raw(&mut buf)?;
+    ///
+    /// if len != COUNT {
+    ///     // This can happen when eof is reached.
+    ///     println!("\nYou cheater, that wasn't 5 bytes!!");
+    /// }
+    ///
+    /// let sum = buf[..len].iter().fold(0_usize, |s, i| s + *i as usize);
+    /// if sum == TARGET {
+    ///     println!("Well done!");
+    /// } else {
+    ///     println!("Not quite, you entered {sum}.");
+    /// }
+    ///
+    /// term.consume_available()?;
+    ///
+    /// Result::Ok(())
+    /// ```
+    ///
+    /// ## Result in terminal
+    /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/raw/terminal/read_raw.png)
     pub fn read_raw(&mut self, res: &mut [u8]) -> Result<usize> {
-        let mut read = self.read_buffered(res)?;
+        let mut read = self.read_buffered(res);
         let mut stdin = self.io.get_in();
         while read < res.len() {
             match read_stdin_once(&mut *stdin, &mut res[read..]) {
@@ -372,7 +419,7 @@ impl<T: IoProvider> Terminal<T> {
         res: &mut [u8],
         timeout: Duration,
     ) -> Result<usize> {
-        let mut read = self.read_buffered(res)?;
+        let mut read = self.read_buffered(res);
         let mut stdin = self.io.get_in();
         while read < res.len()
             && stdin.wait_for_in(timeout).unwrap_or_default()
@@ -398,7 +445,7 @@ impl<T: IoProvider> Terminal<T> {
         res: &mut [u8],
         mut timeout: Duration,
     ) -> Result<usize> {
-        let mut read = self.read_buffered(res)?;
+        let mut read = self.read_buffered(res);
         let mut stdin = self.io.get_in();
         while read < res.len() {
             let now = Instant::now();
@@ -507,14 +554,14 @@ impl<T: IoProvider> Terminal<T> {
         Ok(())
     }
 
-    fn read_buffered(&mut self, mut res: &mut [u8]) -> Result<usize> {
+    fn read_buffered(&mut self, mut res: &mut [u8]) -> usize {
         let (s1, s2) = self.buffer.as_slices();
 
         // Read from the first slice.
         if s1.len() >= res.len() {
             res.copy_from_slice(&s1[..res.len()]);
             self.buffer.consume(res.len());
-            return Ok(res.len());
+            return res.len();
         }
         res[..s1.len()].copy_from_slice(s1);
         res = &mut res[s1.len()..];
@@ -524,12 +571,12 @@ impl<T: IoProvider> Terminal<T> {
             res.copy_from_slice(&s2[..res.len()]);
             let read = s1.len() + res.len();
             self.buffer.consume(read);
-            return Ok(read);
+            return read;
         }
         res[..s2.len()].copy_from_slice(s2);
         let read = s1.len() + s2.len();
         self.buffer.clear();
-        Ok(read)
+        read
     }
 
     fn fill_buffer(&mut self) -> Result<()> {

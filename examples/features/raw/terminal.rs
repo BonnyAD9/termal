@@ -116,3 +116,31 @@ pub fn show_wait_for_input() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_read_raw() -> Result<()> {
+    const TARGET: usize = 404;
+    const COUNT: usize = 5;
+
+    let mut term = Terminal::stdio();
+    term.flushed(codes::CLEAR)?;
+
+    term.flushed(format!("Enter byte sum of {TARGET} with {COUNT} bytes: "))?;
+    let mut buf = [0; COUNT];
+    let len = term.read_raw(&mut buf)?;
+
+    if len != COUNT {
+        // This can happen when eof is reached.
+        println!("\nYou cheater, that wasn't 5 bytes!!");
+    }
+
+    let sum = buf[..len].iter().fold(0_usize, |s, i| s + *i as usize);
+    if sum == TARGET {
+        println!("Well done!");
+    } else {
+        println!("Not quite, you entered {sum}.");
+    }
+
+    term.consume_available()?;
+
+    Ok(())
+}
