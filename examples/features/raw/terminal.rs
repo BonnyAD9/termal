@@ -144,3 +144,27 @@ pub fn show_read_raw() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_read_raw_single_timeout() -> Result<()> {
+    let mut term = Terminal::stdio();
+    term.flushed(codes::CLEAR)?;
+
+    term.flushed("You have 1 second to enter `HeLlO`: ")?;
+    let mut buf = [0; 6];
+    let len =
+        term.read_raw_single_timeout(&mut buf, Duration::from_secs(1))?;
+
+    if len == 0 {
+        println!();
+    }
+
+    if &buf == b"HeLlO\n" {
+        println!("Well done!");
+    } else {
+        println!("YOU FAILED");
+    }
+
+    raw_guard(true, || term.consume_available())?;
+
+    Ok(())
+}

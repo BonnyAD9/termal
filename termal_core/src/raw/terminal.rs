@@ -412,8 +412,17 @@ impl<T: IoProvider> Terminal<T> {
 
     /// Read raw bytes from the terminal to `res`. Returns the number of readed
     /// bytes. Returns [`Error::StdInEof`] when reaches eof. Block for at most
-    /// the given duration for each read from the terminal (so possibly
-    /// idefinitely if the input comes in periodically)
+    /// the given duration for each read from the terminal (so possibly for up
+    /// to `res.len() * timeout`). If you want to measure the total timeout
+    /// instead, use [`Self::read_raw_single_timeout`].
+    ///
+    /// # Returns
+    /// The number of bytes read. This may return with less bytes when eof was
+    /// reached.
+    ///
+    /// # Errors
+    /// - [`Error::StdInEof`] if eof was reached and no data were read.
+    /// - [`Error::Io`] on io error.
     pub fn read_raw_timeout(
         &mut self,
         res: &mut [u8],
@@ -426,20 +435,62 @@ impl<T: IoProvider> Terminal<T> {
         {
             match read_stdin_once(&mut *stdin, &mut res[read..]) {
                 Ok(v) => read += v,
-                Err(Error::StdInEof) => break,
+                Err(Error::StdInEof) => {
+                    if read == 0 {
+                        return Err(Error::StdInEof);
+                    } else {
+                        return Ok(read);
+                    }
+                }
                 e => return e,
             }
         }
-        if read == 0 {
-            Err(Error::StdInEof)
-        } else {
-            Ok(read)
-        }
+        Ok(read)
     }
 
     /// Read raw bytes from the terminal to `res`. Returns the number of readed
     /// bytes. Returns [`Error::StdInEof`] when reaches eof. Block for at most
     /// the given total duration.
+    ///
+    /// # Returns
+    /// The number of bytes read. This may return less than was the input
+    /// before the timeout if eof was reached.
+    ///
+    /// # Errors
+    /// - [`Error::StdInEof`] if eof was reached.
+    /// - [`Error::Io`] on io error.
+    ///
+    /// # Example
+    /// ```no_run
+    /// use std::time::Duration;
+    /// 
+    /// use termal_core::{raw::{Terminal, raw_guard}, codes, Result};
+    ///
+    /// let mut term = Terminal::stdio();
+    /// term.flushed(codes::CLEAR)?;
+    ///
+    /// term.flushed("You have 1 second to enter `HeLlO`: ")?;
+    /// let mut buf = [0; 6];
+    /// let len =
+    ///     term.read_raw_single_timeout(&mut buf, Duration::from_secs(1))?;
+    ///
+    /// if len == 0 {
+    ///     println!();
+    /// }
+    ///
+    /// if &buf == b"HeLlO\n" {
+    ///     println!("Well done!");
+    /// } else {
+    ///     println!("YOU FAILED");
+    /// }
+    ///
+    /// raw_guard(true, || term.consume_available())?;
+    ///
+    /// Result::Ok(())
+    /// ```
+    ///
+    /// ## Result in terminal
+    /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/raw/terminal/read_raw_single_timeout.png)
     pub fn read_raw_single_timeout(
         &mut self,
         res: &mut [u8],
@@ -456,15 +507,17 @@ impl<T: IoProvider> Terminal<T> {
             }
             match read_stdin_once(&mut *stdin, &mut res[read..]) {
                 Ok(v) => read += v,
-                Err(Error::StdInEof) => break,
+                Err(Error::StdInEof) => {
+                    if read == 0 {
+                        return Err(Error::StdInEof);
+                    } else {
+                        return Ok(read);
+                    }
+                }
                 e => return e,
             }
         }
-        if read == 0 {
-            Err(Error::StdInEof)
-        } else {
-            Ok(read)
-        }
+        Ok(read)
     }
 
     /// Read one byte from stdin. Block for at most the given timeout.
