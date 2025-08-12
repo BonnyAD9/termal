@@ -463,7 +463,7 @@ impl<T: IoProvider> Terminal<T> {
     /// # Example
     /// ```no_run
     /// use std::time::Duration;
-    /// 
+    ///
     /// use termal_core::{raw::{Terminal, raw_guard}, codes, Result};
     ///
     /// let mut term = Terminal::stdio();
@@ -520,7 +520,17 @@ impl<T: IoProvider> Terminal<T> {
         Ok(read)
     }
 
-    /// Read one byte from stdin. Block for at most the given timeout.
+    /// Read one byte from stdin. Block for at most the given timeout. If EOF
+    /// is reached, returns [`Error::StdInEof`].
+    ///
+    /// # Returns
+    /// - The read byte.
+    /// - [`Error::StdInEof`] if EOF is reached.
+    /// - [`None`] if no byte is available within the given time.
+    ///
+    /// # Errors
+    /// - [`Error::StdInEof`] on EOF.
+    /// - [`Error::Io`] on io error when reading.
     pub fn read_byte_timeout(
         &mut self,
         timeout: Duration,
@@ -532,18 +542,40 @@ impl<T: IoProvider> Terminal<T> {
         }
     }
 
-    /// Checks if the output stream is terminal
+    /// Checks if the output stream is terminal.
     pub fn is_out_terminal(&self) -> bool {
         self.io.is_out_terminal()
     }
 
-    /// Checks if the input stream is termainl
+    /// Checks if the input stream is termainal.
     pub fn is_in_terminal(&self) -> bool {
         self.io.is_in_terminal()
     }
 
     /// Prints to the output. Properly handles newlines if output is raw
     /// terminal.
+    ///
+    /// The output is not flushed, either flush it with [`Self::flush`], or use
+    /// [`Self::flushed`] to print and flush. Note that stdout usually also
+    /// flushes on newline.
+    /// 
+    /// # Errors
+    /// - [`Error::Io`] on io error when writing to output.
+    /// 
+    /// # Example
+    /// ```no_run
+    /// use termal_core::{raw::Terminal, codes, Result};
+    /// 
+    /// let mut term = Terminal::stdio();
+    /// term.flushed(codes::CLEAR)?;
+    ///
+    /// term.print("Hello there!\n")?;
+    ///
+    /// Result::Ok(())
+    /// ```
+    ///
+    /// ## Result in terminal
+    /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/raw/terminal/print.png)
     pub fn print(&mut self, s: impl AsRef<str>) -> Result<()> {
         if !self.io.is_out_raw() || !self.is_out_terminal() {
             self.write_all(s.as_ref().as_bytes())?;

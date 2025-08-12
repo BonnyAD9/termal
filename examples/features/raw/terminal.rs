@@ -168,3 +168,12 @@ pub fn show_read_raw_single_timeout() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_print() -> Result<()> {
+    let mut term = Terminal::stdio();
+    term.flushed(codes::CLEAR)?;
+
+    term.print("Hello there!\n")?;
+
+    Ok(())
+}
