@@ -121,7 +121,7 @@ impl<'a> TermTextSpan<'a> {
         text: &str,
         skip: usize,
         f: impl Fn(char) -> bool,
-    ) -> (TermTextSpan, &str) {
+    ) -> (TermTextSpan<'_>, &str) {
         let end = text[skip..]
             .char_indices()
             .chain([(usize::MAX, '0')])

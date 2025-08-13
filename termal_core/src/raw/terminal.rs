@@ -558,14 +558,14 @@ impl<T: IoProvider> Terminal<T> {
     /// The output is not flushed, either flush it with [`Self::flush`], or use
     /// [`Self::flushed`] to print and flush. Note that stdout usually also
     /// flushes on newline.
-    /// 
+    ///
     /// # Errors
     /// - [`Error::Io`] on io error when writing to output.
-    /// 
+    ///
     /// # Example
     /// ```no_run
     /// use termal_core::{raw::Terminal, codes, Result};
-    /// 
+    ///
     /// let mut term = Terminal::stdio();
     /// term.flushed(codes::CLEAR)?;
     ///
@@ -588,6 +588,24 @@ impl<T: IoProvider> Terminal<T> {
     /// Prints to the output. Properly handles newlines if output is raw
     /// terminal. Appends newline to the output. Doesn't explicitly flush, but
     /// stdout usually flushes on newline.
+    ///
+    /// # Errors
+    /// - [`Error::Io`] on io error when printing to output.
+    ///
+    /// # Example
+    /// ```no_run
+    /// use termal_core::{raw::Terminal, codes, Result};
+    ///
+    /// let mut term = Terminal::stdio();
+    /// term.flushed(codes::CLEAR)?;
+    ///
+    /// term.println("Hello there!")?;
+    ///
+    /// Result::Ok(())
+    /// ```
+    ///
+    /// ## Result in terminal
+    /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/raw/terminal/print.png)
     pub fn println(&mut self, s: impl AsRef<str>) -> Result<()> {
         if !self.io.is_out_raw() || !self.is_out_terminal() {
             let mut out = self.io.get_out();

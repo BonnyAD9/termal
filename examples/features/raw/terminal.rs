@@ -177,3 +177,12 @@ pub fn show_print() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_println() -> Result<()> {
+    let mut term = Terminal::stdio();
+    term.flushed(codes::CLEAR)?;
+
+    term.println("Hello there!")?;
+
+    Ok(())
+}
