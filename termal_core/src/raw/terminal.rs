@@ -621,6 +621,22 @@ impl<T: IoProvider> Terminal<T> {
 
     /// Prints to the output and flushes. Properly handles newlines if output
     /// is raw terminal.
+    ///
+    /// # Errors
+    /// - [`Error::Io`] on io error when writing to stdout or flushing.
+    ///
+    /// # Example
+    /// ```no_run
+    /// use termal_core::{raw::Terminal, codes, Result};
+    ///
+    /// let mut term = Terminal::stdio();
+    /// term.flushed(codes::CLEAR)?;
+    ///
+    /// Result::Ok(())
+    /// ```
+    ///
+    /// ## Result in terminal
+    /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/raw/terminal/flushed.png)
     pub fn flushed(&mut self, s: impl AsRef<str>) -> Result<()> {
         if !self.io.is_out_raw() || !self.is_out_terminal() {
             let mut out = self.io.get_out();

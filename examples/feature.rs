@@ -235,6 +235,7 @@ fn single(name: &str) -> Result<()> {
         }
         "raw::Terminal::print" => raw::terminal::show_print(),
         "raw::Terminal::println" => raw::terminal::show_println(),
+        "raw::Terminal::flushed" => raw::terminal::show_flushed(),
         _ => {
             eprintacln!("{'r}error: {'_}unknown feature `{name}`.");
             Ok(())
@@ -428,6 +429,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}raw{'y}::{'g}Terminal{'y}::{'w i}read_raw_single_timeout{'_}
   {'c}raw{'y}::{'g}Terminal{'y}::{'w i}print{'_}
   {'c}raw{'y}::{'g}Terminal{'y}::{'w i}println{'_}
+  {'c}raw{'y}::{'g}Terminal{'y}::{'w i}flushed{'_}
     "
     );
     Ok(())

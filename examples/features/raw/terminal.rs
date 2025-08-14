@@ -186,3 +186,10 @@ pub fn show_println() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_flushed() -> Result<()> {
+    let mut term = Terminal::stdio();
+    term.flushed(codes::CLEAR)?;
+
+    Ok(())
+}
