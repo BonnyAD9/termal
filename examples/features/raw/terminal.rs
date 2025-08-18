@@ -193,3 +193,17 @@ pub fn show_flushed() -> Result<()> {
 
     Ok(())
 }
+
+pub fn show_consume_available() -> Result<()> {
+    let mut term = Terminal::stdio();
+    term.flushed(codes::CLEAR)?;
+
+    term.flushed("Type something: ")?;
+    term.wait_for_input(Duration::MAX)?;
+
+    println!("has input (should): {}", term.has_input());
+    term.consume_available()?;
+    println!("has input (shouldn't): {}", term.has_input());
+
+    Ok(())
+}

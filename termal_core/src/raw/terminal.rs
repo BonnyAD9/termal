@@ -448,7 +448,7 @@ impl<T: IoProvider> Terminal<T> {
         Ok(read)
     }
 
-    /// Read raw bytes from the terminal to `res`. Returns the number of readed
+    /// Read raw bytes from the terminal to `res`. Returns the number of read
     /// bytes. Returns [`Error::StdInEof`] when reaches eof. Block for at most
     /// the given total duration.
     ///
@@ -651,6 +651,35 @@ impl<T: IoProvider> Terminal<T> {
     }
 
     /// Consumes all available data in the input stream. Doesn't block.
+    ///
+    /// This is usefult to clean unwanted data from the input.
+    ///
+    /// Sometimes it is useful to use this with [`crate::raw::raw_guard`].
+    ///
+    /// # Errors
+    /// - [`Error::Io`] when fails to read from stdin.
+    ///
+    /// # Example
+    /// ```no_run
+    /// use std::time::Duration;
+    ///
+    /// use termal_core::{raw::Terminal, codes, Result};
+    ///
+    /// let mut term = Terminal::stdio();
+    /// term.flushed(codes::CLEAR)?;
+    ///
+    /// term.flushed("Type something: ")?;
+    /// term.wait_for_input(Duration::MAX)?;
+    ///
+    /// println!("has input (should): {}", term.has_input());
+    /// term.consume_available()?;
+    /// println!("has input (shouldn't): {}", term.has_input());
+    ///
+    /// Result::Ok(())
+    /// ```
+    ///
+    /// ## Result in terminal
+    /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/raw/terminal/consume_available.png)
     pub fn consume_available(&mut self) -> Result<()> {
         self.buffer.clear();
         while self.has_input() {
