@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## future
+## v4.1.0
 ### New features
 - Add `raw::raw_guard`.
 
