@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## future
+### Documentation
+- `raw::WaitForIn`
+- `raw::events`
+- `raw::readers`
+
 ## v4.1.0
 ### New features
 - Add `raw::raw_guard`.

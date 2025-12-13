@@ -4,19 +4,30 @@ bitflags::bitflags! {
     #[doc = "Key modifiers. Some of them are usualy not sent to terminals."]
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
     pub(crate) struct State: u32 {
+        /// Primary button (usually left)
         const PRIMARY = 0x0;
+        /// Middle button.
         const MIDDLE = 0x1;
+        /// Secondary button (usually right)
         const SECONDARY = 0x2;
+        /// Event is release.
         const RELEASE = 0x3;
         const SHIFT = 0x4;
         const ALT = 0x8;
         const CONTROL = 0x10;
+        /// Modifiers mask.
         const MODIFIERS = 0x1C;
+        /// Move event.
         const MOVE = 0x20;
+        /// Scroll bit.
         const ANY_SCROLL = 0x40;
+        /// Scroll up.
         const SCROLL_UP = 0x40;
+        /// Scroll down.
         const SCROLL_DOWN = 0x41;
+        /// Scroll mask.
         const SCROLL = 0x41;
+        /// Other button bit.
         const OTHER_BTN = 0x80;
         /// Usually the back button on mouse.
         const BUTTON4 = 0x80;
@@ -24,6 +35,7 @@ bitflags::bitflags! {
         const BUTTON5 = 0x81;
         const BUTTON6 = 0x82;
         const BUTTON7 = 0x83;
+        /// Button mask.
         const BUTTON = 0xC3;
     }
 }

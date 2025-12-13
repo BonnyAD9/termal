@@ -28,6 +28,7 @@ pub enum AnyEvent {
     Unknown(Vec<u8>),
 }
 
+/// Known terminal event.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Event {
     /// Key was pressed.
@@ -79,6 +80,7 @@ impl AmbiguousEvent {
         Self::event(Event::Status(status))
     }
 
+    /// Create unambiguous state change event.
     pub fn state_change(state: StateChange) -> Self {
         Self::event(Event::StateChange(state))
     }
@@ -100,7 +102,7 @@ impl AmbiguousEvent {
             .unwrap_or_else(|| Self::unknown(code))
     }
 
-    /// Create verbatim key code.
+    /// Create verbatim key code. (key code with the given char value)
     pub fn verbatim(c: char) -> Self {
         Self::key(Key::verbatim(c))
     }
