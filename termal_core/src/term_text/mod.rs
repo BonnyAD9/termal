@@ -124,11 +124,8 @@ impl<'a> TermText<'a> {
     #[inline]
     pub fn strip_control(&self) -> String {
         let mut res = String::new();
-        if let Some(meta) = self.metadata.get() {
-            res.reserve_exact(self.text.len() - meta.control_bytes);
-            for span in self.spans().filter(|s| !s.is_control()) {
-                res.push_str(span.text());
-            }
+        let meta = if let Some(meta) = self.metadata.get() {
+            meta
         } else {
             let mut meta = TermTextMetadata::default();
 
@@ -140,6 +137,14 @@ impl<'a> TermText<'a> {
                     meta.control_bytes += span.text().len();
                 }
             }
+            
+            self.metadata.set(Some(meta));
+            meta
+        };
+        
+        res.reserve_exact(self.text.len() - meta.control_bytes);
+        for span in self.spans().filter(|s| !s.is_control()) {
+            res.push_str(span.text());
         }
 
         res
@@ -162,6 +167,7 @@ impl<'a> TermText<'a> {
                     meta.control_chars += span.chars();
                 }
             }
+            self.metadata.set(Some(meta));
 
             res
         }
