@@ -740,12 +740,12 @@ impl<T: IoProvider> Terminal<T> {
 #[cfg(feature = "readers")]
 impl<T: IoProvider> Terminal<T> {
     /// Appends next line of input from stdin to `s`. May block.
-    /// 
+    ///
     /// This is stable method that uses the unstable [`TermRead`] which is
     /// usually more user friendly than the default readline implementation.
-    /// 
+    ///
     /// For info about what editing features are supported see [`TermRead`].
-    /// 
+    ///
     /// # Errors
     /// - [`Error::Io`] on Io error when reading from stdin, writing to stdout
     ///   or waiting for input on stdin.
@@ -756,12 +756,12 @@ impl<T: IoProvider> Terminal<T> {
     }
 
     /// Read the next line from stdin. May block.
-    /// 
+    ///
     /// This is stable method that uses the unstable [`TermRead`] which is
     /// usually more user friendly than the default readline implementation.
-    /// 
+    ///
     /// For info about what editing features are supported see [`TermRead`].
-    /// 
+    ///
     /// # Errors
     /// - [`Error::Io`] on Io error when reading from stdin, writing to stdout
     ///   or waiting for input on stdin.
@@ -772,12 +772,12 @@ impl<T: IoProvider> Terminal<T> {
     }
 
     /// Edit the given string. May block.
-    /// 
+    ///
     /// This is stable method that uses the unstable [`TermRead`] which is
     /// usually more user friendly than the default readline implementation.
-    /// 
+    ///
     /// For info about what editing features are supported see [`TermRead`].
-    /// 
+    ///
     /// # Errors
     /// - [`Error::Io`] on Io error when reading from stdin, writing to stdout
     ///   or waiting for input on stdin.
@@ -787,12 +787,12 @@ impl<T: IoProvider> Terminal<T> {
     }
 
     /// Edit the given string.
-    /// 
+    ///
     /// This is stable method that uses the unstable [`TermRead`] which is
     /// usually more user friendly than the default readline implementation.
-    /// 
+    ///
     /// For info about what editing features are supported see [`TermRead`].
-    /// 
+    ///
     /// # Errors
     /// - [`Error::Io`] on Io error when reading from stdin, writing to stdout
     ///   or waiting for input on stdin.
@@ -802,12 +802,12 @@ impl<T: IoProvider> Terminal<T> {
     }
 
     /// Prompt the user with the given prompt and return the entered result.
-    /// 
+    ///
     /// This is stable method that uses the unstable [`TermRead`] which is
     /// usually more user friendly than the default readline implementation.
-    /// 
+    ///
     /// For info about what editing features are supported see [`TermRead`].
-    /// 
+    ///
     /// # Errors
     /// - [`Error::Io`] on Io error when reading from stdin, writing to stdout
     ///   or waiting for input on stdin.
@@ -822,12 +822,12 @@ impl<T: IoProvider> Terminal<T> {
 
     /// Prompt the user with the given prompt and append the entered result to
     /// the given string.
-    /// 
+    ///
     /// This is stable method that uses the unstable [`TermRead`] which is
     /// usually more user friendly than the default readline implementation.
-    /// 
+    ///
     /// For info about what editing features are supported see [`TermRead`].
-    /// 
+    ///
     /// # Errors
     /// - [`Error::Io`] on Io error when reading from stdin, writing to stdout
     ///   or waiting for input on stdin.

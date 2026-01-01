@@ -20,17 +20,17 @@ proc = ["dep:litrs", "dep:proc-macro2"]
 readers = ["raw", "term_text", "events"]
 
 [dependencies]
-image =  { version = "0.25.7", optional = true }
-litrs = { version = "0.5.1", features = ["proc-macro2"], optional = true }
-place_macro = "1.0.0"
-proc-macro2 = { version = "1.0.101", optional = true }
-thiserror = "2.0.16"
-bitflags = { version = "2.9.3", optional = true }
+image =  { version = "0.25.9", optional = true }
+litrs = { version = "1.0.0", features = ["proc-macro2"], optional = true }
+place_macro = "1.1.0"
+proc-macro2 = { version = "1.0.104", optional = true }
+thiserror = "2.0.17"
+bitflags = { version = "2.10.0", optional = true }
 base64 = "0.22.1"
 minlin = "0.3.1"
 
 [target.'cfg(unix)'.dependencies]
-libc = { version = "0.2.175", optional = true }
+libc = { version = "0.2.178", optional = true }
 
 [target.'cfg(windows)'.dependencies.winapi]
 version = "0.3.9"

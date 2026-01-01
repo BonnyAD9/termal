@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## future
+## v4.1.1
 ### Documentation
 - `raw::WaitForIn`
 - `raw::events`

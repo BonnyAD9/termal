@@ -84,7 +84,7 @@ where
     }
 
     /// Edit the given string.
-    /// 
+    ///
     /// # Errors
     /// - [`Error::Io`] on io write or read.
     pub fn edit_str(
@@ -99,7 +99,7 @@ where
     }
 
     /// Edit the given string. Return new edited string (the old is unchanged).
-    /// 
+    ///
     /// # Errors
     /// - [`Error::Io`] on io write or read.
     pub fn edit(
@@ -114,7 +114,7 @@ where
 
     /// Edit the given vector. This is the most optimal edit as it doesn't do
     /// any copy of the passed data.
-    /// 
+    ///
     /// # Errors
     /// - [`Error::Io`] on io write or read.
     pub fn edit_vec(
@@ -132,7 +132,7 @@ where
     }
 
     /// Appends readed text to a string.
-    /// 
+    ///
     /// # Errors
     /// - [`Error::Io`] on io write or read.
     pub fn read_to_str(&mut self, s: &mut String) -> Result<()> {
@@ -142,7 +142,7 @@ where
     }
 
     /// Reads from console and returns the readed string.
-    /// 
+    ///
     /// # Errors
     /// - [`Error::Io`] on io write or read.
     pub fn read_str(&mut self) -> Result<String> {
@@ -152,7 +152,7 @@ where
     }
 
     /// Continue reading all data and reset.
-    /// 
+    ///
     /// # Errors
     /// - [`Error::Io`] on io write or read.
     pub fn finish_to_str(&mut self, s: &mut String) -> Result<()> {
@@ -163,7 +163,7 @@ where
     }
 
     /// Continue reading all the data and reset.
-    /// 
+    ///
     /// # Errors
     /// - [`Error::Io`] on io write or read.
     pub fn finish(&mut self) -> Result<String> {
@@ -202,7 +202,7 @@ where
     }
 
     /// Refresh the view.
-    /// 
+    ///
     /// # Errors
     /// - [`Error::Io`] on io error when writing.
     pub fn reshow(&mut self) -> Result<()> {
@@ -231,7 +231,7 @@ where
     /// Read one next character or nothing. Doesn't block. Returns `true` if
     /// the input has ended and the result may be retrieved with
     /// [`TermRead::finish`] or [`TermRead::finish_to_str`].
-    /// 
+    ///
     /// # Errors
     /// - [`Error::Io`] on io write or read.
     ///
