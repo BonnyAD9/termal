@@ -137,11 +137,11 @@ impl<'a> TermText<'a> {
                     meta.control_bytes += span.text().len();
                 }
             }
-            
+
             self.metadata.set(Some(meta));
             meta
         };
-        
+
         res.reserve_exact(self.text.len() - meta.control_bytes);
         for span in self.spans().filter(|s| !s.is_control()) {
             res.push_str(span.text());

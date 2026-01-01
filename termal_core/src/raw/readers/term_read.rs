@@ -321,7 +321,8 @@ where
                 self.pbuf += &codes::move_up!(pos.y);
             } else {
                 self.pbuf += &codes::move_up!(
-                    self.pos / size.x + (self.pos % size.y > 0) as usize
+                    self.pos / size.x
+                        + !self.pos.is_multiple_of(size.y) as usize
                 );
             }
         }
