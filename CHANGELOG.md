@@ -2,8 +2,9 @@
 
 ## future
 ### Fixes
+- Use `doc_cfg` instead of `doc_auto_cfg`.
 - Properly use cache in `TermText::strip_control` and
-  `TermText::to_string_cache`
+  `TermText::to_string_cache`.
 
 ## v4.1.1
 ### Documentation
