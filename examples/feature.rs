@@ -231,6 +231,18 @@ fn single(name: &str) -> Result<()> {
         "raw::request::text_area_size_px" => {
             raw::request::show_text_area_size_px()
         }
+        "raw::request::char_size" => raw::request::show_char_size(),
+        "raw::request::text_area_size" => raw::request::show_text_area_size(),
+        "raw::request::sixel_colors" => raw::request::show_sixel_colors(),
+        "raw::request::color_code" => raw::request::show_color_code(),
+        "raw::request::default_fg_color" => {
+            raw::request::show_default_fg_color()
+        }
+        "raw::request::default_bg_color" => {
+            raw::request::show_default_bg_color()
+        }
+        "raw::request::cursor_color" => raw::request::show_cursor_color(),
+        "raw::request::selection" => raw::request::show_selection(),
         "raw::request::status_report" => raw::request::show_status_report(),
         "raw::Terminal::stdio" => raw::terminal::show_stdio(),
         "raw::Terminal::read_byte" => raw::terminal::show_read_byte(),
@@ -437,6 +449,14 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}raw{'y}::{'c}request{'y}::{'w i}status_report{'_}
   {'c}raw{'y}::{'c}request{'y}::{'w i}terminal_name{'_}
   {'c}raw{'y}::{'c}request{'y}::{'w i}text_area_size_px{'_}
+  {'c}raw{'y}::{'c}request{'y}::{'w i}char_size{'_}
+  {'c}raw{'y}::{'c}request{'y}::{'w i}text_area_size{'_}
+  {'c}raw{'y}::{'c}request{'y}::{'w i}sixel_colors{'_}
+  {'c}raw{'y}::{'c}request{'y}::{'w i}color_code{'_}
+  {'c}raw{'y}::{'c}request{'y}::{'w i}default_fg_color{'_}
+  {'c}raw{'y}::{'c}request{'y}::{'w i}default_bg_color{'_}
+  {'c}raw{'y}::{'c}request{'y}::{'w i}cursor_color{'_}
+  {'c}raw{'y}::{'c}request{'y}::{'w i}selection{'_}
   {'c}raw{'y}::{'g}Terminal{'y}::{'w i}stdio{'_}
   {'c}raw{'y}::{'g}Terminal{'y}::{'w i}read_byte{'_}
   {'c}raw{'y}::{'g}Terminal{'y}::{'w i}has_buffered_input{'_}

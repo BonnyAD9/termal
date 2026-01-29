@@ -55,6 +55,86 @@ pub fn show_text_area_size_px() -> Result<()> {
     Ok(())
 }
 
+pub fn show_char_size() -> Result<()> {
+    let mut term = Terminal::stdio();
+    term.flushed(codes::CLEAR)?;
+
+    let res = request::char_size(Duration::from_millis(100))?;
+    term.consume_available()?;
+    println!("{res:#?}");
+    Ok(())
+}
+
+pub fn show_text_area_size() -> Result<()> {
+    let mut term = Terminal::stdio();
+    term.flushed(codes::CLEAR)?;
+
+    let res = request::text_area_size(Duration::from_millis(100))?;
+    term.consume_available()?;
+    println!("{res:#?}");
+    Ok(())
+}
+
+pub fn show_sixel_colors() -> Result<()> {
+    let mut term = Terminal::stdio();
+    term.flushed(codes::CLEAR)?;
+
+    let res = request::sixel_colors(Duration::from_millis(100))?;
+    term.consume_available()?;
+    println!("{res}");
+    Ok(())
+}
+
+pub fn show_color_code() -> Result<()> {
+    let mut term = Terminal::stdio();
+    term.flushed(codes::CLEAR)?;
+
+    let res = request::color_code(11, Duration::from_millis(100))?;
+    term.consume_available()?;
+    println!("{res:#?}");
+    Ok(())
+}
+
+pub fn show_default_fg_color() -> Result<()> {
+    let mut term = Terminal::stdio();
+    term.flushed(codes::CLEAR)?;
+
+    let res = request::default_fg_color(Duration::from_millis(100))?;
+    term.consume_available()?;
+    println!("{res:#?}");
+    Ok(())
+}
+
+pub fn show_default_bg_color() -> Result<()> {
+    let mut term = Terminal::stdio();
+    term.flushed(codes::CLEAR)?;
+
+    let res = request::default_bg_color(Duration::from_millis(100))?;
+    term.consume_available()?;
+    println!("{res:#?}");
+    Ok(())
+}
+
+pub fn show_cursor_color() -> Result<()> {
+    let mut term = Terminal::stdio();
+    term.flushed(codes::CLEAR)?;
+
+    let res = request::cursor_color(Duration::from_millis(100))?;
+    term.consume_available()?;
+    println!("{res:#?}");
+    Ok(())
+}
+
+pub fn show_selection() -> Result<()> {
+    let mut term = Terminal::stdio();
+    term.flushed(codes::CLEAR)?;
+
+    let res = request::selection([], Duration::from_millis(100))?;
+    term.consume_available()?;
+    println!("{}", String::from_utf8_lossy(&res));
+    Ok(())
+}
+
 pub fn show_status_report() -> Result<()> {
     let mut term = Terminal::stdio();
     term.flushed(codes::CLEAR)?;

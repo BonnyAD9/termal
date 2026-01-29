@@ -14,7 +14,7 @@
 ### Documentation
 - Better document some events.
 - Better document `raw::sys`.
-- Add documentation to some requests in `raw::request`.
+- Add missing documentation to requests in `raw::request`.
 
 ## v4.1.1
 ### Documentation
