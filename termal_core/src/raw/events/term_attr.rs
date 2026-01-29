@@ -25,6 +25,8 @@ pub enum TermType {
     Vt420,
     Vt510,
     /// Unknown terminal type id.
+    ///
+    /// The id will be [`None`] if the terminal didn't provide it.
     Other(Option<u32>),
 }
 
@@ -34,8 +36,13 @@ bitflags! {
     pub struct TermFeatures: u32 {
         /// No extra features.
         const NONE = 0x0;
+        /// Terminal supports 132 column mode for wide output.
+        ///
+        /// Modern terminals support variable width and so they don't present
+        /// this flag.
         const COLUMNS132 = 0x1;
         const PRINTER = 0x2;
+        /// Supports regis graphics.
         const REGIS_GRAPHICS = 0x4;
         /// Supports sixel graphics.
         const SIXEL_GRAPHICS = 0x8;

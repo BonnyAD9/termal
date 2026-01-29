@@ -1,10 +1,20 @@
 # CHANGELOG
 
 ## future
+### Changes
+- In `request` look for matches in ambituities.
+- Readers now prefer fallback reader on windows.
+
 ### Fixes
 - Use `doc_cfg` instead of `doc_auto_cfg`.
 - Properly use cache in `TermText::strip_control` and
   `TermText::to_string_cache`.
+- Fix `request::cursor_position`.
+
+### Documentation
+- Better document some events.
+- Better document `raw::sys`.
+- Add documentation to some requests in `raw::request`.
 
 ## v4.1.1
 ### Documentation

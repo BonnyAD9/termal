@@ -22,9 +22,9 @@ pub struct TermSize {
     pub char_width: usize,
     /// Height in charaters.
     pub char_height: usize,
-    /// Width in pixels.
+    /// Width in pixels. Not supported on windows (always 0).
     pub pixel_width: usize,
-    /// Height in pixels.
+    /// Height in pixels. Not supported on windows (always 0).
     pub pixel_height: usize,
 }
 
@@ -32,6 +32,12 @@ pub struct TermSize {
 ///
 /// # Support
 /// - Unix (Linux)
+/// - Windows (not tested)
+///
+/// # Errors
+/// - [`Error::NotSupportedOnPlatform`] when used on unsupported platform.
+///   Supported is linux and windows.
+/// - [`Error::Io`] on io error.
 pub fn enable_raw_mode() -> Result<()> {
     #[cfg(unix)]
     return unix::enable_raw_mode();
@@ -48,6 +54,10 @@ pub fn enable_raw_mode() -> Result<()> {
 /// # Support
 /// - Unix (Linux)
 /// - Windows (not tested)
+///
+/// # Errors
+/// - [`Error::NotSupportedOnPlatform`] when used on  unsupported platform.
+/// - [`Error::Io`] on io error.
 pub fn disable_raw_mode() -> Result<()> {
     #[cfg(unix)]
     return unix::disable_raw_mode();
@@ -64,6 +74,8 @@ pub fn disable_raw_mode() -> Result<()> {
 /// # Support
 /// - Unix (Linux)
 /// - Windows (not tested)
+///
+/// This will conservatively return false (e.g. on unsupported or when fails)
 pub fn is_raw_mode_enabled() -> bool {
     #[cfg(unix)]
     return unix::is_raw_mode_enabled();
@@ -80,6 +92,11 @@ pub fn is_raw_mode_enabled() -> bool {
 /// # Support
 /// - Unix (Linux)
 /// - Windows (not tested)
+///   - Doesn't support size in pixels. (will be set to 0)
+///
+/// # Errors
+/// - [`Error::NotSupportedOnPlatform`] when used on unsupported platform.
+/// - [`Error::Io`] on io error.
 pub fn term_size() -> Result<TermSize> {
     #[cfg(unix)]
     return unix::window_size();
@@ -102,6 +119,14 @@ pub fn term_size() -> Result<TermSize> {
 /// # Support
 /// - Unix (Linux)
 /// - Windows (not tested)
+///
+/// # Errors
+/// - [`Error::NotSupportedOnPlatform`] on unsupported platforms.
+/// - [`Error::Io`] on io error.
+/// - [`Error::WaitAbandoned`] when unexpected state happens. See error
+///   description.
+/// - [`Error::IntConvert`] when timeout value is too large (but not
+///   [`Duration::MAX`])
 pub fn wait_for_stdin(timeout: Duration) -> Result<bool> {
     #[cfg(unix)]
     return unix::wait_for_stdin(timeout);

@@ -110,6 +110,10 @@ impl Key {
 
 impl KeyCode {
     /// Create key code from its representative character.
+    ///
+    /// This doesn't create verbatim key. It will translate the given character
+    /// to the key code. (e.g. [`KeyCode::Space`] instead of
+    /// `KeyCode::Char(' ')`)
     pub fn from_char(chr: char) -> Self {
         match chr.to_ascii_lowercase() {
             ' ' | '\0' => Self::Space,
@@ -148,6 +152,8 @@ impl KeyCode {
     }
 
     /// Craete key code from VT id.
+    ///
+    /// This will return [`None`] for unknown vt key codes.
     pub fn from_vt_id(id: u32) -> Option<Self> {
         match id {
             1 => Some(Self::Home),
@@ -184,6 +190,8 @@ impl KeyCode {
     }
 
     /// Get key code from xterm id.
+    ///
+    /// This will return [`None`] for unknown key codes.
     pub fn from_xterm_id(id: char) -> Option<Self> {
         match id {
             'A' => Some(Self::Up),

@@ -10,7 +10,11 @@ use termal::{
 
 fn main() -> Result<()> {
     enable_raw_mode()?;
-    print!("{}", codes::REQUEST_SELECTION);
+    print!(
+        "{}{}",
+        codes::REQUEST_CURSOR_POSITION,
+        codes::REQUEST_STATUS_REPORT
+    );
     _ = io::stdout().flush();
 
     start()?;

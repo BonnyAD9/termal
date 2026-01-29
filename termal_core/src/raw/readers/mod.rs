@@ -32,7 +32,7 @@ pub fn prompt(prompt: impl AsRef<str>) -> Result<String> {
 }
 
 /// Prompt the user with better read line capabilities.
-#[cfg(any(windows, unix))]
+#[cfg(unix)]
 pub fn prompt_to(res: &mut String, prompt: impl AsRef<str>) -> Result<()> {
     prompt_to_inner(res, prompt.as_ref())
         .or_else(|_| prompt_to_fallback(res, prompt))
@@ -40,12 +40,12 @@ pub fn prompt_to(res: &mut String, prompt: impl AsRef<str>) -> Result<()> {
 
 /// Prompt the user. Better readline is not supported on this platform, so this
 /// will just fallback to default readline.
-#[cfg(not(any(windows, unix)))]
+#[cfg(not(unix))]
 pub fn prompt_to(res: &mut String, prompt: impl AsRef<str>) -> Result<()> {
     prompt_to_fallback(res, prompt)
 }
 
-#[cfg(any(windows, unix))]
+#[cfg(unix)]
 fn prompt_to_inner(res: &mut String, prompt: impl AsRef<str>) -> Result<()> {
     use super::{
         Terminal, disable_raw_mode, enable_raw_mode, is_raw_mode_enabled,

@@ -221,6 +221,16 @@ fn single(name: &str) -> Result<()> {
         "raw::request::device_attributes" => {
             raw::request::show_device_attributes()
         }
+        "raw::request::cursor_position" => {
+            raw::request::show_cursor_position()
+        }
+        "raw::request::cursor_position2" => {
+            raw::request::show_cursor_position2()
+        }
+        "raw::request::terminal_name" => raw::request::show_terminal_name(),
+        "raw::request::text_area_size_px" => {
+            raw::request::show_text_area_size_px()
+        }
         "raw::request::status_report" => raw::request::show_status_report(),
         "raw::Terminal::stdio" => raw::terminal::show_stdio(),
         "raw::Terminal::read_byte" => raw::terminal::show_read_byte(),
@@ -422,7 +432,11 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}raw{'y}::{'w i}request_ambiguous{'_}
   {'c}raw{'y}::{'w i}request{'_}
   {'c}raw{'y}::{'c}request{'y}::{'w i}device_attributes{'_}
+  {'c}raw{'y}::{'c}request{'y}::{'w i}cursor_position{'_}
+  {'c}raw{'y}::{'c}request{'y}::{'w i}cursor_position2{'_}
   {'c}raw{'y}::{'c}request{'y}::{'w i}status_report{'_}
+  {'c}raw{'y}::{'c}request{'y}::{'w i}terminal_name{'_}
+  {'c}raw{'y}::{'c}request{'y}::{'w i}text_area_size_px{'_}
   {'c}raw{'y}::{'g}Terminal{'y}::{'w i}stdio{'_}
   {'c}raw{'y}::{'g}Terminal{'y}::{'w i}read_byte{'_}
   {'c}raw{'y}::{'g}Terminal{'y}::{'w i}has_buffered_input{'_}

@@ -1,6 +1,6 @@
 use crate::raw::events::{Event, Key, KeyCode};
 
-/// Predicate for matchin value.
+/// Predicate for matching value.
 pub trait Predicate<T> {
     /// Checks whether the given value matches.
     fn matches(&self, value: &T) -> bool;

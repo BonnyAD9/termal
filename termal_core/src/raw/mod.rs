@@ -253,8 +253,9 @@ pub fn request<T>(
     request_ambiguous(code, timeout, move |evt| match evt {
         AmbiguousEvent {
             event: AnyEvent::Known(evt),
+            other,
             ..
-        } => m(evt),
+        } => Some(evt).into_iter().chain(other).flat_map(&mut m).next(),
         _ => None,
     })
 }

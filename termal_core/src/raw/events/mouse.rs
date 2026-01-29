@@ -12,8 +12,11 @@ bitflags::bitflags! {
         const SECONDARY = 0x2;
         /// Event is release.
         const RELEASE = 0x3;
+        /// Shift modifier.
         const SHIFT = 0x4;
+        /// Alt modifier.
         const ALT = 0x8;
+        /// Control modifier.
         const CONTROL = 0x10;
         /// Modifiers mask.
         const MODIFIERS = 0x1C;
@@ -53,16 +56,25 @@ pub enum Button {
     Button5,
     Button6,
     Button7,
+    /// Other unknown button given by button mask.
     Other(u32),
 }
 
 /// Mouse events.
+///
+/// Note that not all events are always emited. There are several levels of
+/// "event verbosity" for terminals.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Event {
+    /// Mouse press.
     Down,
+    /// Mouse release.
     Up,
+    /// Mouse wheel scroll up.
     ScrollUp,
+    /// Mouse wheel scroll down.
     ScrollDown,
+    /// Mouse cursor moved.
     Move,
 }
 
