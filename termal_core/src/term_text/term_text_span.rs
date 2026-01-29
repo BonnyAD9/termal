@@ -1,9 +1,12 @@
+use unicode_width::UnicodeWidthStr;
+
 use crate::codes;
 
 /// Span of single plain text or single control sequence. Note that all
 /// whitespace except space `' '` is treated as control sequence.
 pub struct TermTextSpan<'a> {
     text: &'a str,
+    columns: usize,
     chars: usize,
     control: bool,
 }
@@ -17,6 +20,11 @@ impl<'a> TermTextSpan<'a> {
     /// Get the number of chars in the span. This is cached.
     pub fn chars(&self) -> usize {
         self.chars
+    }
+
+    /// Get the number of columns the text will take up on screen.
+    pub fn columns(&self) -> usize {
+        self.columns
     }
 
     /// Check if the span contains either control sequnece or plain text.
@@ -43,6 +51,7 @@ impl<'a> TermTextSpan<'a> {
             return (
                 TermTextSpan {
                     text,
+                    columns: text.width(),
                     chars: idx,
                     control: false,
                 },
@@ -88,9 +97,11 @@ impl<'a> TermTextSpan<'a> {
         chars: usize,
         control: bool,
     ) -> (TermTextSpan<'_>, &str) {
+        let columns = if control { 0 } else { text[..ind].width() };
         (
             TermTextSpan {
                 text: &text[..ind],
+                columns,
                 chars,
                 control,
             },
@@ -109,6 +120,7 @@ impl<'a> TermTextSpan<'a> {
             (
                 TermTextSpan {
                     text,
+                    columns: 0,
                     chars: text.chars().count(),
                     control: true,
                 },
@@ -136,6 +148,7 @@ impl<'a> TermTextSpan<'a> {
             (
                 TermTextSpan {
                     text,
+                    columns: 0,
                     chars: idx + skip,
                     control: true,
                 },

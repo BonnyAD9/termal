@@ -114,6 +114,11 @@ impl<'a> TermText<'a> {
         self.get_metadata().control_bytes
     }
 
+    /// Get the number of columns the text will take up on screen.
+    pub fn columns(&self) -> usize {
+        self.get_metadata().columns
+    }
+
     /// Get iterator over the spans of the control string. Single span contains
     /// either plain text or single control sequence.
     pub fn spans(&self) -> TermTextSpans<'_> {

@@ -1,6 +1,9 @@
 # CHANGELOG
 
 ## future
+### New features
+- Add option to get the number of columns that text will take up in `TermText`.
+
 ### Changes
 - In `request` look for matches in ambituities.
 - Readers now prefer fallback reader on windows.
@@ -10,6 +13,7 @@
 - Properly use cache in `TermText::strip_control` and
   `TermText::to_string_cache`.
 - Fix `request::cursor_position`.
+- Reader now properly works with wide characters in prompt.
 
 ### Documentation
 - Better document some events.

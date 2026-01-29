@@ -16,6 +16,8 @@ use crate::{
 
 use super::{Predicate, ReadConf, Vec2};
 
+// TODO: properly handle different display width characters
+
 /// Terminal reader. Supports only single line. Newlines are skipped.
 ///
 /// ## Unstable API
@@ -502,7 +504,7 @@ where
 
     /// Gets the position + prompt lentgth
     fn len(&self) -> usize {
-        self.pos + self.prompt.display_char_cnt()
+        self.pos + self.prompt.columns()
     }
 
     fn cur_pos(&self) -> Vec2 {
@@ -510,7 +512,7 @@ where
     }
 
     fn start_pos(&self) -> Vec2 {
-        self.size.pos_of_idx(self.prompt.display_char_cnt())
+        self.size.pos_of_idx(self.prompt.columns())
     }
 
     fn move_start(&mut self) {

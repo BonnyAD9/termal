@@ -5,6 +5,8 @@ use super::TermTextSpans;
 pub struct TermTextMetadata {
     /// Total number of chars.
     pub chars: usize,
+    /// Number of columns used when the characters are displayed.
+    pub columns: usize,
     /// Number of chars from control sequences.
     pub control_chars: usize,
     /// Number of bytes from control sequences.
@@ -23,6 +25,7 @@ impl TermTextMetadata {
     pub fn add_length(&mut self, text: &str) {
         for span in TermTextSpans::new(text) {
             self.chars += span.chars();
+            self.columns += span.columns();
             if span.is_control() {
                 self.control_chars += span.chars();
                 self.control_bytes += span.text().len();
