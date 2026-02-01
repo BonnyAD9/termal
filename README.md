@@ -82,12 +82,6 @@ It is available on [crates.io][crate]:
 cargo add termal
 ```
 
-### In Cargo.toml
-```toml
-[dependencies]
-termal = "2.1.1"
-```
-
 ### Features
 + `raw`: enable features for raw terminal.
 - `term_image`: enables functionality for drawing images to terminal.
