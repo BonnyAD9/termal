@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## future
+## v4.2.0
 ### New features
 - Add option to get the number of columns that text will take up in `TermText`.
 
