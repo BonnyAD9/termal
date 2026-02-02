@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## future
+### Fixes
+- Use `doc_cfg` instead of `doc_auto_cfg` in termal_core.
+
 ## v4.2.0
 ### New features
 - Add option to get the number of columns that text will take up in `TermText`.
