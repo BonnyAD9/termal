@@ -5026,7 +5026,7 @@ color and `Pc` is the color either in format `rgb:R/G/B` or `#RGB` where `R`,
 
 Termal can parse the response as [`crate::raw::events::Event::Status`] with
 [`crate::raw::events::Status::ColorCodeColor(Rgb::<u16> { r, g, b })`]. So the
-read event will match `Event::Status(Status::SixelColors(Rgb::<u16> { .. }))`.
+read event will match `Event::Status(Status::ColorCodeColor(Rgb::<u16> { .. }))`.
 
 # Example
 ```no_run

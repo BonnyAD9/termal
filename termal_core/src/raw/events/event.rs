@@ -33,15 +33,35 @@ pub enum AnyEvent {
 pub enum Event {
     /// Key was pressed.
     KeyPress(Key),
-    /// Mouse event
+    /// Mouse event.
+    ///
+    /// Mouse events are sent only if enabled with one of:
+    ///
+    /// - [`codes::ENABLE_MOUSE_XY_PR_TRACKING`]: enables events only on mouse
+    ///   press, release and scroll.
+    /// - [`codes::ENABLE_MOUSE_XY_DRAG_TRACKING`]: also enables drag events.
+    /// - [`codes::ENABLE_MOUSE_XY_ALL_TRACKING`]: also enables move events.
+    ///
+    /// It is recommended to use an extension for better encoding of the
+    /// events. The recommended extension is [`codes::ENABLE_MOUSE_XY_EXT`].
     Mouse(Mouse),
     /// Received terminal attributes.
+    ///
+    /// Usually received after request.
     Status(Status),
     /// The terminal has gained focus.
+    ///
+    /// The event may be received only if enabled with
+    /// [`codes::ENABLE_FOCUS_EVENT`].
     Focus,
     /// The terminal has lost focus.
+    ///
+    /// The event may be received only if enabled with
+    /// [`codes::ENABLE_FOCUS_EVENT`].
     FocusLost,
     /// The input state has changed.
+    ///
+    /// Usually requires to be enabled with feature.
     StateChange(StateChange),
 }
 
