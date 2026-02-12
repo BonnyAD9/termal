@@ -89,7 +89,7 @@ pub fn wait_for_stdin(timeout: Duration) -> Result<bool> {
         MsgWaitForMultipleObjectsEx(
             1,
             &stdin,
-            timeout,
+            wait,
             QS_ALLINPUT,
             MWMO_INPUTAVAILABLE,
         )
