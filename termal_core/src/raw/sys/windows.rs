@@ -16,7 +16,8 @@ use winapi::{
         },
         wincon::{
             CONSOLE_SCREEN_BUFFER_INFO, ENABLE_ECHO_INPUT, ENABLE_LINE_INPUT,
-            ENABLE_PROCESSED_INPUT, GetConsoleScreenBufferInfo,
+            ENABLE_PROCESSED_INPUT, ENABLE_VIRTUAL_TERMINAL_INPUT,
+            GetConsoleScreenBufferInfo,
         },
         winnt::{
             FILE_SHARE_READ, FILE_SHARE_WRITE, GENERIC_READ, GENERIC_WRITE,
@@ -29,6 +30,8 @@ use winapi::{
 };
 
 use crate::{Error, Result, raw::TermSize};
+
+const RAW_BITS: DWORD = ENABLE_VIRTUAL_TERMINAL_INPUT;
 
 const NO_RAW_BITS: DWORD =
     ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT | ENABLE_PROCESSED_INPUT;
@@ -47,13 +50,13 @@ struct Handle {
 /// Enables raw mode on windows.
 pub fn enable_raw_mode() -> Result<()> {
     let in_buf = Handle::current_in_buf()?;
-    in_buf.set_mode(in_buf.get_mode()? & !NO_RAW_BITS)
+    in_buf.set_mode((in_buf.get_mode()? & !NO_RAW_BITS) | RAW_BITS)
 }
 
 /// Disables raw mode on windows.
 pub fn disable_raw_mode() -> Result<()> {
     let in_buf = Handle::current_in_buf()?;
-    in_buf.set_mode(in_buf.get_mode()? | NO_RAW_BITS)
+    in_buf.set_mode((in_buf.get_mode()? | NO_RAW_BITS) & !RAW_BITS)
 }
 
 /// Checks whether raw mode is enabled on windows.
