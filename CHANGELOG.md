@@ -3,6 +3,11 @@
 ## future
 ### Fixes
 - Use `doc_cfg` instead of `doc_auto_cfg` in termal_core.
+- Fix windows wait for stdin.
+- Add modes for better windows support.
+
+### Changes
+- Use the custom readline also on windows.
 
 ### Documentation
 - Better document some events.
