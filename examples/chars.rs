@@ -4,7 +4,7 @@ use termal::{Result, codes, raw::enable_raw_mode, reset_terminal};
 
 fn main() -> Result<()> {
     enable_raw_mode()?;
-    print!("{}", codes::REQUEST_DEVICE_ATTRIBUTES);
+    print!("{}", codes::ENABLE_MOUSE_XY_ALL_TRACKING);
     _ = stdout().flush();
 
     start()?;

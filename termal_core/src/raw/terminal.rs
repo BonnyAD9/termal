@@ -935,9 +935,9 @@ impl<T: IoProvider> Terminal<T> {
             // sequence rules.
             code.push(cur);
             for _ in 0..3 {
-                if self.buffer.is_empty() {
-                    return Ok(AmbiguousEvent::from_code(&code));
-                }
+                // Don't check for buffer emptiness. For some reason, windows
+                // sends the triplet as separate.
+
                 let Some(b) = self.read_byte_if(|b| b >= 32)? else {
                     return Ok(AmbiguousEvent::from_code(&code));
                 };
