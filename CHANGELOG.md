@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## future
+## v4.2.1
 ### Fixes
 - Use `doc_cfg` instead of `doc_auto_cfg` in termal_core.
 - Fix windows wait for stdin.
