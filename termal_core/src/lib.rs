@@ -17,6 +17,8 @@ mod err;
 pub mod image;
 #[cfg(feature = "proc")]
 pub mod proc;
+#[cfg(feature = "progress")]
+pub mod progress;
 #[cfg(feature = "raw")]
 pub mod raw;
 #[cfg(feature = "term_text")]

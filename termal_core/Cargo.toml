@@ -10,7 +10,7 @@ readme = "../README.md"
 
 [features]
 default = ["all"]
-all = ["term_image", "image", "raw", "term_text", "proc", "readers", "events"]
+all = ["term_image", "image", "raw", "term_text", "proc", "readers", "events", "progress"]
 term_image = []
 image = ["dep:image", "term_image"]
 raw = ["dep:bitflags", "dep:libc", "dep:winapi"]
@@ -18,6 +18,7 @@ events = ["raw"]
 term_text = ["dep:unicode-width"]
 proc = ["dep:litrs", "dep:proc-macro2"]
 readers = ["raw", "term_text", "events"]
+progress = []
 
 [dependencies]
 image =  { version = "0.25.9", optional = true }
