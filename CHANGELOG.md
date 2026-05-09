@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## future
+### New features
+- New progress tracking tool `Progress`.
+
 ## v4.2.1
 ### Fixes
 - Use `doc_cfg` instead of `doc_auto_cfg` in termal_core.
