@@ -35,6 +35,8 @@ impl<I: Iterator, F: ProgressFormatter, S: Display, P: AsMut<Progress<F, S>>>
 
     /// Change how often the progress updates. This may be either usize
     /// specifying number of iterations or duration specifying time.
+    ///
+    /// The default is every 100 ms.
     pub fn every(mut self, policy: impl Into<UpdatePolicy>) -> Self {
         self.progress.as_mut().set_update_policy(policy);
         self
