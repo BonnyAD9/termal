@@ -1,3 +1,7 @@
+mod bar;
+mod iter;
+mod no_state;
+mod progress_ext;
 mod progress_formatter;
 mod state_progress;
 mod update_policy;
@@ -9,11 +13,14 @@ use std::{
     time::{Duration, Instant},
 };
 
-pub use self::{progress_formatter::*, state_progress::*, update_policy::*};
+pub use self::{
+    bar::*, iter::*, no_state::*, progress_ext::*, progress_formatter::*,
+    state_progress::*, update_policy::*,
+};
 
 /// The core type for tracking progress.
 #[derive(Debug, Clone)]
-pub struct Progress<F, S = ()> {
+pub struct Progress<F, S = NoState> {
     formatter: F,
     task: Cow<'static, str>,
     state_str: String,
@@ -70,8 +77,8 @@ impl<F: ProgressFormatter, S: Display> Progress<F, S> {
     ///
     /// The update policy decides how often should the progress update. The
     /// default updates every 100 ms.
-    pub fn set_update_policy(&mut self, policy: UpdatePolicy) {
-        self.update = Update::new(policy, self.start_time);
+    pub fn set_update_policy(&mut self, policy: impl Into<UpdatePolicy>) {
+        self.update = Update::new(policy.into(), self.start_time);
     }
 
     /// Reuse this progress for another task.
@@ -174,9 +181,36 @@ impl<F: ProgressFormatter, S: Display> Progress<F, S> {
 
     fn update_inner(&mut self, now: Instant, p: f32) {
         let elapsed = (now - self.start_time).as_secs_f32();
-        let eta = Duration::from_secs_f32((1. - p) * (elapsed / p));
+        let ets = (1. - p) * (elapsed / p);
+        let eta = if ets > u64::MAX as f32 {
+            Duration::ZERO
+        } else {
+            Duration::from_secs_f32(ets)
+        };
         self.update_state_str();
-        self.formatter.update(p, &self.task, &self.state_str, eta);
+        self.formatter
+            .update(Some(p), &self.task, &self.state_str, eta);
+    }
+
+    /// Update with unknown progress.
+    pub fn update_unknown(&mut self) {
+        let Some(now) = self.update.should() else {
+            return;
+        };
+        let elapsed = now - self.start_time;
+        self.update_state_str();
+        self.formatter
+            .update(None, &self.task, &self.state_str, elapsed);
+    }
+
+    /// Update with unknown progress.
+    pub fn force_update_unknown(&mut self) {
+        let now = Instant::now();
+        self.update.reset(now);
+        let elapsed = now - self.start_time;
+        self.update_state_str();
+        self.formatter
+            .update(None, &self.task, &self.state_str, elapsed);
     }
 
     /// Finish the progress.
@@ -193,6 +227,12 @@ impl<F: ProgressFormatter, S: Display> Progress<F, S> {
             // Writing to string is infallible.
             _ = write!(&mut self.state_str, "{}", self.state);
         }
+    }
+}
+
+impl<F, S> AsMut<Progress<F, S>> for Progress<F, S> {
+    fn as_mut(&mut self) -> &mut Progress<F, S> {
+        self
     }
 }
 

@@ -6,7 +6,13 @@ pub trait ProgressFormatter {
     fn start(&mut self, task: &str, info: &str);
 
     /// Update the progress.
-    fn update(&mut self, done: f32, task: &str, info: &str, eta: Duration);
+    fn update(
+        &mut self,
+        done: Option<f32>,
+        task: &str,
+        info: &str,
+        time: Duration,
+    );
 
     /// Finish the progress.
     fn finish(&mut self, task: &str, info: &str, time: Duration);

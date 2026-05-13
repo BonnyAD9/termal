@@ -15,3 +15,15 @@ impl Default for UpdatePolicy {
         Self::Time(Duration::from_millis(100))
     }
 }
+
+impl From<usize> for UpdatePolicy {
+    fn from(value: usize) -> Self {
+        Self::Iterations(value)
+    }
+}
+
+impl From<Duration> for UpdatePolicy {
+    fn from(value: Duration) -> Self {
+        Self::Time(value)
+    }
+}
