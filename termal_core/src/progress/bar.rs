@@ -1,33 +1,28 @@
 use std::{
-    borrow::Cow,
     fmt::Write,
     io::{Write as _, stdout},
     iter,
     time::Duration,
 };
 
-use crate::{codes, progress::ProgressFormatter};
+use crate::{
+    codes,
+    progress::{BarTheme, DefaultBarTheme, ProgressFormatter},
+};
 
 /// Customizable progress bar.
 #[derive(Debug, Clone)]
-pub struct Bar {
+pub struct Bar<T: BarTheme = DefaultBarTheme> {
     /// The width of the bar.
     pub width: usize,
-    /// Sequence starting the bar.
-    pub start: Option<Cow<'static, str>>,
-    /// Sequence ending the bar.
-    pub end: Option<Cow<'static, str>>,
-    /// Empty bar positions (from the end)
-    pub empty: Cow<'static, str>,
-    /// Full bar position (from the start)
-    pub full: Cow<'static, str>,
+    pub theme: T,
     /// If ture, bar will buffer clearing so that `println` will work. Note
     /// that if the println will overwrite the bar.
     pub log: bool,
     buf: String,
 }
 
-impl Bar {
+impl<T: BarTheme> Bar<T> {
     fn show_progress(
         &mut self,
         done: Option<f32>,
@@ -54,48 +49,78 @@ impl Bar {
         info: &str,
         eta: Option<Duration>,
     ) {
+        let reset = self.theme.reset();
+        self.buf += "  ";
         if !task.is_empty() {
+            self.buf += self.theme.task();
             self.buf += task;
+            self.buf += reset;
             self.buf.push(' ');
         }
-        let cnt = if let Some(done) = done {
-            _ = write!(self.buf, "{:.2} % ", done * 100.);
-            (self.width as f32 * done).round() as usize
+
+        if let Some(done) = done {
+            _ = write!(
+                self.buf,
+                "{}{:.2} %{reset} ",
+                self.theme.percent(),
+                done * 100.
+            );
         } else {
-            self.buf += "?? % ";
-            0
-        };
-        if let Some(s) = &self.start {
-            self.buf += s;
+            self.buf += self.theme.percent();
+            self.buf += "?? %";
+            self.buf += reset;
+            self.buf.push(' ');
         }
-        for _ in 0..cnt {
-            self.buf += &self.full;
+
+        self.buf += self.theme.start();
+        let empty = self.theme.empty();
+        if let Some(done) = done {
+            let full = self.theme.full();
+            let cnt = (self.width as f32 * done).round() as usize;
+            for _ in 0..cnt {
+                self.buf += full;
+            }
+            self.buf += self.theme.thumb();
+            for _ in 0..self.width - cnt {
+                self.buf += empty;
+            }
+        } else {
+            let mut cnt = eta.unwrap_or_default().as_millis() as usize / 100
+                % (self.width * 2);
+            if cnt > self.width {
+                cnt = self.width * 2 - cnt;
+            }
+            for _ in 0..cnt {
+                self.buf += empty;
+            }
+            self.buf += self.theme.thumb();
+            for _ in 0..self.width - cnt {
+                self.buf += empty;
+            }
         }
-        for _ in 0..self.width - cnt {
-            self.buf += &self.empty;
-        }
-        if let Some(e) = &self.end {
-            self.buf += e;
-        }
+
+        self.buf += self.theme.end();
         if let Some(eta) = eta {
             self.buf.push(' ');
+            self.buf += self.theme.time();
             duration_to_string(eta, true, &mut self.buf);
+            self.buf += reset;
         }
+
         if !info.is_empty() {
             self.buf.push(' ');
+            self.buf += self.theme.info();
             self.buf += info;
+            self.buf += reset;
         }
     }
 }
 
-impl Default for Bar {
+impl<T: BarTheme + Default> Default for Bar<T> {
     fn default() -> Self {
         Self {
             width: 40,
-            start: Some("[".into()),
-            end: Some("]".into()),
-            empty: " ".into(),
-            full: "#".into(),
+            theme: T::default(),
             log: true,
             buf: Default::default(),
         }

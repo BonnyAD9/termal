@@ -1,4 +1,5 @@
 mod bar;
+mod bar_theme;
 mod iter;
 mod no_state;
 mod progress_ext;
@@ -14,8 +15,8 @@ use std::{
 };
 
 pub use self::{
-    bar::*, iter::*, no_state::*, progress_ext::*, progress_formatter::*,
-    state_progress::*, update_policy::*,
+    bar::*, bar_theme::*, iter::*, no_state::*, progress_ext::*,
+    progress_formatter::*, state_progress::*, update_policy::*,
 };
 
 /// The core type for tracking progress.

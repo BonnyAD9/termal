@@ -1,12 +1,16 @@
 use std::{borrow::Cow, fmt::Display, marker::PhantomData};
 
 use crate::progress::{
-    Bar, NoState, Progress, ProgressFormatter, UpdatePolicy,
+    Bar, DefaultBarTheme, NoState, Progress, ProgressFormatter, UpdatePolicy,
 };
 
 /// Iterator tracking progress with progress bar.
-pub type ProgressBarIter<I, S = NoState, P = Progress<Bar, S>> =
-    Iter<I, Bar, S, P>;
+pub type ProgressBarIter<
+    I,
+    T = DefaultBarTheme,
+    S = NoState,
+    P = Progress<Bar<T>, S>,
+> = Iter<I, Bar<T>, S, P>;
 
 /// Iterator tracking progress.
 #[derive(Debug, Clone)]
