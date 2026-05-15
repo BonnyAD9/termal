@@ -1,4 +1,6 @@
-use std::{borrow::Cow, fmt::Display, marker::PhantomData};
+use std::{
+    borrow::Cow, fmt::Display, iter::FusedIterator, marker::PhantomData,
+};
 
 use crate::progress::{
     Bar, DefaultBarTheme, NoState, Progress, ProgressFormatter, UpdatePolicy,
@@ -45,6 +47,19 @@ impl<I: Iterator, F: ProgressFormatter, S: Display, P: AsMut<Progress<F, S>>>
         self.progress.as_mut().set_update_policy(policy);
         self
     }
+
+    fn update_progress(&mut self, fin: bool) {
+        if fin {
+            self.progress.as_mut().finish();
+        } else {
+            if self.pos <= self.len {
+                self.progress.as_mut().update_of(self.pos, self.len);
+                self.pos += 1;
+            } else {
+                self.progress.as_mut().update_unknown();
+            }
+        }
+    }
 }
 
 impl<I: Iterator> ProgressBarIter<I> {
@@ -61,16 +76,43 @@ impl<I: Iterator, F: ProgressFormatter, S: Display, P: AsMut<Progress<F, S>>>
 
     fn next(&mut self) -> Option<Self::Item> {
         let res = self.iter.next();
-        if res.is_some() {
-            if self.pos <= self.len {
-                self.progress.as_mut().update_of(self.pos, self.len);
-                self.pos += 1;
-            } else {
-                self.progress.as_mut().update_unknown();
-            }
-        } else {
-            self.progress.as_mut().finish();
-        }
+        self.update_progress(res.is_none());
         res
     }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        self.iter.size_hint()
+    }
+}
+
+impl<
+    I: DoubleEndedIterator,
+    F: ProgressFormatter,
+    S: Display,
+    P: AsMut<Progress<F, S>>,
+> DoubleEndedIterator for Iter<I, F, S, P>
+{
+    fn next_back(&mut self) -> Option<Self::Item> {
+        let res = self.iter.next_back();
+        self.update_progress(res.is_none());
+        res
+    }
+}
+
+impl<
+    I: ExactSizeIterator,
+    F: ProgressFormatter,
+    S: Display,
+    P: AsMut<Progress<F, S>>,
+> ExactSizeIterator for Iter<I, F, S, P>
+{
+}
+
+impl<
+    I: FusedIterator,
+    F: ProgressFormatter,
+    S: Display,
+    P: AsMut<Progress<F, S>>,
+> FusedIterator for Iter<I, F, S, P>
+{
 }
