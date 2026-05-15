@@ -1,13 +1,13 @@
 use std::borrow::Cow;
 
-use crate::progress::ProgressBarIter;
+use crate::progress::BarIter;
 
 pub trait ProgressExt: Sized + Iterator {
     fn progress_bar(
         self,
         task: impl Into<Cow<'static, str>>,
-    ) -> ProgressBarIter<Self> {
-        ProgressBarIter::bar(self, task)
+    ) -> BarIter<Self> {
+        BarIter::bar(self, task)
     }
 }
 

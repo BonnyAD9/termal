@@ -7,7 +7,7 @@ use crate::progress::{
 };
 
 /// Iterator tracking progress with progress bar.
-pub type ProgressBarIter<
+pub type BarIter<
     I,
     T = DefaultBarTheme,
     S = NoState,
@@ -62,7 +62,7 @@ impl<I: Iterator, F: ProgressFormatter, S: Display, P: AsMut<Progress<F, S>>>
     }
 }
 
-impl<I: Iterator> ProgressBarIter<I> {
+impl<I: Iterator> BarIter<I> {
     /// Create new progress bar tracking iterator.
     pub fn bar(iter: I, task: impl Into<Cow<'static, str>>) -> Self {
         Self::new(iter, Progress::new(Bar::default(), task, NoState))
