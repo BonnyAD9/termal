@@ -15,9 +15,10 @@ use crate::{
 pub struct Bar<T: BarTheme = DefaultBarTheme> {
     /// The width of the bar.
     pub width: usize,
+    /// Theme of the progress bar.
     pub theme: T,
     /// If ture, bar will buffer clearing so that `println` will work. Note
-    /// that if the println will overwrite the bar.
+    /// that the println will overwrite the bar.
     pub log: bool,
     buf: String,
 }

@@ -1,4 +1,4 @@
-use std::{iter::repeat, thread, time::Duration};
+use std::{thread, time::Duration};
 
 use termal::{Result, progress::ProgressExt};
 
