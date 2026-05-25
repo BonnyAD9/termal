@@ -2,7 +2,8 @@
 
 ## future
 ### New features
-- New progress tracking tools `Progress`, `progress::Iter`, `progress::Bar`.
+- New progress tracking tools `Progress`, `progress::Iter`, `progress::Bar` and
+  `Progress::Dots`.
 
 ## v4.2.1
 ### Fixes
