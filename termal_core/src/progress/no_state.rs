@@ -1,6 +1,7 @@
 use std::fmt::Display;
 
-#[derive(Debug, Clone, Copy)]
+/// No state when tracking progress. This is the default.
+#[derive(Debug, Clone, Copy, Default)]
 pub struct NoState;
 
 impl Display for NoState {

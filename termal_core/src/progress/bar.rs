@@ -1,13 +1,14 @@
 use std::{
     fmt::Write,
     io::{Write as _, stdout},
-    iter,
     time::Duration,
 };
 
 use crate::{
     codes,
-    progress::{BarTheme, DefaultBarTheme, ProgressFormatter},
+    progress::{
+        BarTheme, DefaultBarTheme, ProgressFormatter, duration_to_string,
+    },
 };
 
 /// Customizable progress bar.
@@ -128,7 +129,7 @@ impl<T: BarTheme + Default> Default for Bar<T> {
     }
 }
 
-impl ProgressFormatter for Bar {
+impl<T: BarTheme> ProgressFormatter for Bar<T> {
     fn start(&mut self, task: &str, info: &str) {
         self.show_progress(None, task, info, None);
     }
@@ -149,38 +150,18 @@ impl ProgressFormatter for Bar {
         self.format_progress(Some(1.), task, info, Some(time));
         println!("{}", self.buf);
     }
-}
 
-pub fn duration_to_string(dur: Duration, trunc: bool, res: &mut String) {
-    // Number of seconds in the time frame
-    const MIN: u64 = 60;
-    const HOUR: u64 = 60 * MIN;
-    const DAY: u64 = 24 * HOUR;
-
-    let mut secs = dur.as_secs();
-
-    let d = secs / DAY;
-    secs %= DAY;
-    let h = secs / HOUR;
-    secs %= HOUR;
-    let m = secs / MIN;
-    secs %= MIN;
-
-    if d != 0 {
-        _ = write!(res, "{d}d");
-    }
-    if h != 0 {
-        _ = write!(res, "{h:02}:");
-    }
-    if trunc {
-        _ = write!(res, "{m:02}:{secs:02}");
-    } else {
-        _ = write!(res, "{m:02}:{secs:02}");
-        if dur.subsec_nanos() != 0 {
-            let s = dur.subsec_nanos().to_string();
-            res.push('.');
-            res.extend(iter::repeat_n('0', 9 - s.len()));
-            *res += s.trim_end_matches('0');
-        }
+    fn fail(
+        &mut self,
+        done: Option<f32>,
+        task: &str,
+        info: &str,
+        time: Duration,
+        err: &str,
+    ) {
+        self.buf.clear();
+        self.buf += codes::ERASE_TO_END;
+        self.format_progress(done, task, info, Some(time));
+        println!("{}\n\x1b[91merror:\x1b[0m {err}", self.buf);
     }
 }

@@ -1,13 +1,22 @@
 use std::borrow::Cow;
 
-use crate::progress::BarIter;
+use crate::progress::{BarIter, DotsIter};
 
 pub trait ProgressExt: Sized + Iterator {
-    fn progress_bar(
+    /// Track the iterator progress using inline progress bar.
+    fn progress_bar<'a>(
         self,
-        task: impl Into<Cow<'static, str>>,
-    ) -> BarIter<Self> {
+        task: impl Into<Cow<'a, str>>,
+    ) -> BarIter<'a, Self> {
         BarIter::bar(self, task)
+    }
+
+    /// Track the iterator progress using inline dots.
+    fn progress_dots<'a>(
+        self,
+        task: impl Into<Cow<'a, str>>,
+    ) -> DotsIter<'a, Self> {
+        DotsIter::dots(self, task)
     }
 }
 

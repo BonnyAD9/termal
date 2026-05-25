@@ -1,5 +1,6 @@
 mod bar;
 mod bar_theme;
+mod dots;
 mod iter;
 mod no_state;
 mod progress_ext;
@@ -15,15 +16,53 @@ use std::{
 };
 
 pub use self::{
-    bar::*, bar_theme::*, iter::*, no_state::*, progress_ext::*,
+    bar::*, bar_theme::*, dots::*, iter::*, no_state::*, progress_ext::*,
     progress_formatter::*, state_progress::*, update_policy::*,
 };
 
+/// Track progress with progress bar.
+pub fn track_bar<T>(task: &str, f: impl FnOnce(&mut ProgressBar) -> T) -> T {
+    let mut pb = ProgressBar::bar(task);
+    pb.track_this(f)
+}
+
+/// Track fallible progress with progress bar.
+pub fn try_track_bar<T, E: Display>(
+    task: &str,
+    f: impl FnOnce(&mut ProgressBar) -> Result<T, E>,
+) -> Result<T, E> {
+    let mut pb = ProgressBar::bar(task);
+    pb.try_track_this(f)
+}
+
+/// Track progress with progress dots.
+pub fn track_dots<T>(task: &str, f: impl FnOnce(&mut ProgressDots) -> T) -> T {
+    let mut pb = ProgressDots::dots(task);
+    pb.track_this(f)
+}
+
+/// Track fallible progress with progress dots.
+pub fn try_track_dots<T, E: Display>(
+    task: &str,
+    f: impl FnOnce(&mut ProgressDots) -> Result<T, E>,
+) -> Result<T, E> {
+    let mut pb = ProgressDots::dots(task);
+    pb.try_track_this(f)
+}
+
+/// A progress bar progress.
+type ProgressBar<'a, T = DefaultBarTheme, S = NoState> =
+    Progress<'a, Bar<T>, S>;
+
+/// Progress with three dots.
+type ProgressDots<'a, S = NoState> = Progress<'a, Dots, S>;
+
 /// The core type for tracking progress.
 #[derive(Debug, Clone)]
-pub struct Progress<F, S = NoState> {
+pub struct Progress<'a, F, S = NoState> {
     formatter: F,
-    task: Cow<'static, str>,
+    task: Cow<'a, str>,
+    pos: Option<f32>,
     state_str: String,
     start_time: Instant,
     update: Update,
@@ -36,20 +75,29 @@ enum Update {
     Time { every: Duration, last: Instant },
 }
 
-impl<F: ProgressFormatter, S: Display> Progress<F, S> {
+impl<'a, T: BarTheme + Default, S: Display + Default> ProgressBar<'a, T, S> {
+    pub fn bar(task: impl Into<Cow<'a, str>>) -> Self {
+        Self::new(Bar::default(), task, S::default())
+    }
+}
+
+impl<'a, S: Display + Default> ProgressDots<'a, S> {
+    pub fn dots(task: impl Into<Cow<'a, str>>) -> Self {
+        Self::new(Dots::default(), task, S::default())
+    }
+}
+
+impl<'a, F: ProgressFormatter, S: Display> Progress<'a, F, S> {
     /// Create new progress tracker.
     ///
     /// - `formatter` decides how progress is displayed.
     /// - `task` name of the task.
     /// - `state` additional state information.
-    pub fn new(
-        formatter: F,
-        task: impl Into<Cow<'static, str>>,
-        state: S,
-    ) -> Self {
+    pub fn new(formatter: F, task: impl Into<Cow<'a, str>>, state: S) -> Self {
         let now = Instant::now();
         Self {
             formatter,
+            pos: Some(0.),
             task: task.into(),
             state_str: String::new(),
             start_time: now,
@@ -82,9 +130,59 @@ impl<F: ProgressFormatter, S: Display> Progress<F, S> {
         self.update = Update::new(policy.into(), self.start_time);
     }
 
+    /// Set this progress to track the new task.
+    pub fn track<T>(
+        &mut self,
+        task: impl Into<Cow<'a, str>>,
+        f: impl FnOnce(&mut Progress<F, S>) -> T,
+    ) -> T {
+        self.reuse(task);
+        self.track_this(f)
+    }
+
+    /// Set this progress to try track the new task.
+    pub fn try_track<T, E: Display>(
+        &mut self,
+        task: impl Into<Cow<'a, str>>,
+        f: impl FnOnce(&mut Progress<F, S>) -> Result<T, E>,
+    ) -> Result<T, E> {
+        self.reuse(task);
+        self.try_track_this(f)
+    }
+
+    /// Track this progress.
+    pub fn track_this<T>(
+        &mut self,
+        f: impl FnOnce(&mut Progress<F, S>) -> T,
+    ) -> T {
+        self.start();
+        let res = f(self);
+        self.finish();
+        res
+    }
+
+    /// Try to track this process.
+    pub fn try_track_this<T, E: Display>(
+        &mut self,
+        f: impl FnOnce(&mut Progress<F, S>) -> Result<T, E>,
+    ) -> Result<T, E> {
+        self.start();
+        match f(self) {
+            res @ Ok(_) => {
+                self.finish();
+                res
+            }
+            Err(e) => {
+                self.fail(&format!("{e}"));
+                Err(e)
+            }
+        }
+    }
+
     /// Reuse this progress for another task.
-    pub fn reuse(&mut self, task: impl Into<Cow<'static, str>>) {
+    pub fn reuse(&mut self, task: impl Into<Cow<'a, str>>) {
         self.task = task.into();
+        self.pos = Some(0.);
         let now = Instant::now();
         self.start_time = now;
         self.update.reset(now);
@@ -181,6 +279,7 @@ impl<F: ProgressFormatter, S: Display> Progress<F, S> {
     }
 
     fn update_inner(&mut self, now: Instant, p: f32) {
+        self.pos = Some(p);
         let elapsed = (now - self.start_time).as_secs_f32();
         let ets = (1. - p) * (elapsed / p);
         let eta = if ets > u64::MAX as f32 {
@@ -195,6 +294,7 @@ impl<F: ProgressFormatter, S: Display> Progress<F, S> {
 
     /// Update with unknown progress.
     pub fn update_unknown(&mut self) {
+        self.pos = None;
         let Some(now) = self.update.should() else {
             return;
         };
@@ -216,11 +316,27 @@ impl<F: ProgressFormatter, S: Display> Progress<F, S> {
 
     /// Finish the progress.
     pub fn finish(&mut self) {
+        self.pos = None;
         let now = Instant::now();
         self.update.reset(now);
         let elapsed = now - self.start_time;
         self.update_state_str();
         self.formatter.finish(&self.task, &self.state_str, elapsed);
+    }
+
+    /// Finish the progress with the given error.
+    pub fn fail(&mut self, err: &str) {
+        let now = Instant::now();
+        self.update.reset(now);
+        let elapsed = now - self.start_time;
+        self.update_state_str();
+        self.formatter.fail(
+            self.pos,
+            &self.task,
+            &self.state_str,
+            elapsed,
+            err,
+        );
     }
 
     fn update_state_str(&mut self) {
@@ -231,8 +347,8 @@ impl<F: ProgressFormatter, S: Display> Progress<F, S> {
     }
 }
 
-impl<F, S> AsMut<Progress<F, S>> for Progress<F, S> {
-    fn as_mut(&mut self) -> &mut Progress<F, S> {
+impl<'a, F, S> AsMut<Progress<'a, F, S>> for Progress<'a, F, S> {
+    fn as_mut(&mut self) -> &mut Progress<'a, F, S> {
         self
     }
 }
@@ -274,6 +390,44 @@ impl Update {
                     None
                 }
             }
+        }
+    }
+}
+
+pub(crate) fn duration_to_string(
+    dur: Duration,
+    trunc: bool,
+    res: &mut String,
+) {
+    // Number of seconds in the time frame
+    const MIN: u64 = 60;
+    const HOUR: u64 = 60 * MIN;
+    const DAY: u64 = 24 * HOUR;
+
+    let mut secs = dur.as_secs();
+
+    let d = secs / DAY;
+    secs %= DAY;
+    let h = secs / HOUR;
+    secs %= HOUR;
+    let m = secs / MIN;
+    secs %= MIN;
+
+    if d != 0 {
+        _ = write!(res, "{d}d");
+    }
+    if h != 0 {
+        _ = write!(res, "{h:02}:");
+    }
+    if trunc {
+        _ = write!(res, "{m:02}:{secs:02}");
+    } else {
+        _ = write!(res, "{m:02}:{secs:02}");
+        if dur.subsec_nanos() != 0 {
+            let s = dur.subsec_nanos().to_string();
+            res.push('.');
+            res.extend(std::iter::repeat_n('0', 9 - s.len()));
+            *res += s.trim_end_matches('0');
         }
     }
 }

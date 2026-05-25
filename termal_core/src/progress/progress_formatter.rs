@@ -16,4 +16,14 @@ pub trait ProgressFormatter {
 
     /// Finish the progress.
     fn finish(&mut self, task: &str, info: &str, time: Duration);
+
+    /// The job failed with the given error.
+    fn fail(
+        &mut self,
+        done: Option<f32>,
+        task: &str,
+        info: &str,
+        time: Duration,
+        err: &str,
+    );
 }

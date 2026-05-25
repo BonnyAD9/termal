@@ -3,16 +3,22 @@ use std::{
 };
 
 use crate::progress::{
-    Bar, DefaultBarTheme, NoState, Progress, ProgressFormatter, UpdatePolicy,
+    Bar, DefaultBarTheme, Dots, NoState, Progress, ProgressFormatter,
+    UpdatePolicy,
 };
 
 /// Iterator tracking progress with progress bar.
 pub type BarIter<
+    'a,
     I,
     T = DefaultBarTheme,
     S = NoState,
-    P = Progress<Bar<T>, S>,
+    P = Progress<'a, Bar<T>, S>,
 > = Iter<I, Bar<T>, S, P>;
+
+/// Iterator tracking progress with progress bar.
+pub type DotsIter<'a, I, S = NoState, P = Progress<'a, Dots, S>> =
+    Iter<I, Dots, S, P>;
 
 /// Iterator tracking progress.
 #[derive(Debug, Clone)]
@@ -24,8 +30,13 @@ pub struct Iter<I, F, S, P> {
     _p: PhantomData<(F, S)>,
 }
 
-impl<I: Iterator, F: ProgressFormatter, S: Display, P: AsMut<Progress<F, S>>>
-    Iter<I, F, S, P>
+impl<
+    'a,
+    I: Iterator,
+    F: ProgressFormatter,
+    S: Display,
+    P: AsMut<Progress<'a, F, S>>,
+> Iter<I, F, S, P>
 {
     /// Create new progress iterator.
     pub fn new(iter: I, progress: P) -> Self {
@@ -62,15 +73,27 @@ impl<I: Iterator, F: ProgressFormatter, S: Display, P: AsMut<Progress<F, S>>>
     }
 }
 
-impl<I: Iterator> BarIter<I> {
+impl<'a, I: Iterator> BarIter<'a, I> {
     /// Create new progress bar tracking iterator.
-    pub fn bar(iter: I, task: impl Into<Cow<'static, str>>) -> Self {
+    pub fn bar(iter: I, task: impl Into<Cow<'a, str>>) -> Self {
         Self::new(iter, Progress::new(Bar::default(), task, NoState))
     }
 }
 
-impl<I: Iterator, F: ProgressFormatter, S: Display, P: AsMut<Progress<F, S>>>
-    Iterator for Iter<I, F, S, P>
+impl<'a, I: Iterator> DotsIter<'a, I> {
+    /// Create new progress bar tracking iterator.
+    pub fn dots(iter: I, task: impl Into<Cow<'a, str>>) -> Self {
+        Self::new(iter, Progress::new(Dots::default(), task, NoState))
+    }
+}
+
+impl<
+    'a,
+    I: Iterator,
+    F: ProgressFormatter,
+    S: Display,
+    P: AsMut<Progress<'a, F, S>>,
+> Iterator for Iter<I, F, S, P>
 {
     type Item = I::Item;
 
@@ -86,10 +109,11 @@ impl<I: Iterator, F: ProgressFormatter, S: Display, P: AsMut<Progress<F, S>>>
 }
 
 impl<
+    'a,
     I: DoubleEndedIterator,
     F: ProgressFormatter,
     S: Display,
-    P: AsMut<Progress<F, S>>,
+    P: AsMut<Progress<'a, F, S>>,
 > DoubleEndedIterator for Iter<I, F, S, P>
 {
     fn next_back(&mut self) -> Option<Self::Item> {
@@ -100,19 +124,21 @@ impl<
 }
 
 impl<
+    'a,
     I: ExactSizeIterator,
     F: ProgressFormatter,
     S: Display,
-    P: AsMut<Progress<F, S>>,
+    P: AsMut<Progress<'a, F, S>>,
 > ExactSizeIterator for Iter<I, F, S, P>
 {
 }
 
 impl<
+    'a,
     I: FusedIterator,
     F: ProgressFormatter,
     S: Display,
-    P: AsMut<Progress<F, S>>,
+    P: AsMut<Progress<'a, F, S>>,
 > FusedIterator for Iter<I, F, S, P>
 {
 }
