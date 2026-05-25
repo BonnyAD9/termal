@@ -15,6 +15,15 @@ pub use windows::MAX_STDIN_WAIT;
 #[cfg(all(not(unix), not(windows)))]
 pub const MAX_STDIN_WAIT: Duration = Duration::ZERO;
 
+/// Unprocessed system event.
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub enum SysEvent {
+    #[default]
+    Timeout,
+    StdinReady,
+    WindowResize,
+}
+
 /// Size of terminal.
 #[derive(Clone, Debug)]
 pub struct TermSize {
@@ -67,6 +76,18 @@ pub fn disable_raw_mode() -> Result<()> {
 
     #[allow(unreachable_code)]
     Err(Error::NotSupportedOnPlatform("raw mode"))
+}
+
+/// Enable special events handling.
+///
+/// On windows this is noop. On linux this blocks the signal WINCHG to allow
+/// proper handling of the window resize.
+pub fn init_events() -> Result<()> {
+    #[cfg(unix)]
+    return unix::init_events();
+
+    #[allow(unreachable_code)]
+    Ok(())
 }
 
 /// Checks if raw mode is enabled.
@@ -133,6 +154,48 @@ pub fn wait_for_stdin(timeout: Duration) -> Result<bool> {
 
     #[cfg(windows)]
     return windows::wait_for_stdin(timeout);
+
+    #[allow(unreachable_code)]
+    {
+        _ = timeout;
+        Err(Error::NotSupportedOnPlatform("stdin timeout"))
+    }
+}
+
+/// Wait for any event on stdin or other supported event, but not longer than
+/// the timeout.
+///
+/// If timeout is [`Duration::MAX`], this will wait indefinitely.
+///
+/// # Returns
+/// The kind of event detected or `SysEvent::Timeout` if timeout was reached.
+///
+/// # Support
+/// - Unix (Linux)
+///     - `SysEvent::Stdin`
+///     - `SysEvent::Resize`
+/// - Windows (not tested)
+///     - `SysEvent::Stdin`
+///
+/// # Errors
+/// - [`Error::NotSupportedOnPlatform`] on unsupported platforms.
+/// - [`Error::Io`] on io error.
+/// - [`Error::WaitAbandoned`] when unexpected state happens. See error
+///   description.
+/// - [`Error::IntConvert`] when timeout value is too large (but not
+///   [`Duration::MAX`])
+pub fn wait_for_event(timeout: Duration) -> Result<SysEvent> {
+    #[cfg(unix)]
+    return unix::wait_for_event(timeout);
+
+    #[cfg(windows)]
+    return windows::wait_for_stdin(timeout).map(|b| {
+        if b {
+            SysEvent::StdinReady
+        } else {
+            SysEvent::Timeout
+        }
+    });
 
     #[allow(unreachable_code)]
     {

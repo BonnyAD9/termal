@@ -18,6 +18,7 @@ mod io_provider;
 mod stdio_provider;
 mod sys;
 mod terminal;
+mod wait_for_event;
 mod wait_for_in;
 
 #[cfg(feature = "events")]
@@ -34,7 +35,8 @@ use crate::{
 };
 
 pub use self::{
-    io_provider::*, stdio_provider::*, sys::*, terminal::*, wait_for_in::*,
+    io_provider::*, stdio_provider::*, sys::*, terminal::*, wait_for_event::*,
+    wait_for_in::*,
 };
 
 #[cfg(feature = "events")]

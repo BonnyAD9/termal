@@ -2,7 +2,7 @@ use std::io::{BufRead, Read, Write};
 
 use termal::{
     Result,
-    raw::{IoProvider, ValueOrMut, WaitForIn},
+    raw::{IoProvider, SysEvent, ValueOrMut, WaitForEvent, WaitForIn},
 };
 
 pub struct BufProvider {
@@ -92,6 +92,15 @@ impl Write for BufProvider {
 impl WaitForIn for BufProvider {
     fn wait_for_in(&self, _timeout: std::time::Duration) -> Result<bool> {
         Ok(true)
+    }
+}
+
+impl WaitForEvent for BufProvider {
+    fn wait_for_event(
+        &self,
+        _timeout: std::time::Duration,
+    ) -> Result<SysEvent> {
+        Ok(SysEvent::StdinReady)
     }
 }
 

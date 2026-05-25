@@ -61,4 +61,8 @@ pub enum Status {
     /// Sent after request [`crate::codes::REQUEST_SELECTION`] or
     /// [`crate::codes::request_selection`].
     SelectionData(Vec<u8>),
+    /// The terminal was resized. The actual size has to be checked separately.
+    ///
+    /// This is detected only on unix (linux) through the signal `SIGWINCH`.
+    Resize,
 }

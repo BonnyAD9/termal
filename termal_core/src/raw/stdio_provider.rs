@@ -1,6 +1,9 @@
 use std::io::{IsTerminal, StdinLock, StdoutLock, stdin, stdout};
 
-use crate::Result;
+use crate::{
+    Result,
+    raw::{SysEvent, WaitForEvent, wait_for_event},
+};
 
 use super::{
     IoProvider, ValueOrMut, WaitForIn, is_raw_mode_enabled, wait_for_stdin,
@@ -18,6 +21,15 @@ pub struct StdioProvider;
 impl WaitForIn for StdioProvider {
     fn wait_for_in(&self, timeout: std::time::Duration) -> Result<bool> {
         wait_for_stdin(timeout)
+    }
+}
+
+impl WaitForEvent for StdioProvider {
+    fn wait_for_event(
+        &self,
+        timeout: std::time::Duration,
+    ) -> Result<SysEvent> {
+        wait_for_event(timeout)
     }
 }
 

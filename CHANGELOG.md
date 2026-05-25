@@ -4,6 +4,9 @@
 ### New features
 - New progress tracking tools `Progress`, `progress::Iter`, `progress::Bar` and
   `Progress::Dots`.
+- Add new raw functions `wait_for_event` and `init_events`.
+- If `init_events` is called, `Terminal::read` and `Terminal::read_ambiguous`
+  can now detect console resize with new event `Event::State(State::Resize)`.
 
 ## v4.2.1
 ### Fixes

@@ -3,6 +3,8 @@ use std::{
     ops::{Deref, DerefMut},
 };
 
+use crate::raw::WaitForEvent;
+
 use super::WaitForIn;
 
 /// Represents mutable value that is either owned or borrowed.
@@ -16,11 +18,11 @@ pub enum ValueOrMut<'a, T> {
 /// Proveder of input and output stream.
 ///
 /// This is the base trait on which operates [`crate::raw::Terminal`].
-pub trait IoProvider: WaitForIn {
+pub trait IoProvider: WaitForIn + WaitForEvent {
     /// Output stream.
     type Out: Write;
     /// Input stream.
-    type In: BufRead + WaitForIn;
+    type In: BufRead + WaitForIn + WaitForEvent;
 
     /// Gets the output writer (stream).
     fn get_out(&mut self) -> ValueOrMut<'_, Self::Out>;

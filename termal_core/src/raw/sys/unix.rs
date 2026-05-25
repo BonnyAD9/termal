@@ -1,20 +1,25 @@
 use std::{
+    ffi::c_void,
     fs,
     io::{self, ErrorKind},
     mem,
-    os::fd::{AsRawFd, IntoRawFd, RawFd},
+    os::fd::{AsRawFd, FromRawFd, IntoRawFd, OwnedFd, RawFd},
     ptr,
     sync::{Mutex, MutexGuard},
     time::{Duration, Instant},
 };
 
 use libc::{
-    POLLERR, POLLIN, TCSANOW, TIOCGWINSZ, cfmakeraw, ioctl, poll, pollfd,
-    ppoll, tcgetattr, tcsetattr, termios as Termios, time_t, timespec,
-    winsize,
+    POLLERR, POLLIN, SIG_BLOCK, SIGWINCH, TCSANOW, TIOCGWINSZ, c_ulong,
+    cfmakeraw, ioctl, pollfd, ppoll, pthread_sigmask, sigaddset, sigemptyset,
+    signalfd, signalfd_siginfo, tcgetattr, tcsetattr, termios as Termios,
+    time_t, timespec, winsize,
 };
 
-use crate::{Error, Result, raw::TermSize};
+use crate::{
+    Error, Result,
+    raw::{SysEvent, TermSize},
+};
 
 static ORIGINAL_TERMINAL_MODE: Mutex<Option<Termios>> = Mutex::new(None);
 
@@ -137,15 +142,17 @@ pub(crate) fn window_size() -> Result<TermSize> {
 /// Wait for stdin input on linux with the given timeout. If zero returns
 /// immidietly whether there is available input.
 pub(crate) fn wait_for_stdin(timeout: Duration) -> Result<bool> {
-    if timeout == Duration::MAX {
-        return infinite_wait_for_stdin();
-    }
+    let infinite = timeout == Duration::MAX;
 
-    if timeout > MAX_STDIN_WAIT {
+    if timeout > MAX_STDIN_WAIT && !infinite {
         return Err(Error::IntConvert);
     }
 
-    let end = Instant::now() + timeout;
+    let end = if infinite {
+        Instant::now()
+    } else {
+        Instant::now() + timeout
+    };
 
     let mut pdfs = pollfd {
         fd: libc::STDIN_FILENO,
@@ -154,7 +161,11 @@ pub(crate) fn wait_for_stdin(timeout: Duration) -> Result<bool> {
     };
 
     loop {
-        let wait = end.saturating_duration_since(Instant::now());
+        let wait = if infinite {
+            MAX_STDIN_WAIT
+        } else {
+            end.saturating_duration_since(Instant::now())
+        };
         let wait = timespec {
             tv_sec: wait.as_secs() as time_t,
             tv_nsec: wait.subsec_nanos().into(),
@@ -182,25 +193,94 @@ pub(crate) fn wait_for_stdin(timeout: Duration) -> Result<bool> {
     }
 }
 
-fn infinite_wait_for_stdin() -> Result<bool> {
-    let mut pdfs = pollfd {
-        fd: libc::STDIN_FILENO,
-        events: POLLIN,
-        revents: 0,
+pub(crate) fn init_events() -> Result<()> {
+    let res = unsafe {
+        let mut signals = mem::zeroed();
+        sigemptyset(&mut signals);
+        sigaddset(&mut signals, SIGWINCH);
+        pthread_sigmask(SIG_BLOCK, &signals, ptr::null_mut())
+    };
+    to_io_result(res)?;
+    Ok(())
+}
+
+pub(crate) fn wait_for_event(timeout: Duration) -> Result<SysEvent> {
+    let infinite = timeout == Duration::MAX;
+
+    if timeout > MAX_STDIN_WAIT && !infinite {
+        return Err(Error::IntConvert);
+    }
+
+    let end = if infinite {
+        Instant::now()
+    } else {
+        Instant::now() + timeout
     };
 
+    let signals = unsafe {
+        let mut signals = mem::zeroed();
+        sigemptyset(&mut signals);
+        sigaddset(&mut signals, SIGWINCH);
+        signals
+    };
+
+    let sigfd = unsafe {
+        let fd = signalfd(-1, &signals, 0);
+        OwnedFd::from_raw_fd(fd)
+    };
+
+    let mut pdfs = [
+        pollfd {
+            fd: libc::STDIN_FILENO,
+            events: POLLIN,
+            revents: 0,
+        },
+        pollfd {
+            fd: sigfd.as_raw_fd(),
+            events: POLLIN,
+            revents: 0,
+        },
+    ];
+
     loop {
-        let r = unsafe { poll(&mut pdfs, 1, -1) };
+        let wait = if infinite {
+            MAX_STDIN_WAIT
+        } else {
+            end.saturating_duration_since(Instant::now())
+        };
+        let wait = timespec {
+            tv_sec: wait.as_secs() as time_t,
+            tv_nsec: wait.subsec_nanos().into(),
+        };
+        let r = unsafe {
+            ppoll(pdfs.as_mut_ptr(), pdfs.len() as c_ulong, &wait, &signals)
+        };
 
         match r {
-            // Shouldn't happen
-            0 => return Ok(false),
-            1 => {
-                return if (pdfs.revents & POLLERR) == POLLERR {
-                    Err(Error::WaitAbandoned)
-                } else {
-                    Ok(true)
-                };
+            0 => return Ok(SysEvent::Timeout),
+            1.. => {
+                for e in &pdfs {
+                    if e.revents == 0 {
+                        continue;
+                    }
+                    return if (e.revents & POLLERR) == POLLERR {
+                        Err(Error::WaitAbandoned)
+                    } else {
+                        let fd = e.fd;
+                        if fd == libc::STDIN_FILENO {
+                            Ok(SysEvent::StdinReady)
+                        } else if fd == sigfd.as_raw_fd() {
+                            let sig = read_signal(&sigfd);
+                            if sig == SIGWINCH {
+                                Ok(SysEvent::WindowResize)
+                            } else {
+                                panic!("unhandled signal {sig}.");
+                            }
+                        } else {
+                            panic!("ppoll has event on unknown descriptor.");
+                        }
+                    };
+                }
             }
             -1 => {
                 let err = io::Error::last_os_error();
@@ -212,6 +292,19 @@ fn infinite_wait_for_stdin() -> Result<bool> {
             _ => return Err(Error::WaitAbandoned),
         }
     }
+}
+
+fn read_signal(fd: &OwnedFd) -> i32 {
+    let info = unsafe {
+        let mut info: signalfd_siginfo = mem::zeroed();
+        libc::read(
+            fd.as_raw_fd(),
+            ptr::from_mut(&mut info) as *mut c_void,
+            mem::size_of::<signalfd_siginfo>(),
+        );
+        info
+    };
+    info.ssi_signo as i32
 }
 
 fn get_terminal_attr(fd: RawFd) -> Result<Termios> {

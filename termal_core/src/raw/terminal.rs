@@ -4,14 +4,14 @@ use std::{
     time::{Duration, Instant},
 };
 
-use crate::{Error, Result};
+use crate::{Error, Result, raw::SysEvent};
 
 use super::{IoProvider, StdioProvider, WaitForIn};
 
 #[cfg(feature = "events")]
 use crate::{
     codes,
-    raw::events::{AmbiguousEvent, AnyEvent, Event, StateChange},
+    raw::events::{AmbiguousEvent, AnyEvent, Event, StateChange, Status},
 };
 #[cfg(feature = "readers")]
 use crate::{raw::readers::TermRead, term_text::TermText};
@@ -344,6 +344,18 @@ impl<T: IoProvider> Terminal<T> {
             Ok(true)
         } else {
             self.io.wait_for_in(timeout)
+        }
+    }
+
+    /// Wait for any event and consume it.
+    ///
+    /// The consumption of event cannot apply to `StdinReady` since this event
+    /// doesn't consume any data.
+    pub fn wait_for_event(&self, timeout: Duration) -> Result<SysEvent> {
+        if self.has_buffered_input() {
+            Ok(SysEvent::StdinReady)
+        } else {
+            self.io.wait_for_event(timeout)
         }
     }
 
@@ -859,23 +871,17 @@ impl<T: IoProvider> Terminal<T> {
         &mut self,
         timeout: Duration,
     ) -> Result<Option<Event>> {
-        if self.wait_for_input(timeout)? {
-            Ok(Some(self.read()?))
-        } else {
-            Ok(None)
+        match self.wait_for_event(timeout)? {
+            SysEvent::Timeout => Ok(None),
+            SysEvent::StdinReady => Ok(Some(self.read()?)),
+            SysEvent::WindowResize => Ok(Some(Event::Status(Status::Resize))),
         }
     }
 
     /// Read the next event on stdin. May block.
     pub fn read_ambiguous(&mut self) -> Result<AmbiguousEvent> {
-        if self.bracketed_paste_open {
-            self.read_bracketed()
-        } else if self.cur()? == 0x1b && self.buffer.len() != 1 {
-            self.read_escape()
-        } else {
-            // TODO should \r\n be single event?
-            self.read_char()
-        }
+        self.read_ambiguous_timeout(Duration::MAX)
+            .map(|a| a.unwrap())
     }
 
     /// Read the next event on terminal. Block for at most the given duration.
@@ -883,10 +889,12 @@ impl<T: IoProvider> Terminal<T> {
         &mut self,
         timeout: Duration,
     ) -> Result<Option<AmbiguousEvent>> {
-        if self.wait_for_input(timeout)? {
-            Ok(Some(self.read_ambiguous()?))
-        } else {
-            Ok(None)
+        match self.wait_for_event(timeout)? {
+            SysEvent::Timeout => Ok(None),
+            SysEvent::StdinReady => Ok(Some(self.read_stdin_ambiguous()?)),
+            SysEvent::WindowResize => {
+                Ok(Some(AmbiguousEvent::status(Status::Resize)))
+            }
         }
     }
 
@@ -908,6 +916,17 @@ impl<T: IoProvider> Terminal<T> {
     /// instead of control sequences.
     pub fn is_bracketed_paste_open(&mut self) -> bool {
         self.bracketed_paste_open
+    }
+
+    fn read_stdin_ambiguous(&mut self) -> Result<AmbiguousEvent> {
+        if self.bracketed_paste_open {
+            self.read_bracketed()
+        } else if self.cur()? == 0x1b && self.buffer.len() != 1 {
+            self.read_escape()
+        } else {
+            // TODO should \r\n be single event?
+            self.read_char()
+        }
     }
 
     fn read_escape(&mut self) -> Result<AmbiguousEvent> {

@@ -5,11 +5,13 @@ use termal::{
     raw::{
         StdioProvider, Terminal, disable_raw_mode, enable_raw_mode,
         events::{AmbiguousEvent, AnyEvent, Event, Key, KeyCode, Modifiers},
+        init_events,
     },
 };
 
 fn main() -> Result<()> {
     enable_raw_mode()?;
+    init_events()?;
     print!(
         "{}{}",
         codes::REQUEST_CURSOR_POSITION,
