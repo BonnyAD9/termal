@@ -1,3 +1,5 @@
+use minlin::Cast;
+
 use crate::{
     Rgb, codes,
     image::{Image, Rect},

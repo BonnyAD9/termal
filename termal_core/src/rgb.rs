@@ -1,4 +1,4 @@
-use minlin::Vec3;
+use minlin::{Cast, MapExt, Vec3};
 
 use crate::Error;
 
@@ -140,7 +140,8 @@ impl ToAnsiColorStr for Rgb<u16> {
     fn to_ansi_color_str(&self) -> String {
         let (r, g, b) = (*self).into();
         if self.are_all(|c| c.overflowing_shr(8).0 == (c & 0xff)) {
-            self.cast::<u8>().to_ansi_color_str()
+            let val: Rgb<u8> = self.cast();
+            val.to_ansi_color_str()
         } else if self.are_all(|c| c.overflowing_shr(12).0 == (c & 0xf)) {
             format!(
                 "rgb:{:03x}/{:03x}/{:03x}",

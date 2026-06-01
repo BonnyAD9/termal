@@ -19,6 +19,8 @@ mod rect;
 mod sixel;
 mod texel;
 
+use minlin::{Cast, MapExt, RectExt};
+
 use crate::Rgb;
 
 pub use self::{
@@ -46,16 +48,17 @@ pub trait Image {
 
         let x = rect.x as usize;
         let y = rect.y as usize;
-        let w = (*rect.width() as usize).max(1);
-        let h = (*rect.height() as usize).max(1);
+        let w = (rect.width() as usize).max(1);
+        let h = (rect.height() as usize).max(1);
 
         for y in y..y + h {
             for x in x..x + w {
-                color_sum += self.get_pixel(x, y).convert::<usize>();
+                color_sum += self.get_pixel(x, y).map(|a| a as usize);
             }
         }
 
-        color_sum.cast::<f32>() / (w * h) as f32
+        let sumf: Rgb<f32> = color_sum.cast();
+        sumf / (w * h) as f32
     }
 }
 

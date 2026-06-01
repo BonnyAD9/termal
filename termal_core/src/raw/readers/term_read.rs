@@ -2,6 +2,8 @@ use std::{
     collections::VecDeque, io::Write, mem, ops::RangeBounds, time::Duration,
 };
 
+use minlin::MapExt;
+
 use crate::{
     Error, Result, codes,
     raw::{
