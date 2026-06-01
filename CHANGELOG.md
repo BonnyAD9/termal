@@ -1,6 +1,10 @@
 # CHANGELOG
 
 ## future
+### Breaking changes
+- The trait `IoProvider` now also requires that implementation of new trait
+  `WaitForEvent`.
+
 ### New features
 - New progress tracking tools `Progress`, `progress::Iter`, `progress::Bar` and
   `Progress::Dots`.
