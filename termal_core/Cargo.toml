@@ -1,6 +1,6 @@
 [package]
 name = "termal_core"
-version = "4.2.1"
+version = "5.0.0"
 edition = "2024"
 license-file = "../LICENSE"
 description = "This library contains implementation for the termal library"
@@ -21,7 +21,7 @@ readers = ["raw", "term_text", "events"]
 progress = []
 
 [dependencies]
-image =  { version = "0.25.10", optional = true }
+image = { version = "0.25.10", optional = true }
 litrs = { version = "1.0.0", features = ["proc-macro2"], optional = true }
 place_macro = "1.1.0"
 proc-macro2 = { version = "1.0.106", optional = true }
