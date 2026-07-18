@@ -702,6 +702,28 @@ impl<T: IoProvider> Terminal<T> {
         Ok(())
     }
 
+    /// Append data to the internal buffer.
+    ///
+    /// This effectively fakes input on the terminal for this instance only.
+    ///
+    /// The data is appended to the end of the buffer. All previously buffered
+    /// inputs will have to be read before it reaches this data.
+    pub fn append_buffer(&mut self, data: impl AsRef<[u8]>) {
+        self.buffer.extend(data.as_ref());
+    }
+
+    /// Prepend data to the internal buffer.
+    ///
+    /// This effectively fakes input on the terminal for this instance only.
+    ///
+    /// The data is prepended to the start of the buffer. All of the prepended
+    /// data will have to be read before it reaches the already buffered data.
+    pub fn prepend_buffer(&mut self, data: impl AsRef<[u8]>) {
+        for v in data.as_ref() {
+            self.buffer.push_front(*v);
+        }
+    }
+
     fn print_escaped(out: &mut T::Out, s: impl AsRef<str>) -> Result<()> {
         let mut spl = s.as_ref().split('\n');
         let Some(n) = spl.next() else {

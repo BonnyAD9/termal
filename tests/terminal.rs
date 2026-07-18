@@ -145,3 +145,29 @@ fn test_events() {
     assert_eq!(t.read_ambiguous().unwrap(), AmbiguousEvent::from_code(b"l"));
     assert!(matches!(t.read_ambiguous(), Err(Error::StdInEof)));
 }
+
+fn test_append() {
+    let mut term = Terminal::new(BufProvider::new(&[b"ab"]));
+
+    assert_eq!(term.read_byte().unwrap(), b'a');
+
+    term.append_buffer("c");
+    term.append_buffer("d");
+
+    assert_eq!(term.read_byte().unwrap(), b'b');
+    assert_eq!(term.read_byte().unwrap(), b'c');
+    assert_eq!(term.read_byte().unwrap(), b'd');
+}
+
+fn test_prepend() {
+    let mut term = Terminal::new(BufProvider::new(&[b"ab"]));
+
+    assert_eq!(term.read_byte().unwrap(), b'a');
+
+    term.prepend_buffer("c");
+    term.prepend_buffer("d");
+
+    assert_eq!(term.read_byte().unwrap(), b'd');
+    assert_eq!(term.read_byte().unwrap(), b'c');
+    assert_eq!(term.read_byte().unwrap(), b'b');
+}

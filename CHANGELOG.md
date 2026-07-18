@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## future
+### New features
+- Add methods `Terminal::append_buffer` and `Terminal::prepend_buffer`.
+
 ## v5.0.0
 ### Breaking changes
 - The trait `IoProvider` now also requires that implementation of new trait
