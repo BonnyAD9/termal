@@ -5519,6 +5519,9 @@ pub fn set_selection(
 /// buffer multiple commands before displaying the output at once to prevent
 /// unintentional flashing when updating terminal content. This is necessary
 /// for some fast terminals such as ghostty.
+/// 
+/// Terminals may automatically flush the contents after some timeout to
+/// prevent accidental freezing of the terminal contents.
 pub const SYNCHRONIZED_BUFFER: &str = enable!(2026);
 
 /// Flush all buffered changes for synchronized rendering.
