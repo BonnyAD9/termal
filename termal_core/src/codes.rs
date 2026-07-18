@@ -5508,19 +5508,45 @@ pub fn set_selection(
     res + "\x1b\\"
 }
 
+/// Start buffering for synchronized rendering.
+/// 
+/// Equivalent to `CSI ? 2 0 2 6 h`.
+/// 
+/// To flush use [`SYNCHRONIZED_FLUSH`].
+/// 
+/// When this is sent, the terminal will stop displaying the results of any
+/// future input until it receives [`SYNCHRONIZED_FLUSH`]. This is useful to
+/// buffer multiple commands before displaying the output at once to prevent
+/// unintentional flashing when updating terminal content. This is necessary
+/// for some fast terminals such as ghostty.
+pub const SYNCHRONIZED_BUFFER: &str = enable!(2026);
+
+/// Flush all buffered changes for synchronized rendering.
+/// 
+/// Equivalent to `CSI ? 2 0 2 6 l`.
+/// 
+/// To start buffering before flush use [`SYNCHRONIZED_BUFFER`].
+/// 
+/// When this is received by the terminal, all buffered changes since the event
+/// [`SYNCHRONIZED_BUFFER`] will be flushed at once to display the resulting
+/// output. This is useful to buffer multiple commands before displaying the
+/// output at once to prevent unintentional flashing when updating terminal
+/// content. This is necessary for some fast terminals such as ghostty.
+pub const SYNCHRONIZED_FLUSH: &str = disable!(2026);
+
 // TODO: Kitty extensions
 
 // Internal
 
 /// Input code for bracketed paste start.
 ///
-/// Equivalent to `CSI [ 2 0 0 ~`.
+/// Equivalent to `CSI 2 0 0 ~`.
 ///
 /// See [`ENABLE_BRACKETED_PASTE_MODE`] for more info.
 pub const BRACKETED_PASTE_START: &str = "\x1b[200~";
 /// Input code for bracketed paste end.
 ///
-/// Equivalent to `CSI [ 2 0 1 ~`.
+/// Equivalent to `CSI 2 0 1 ~`.
 ///
 /// See [`ENABLE_BRACKETED_PASTE_MODE`] for more info.
 pub const BRACKETED_PASTE_END: &str = "\x1b[201~";

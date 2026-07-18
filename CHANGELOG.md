@@ -3,6 +3,7 @@
 ## future
 ### New features
 - Add methods `Terminal::append_buffer` and `Terminal::prepend_buffer`.
+- Add codes `SYNCHRONIZED_BUFFER` and `SYNCHRONIZED_FLUSH`.
 
 ## v5.0.0
 ### Breaking changes
