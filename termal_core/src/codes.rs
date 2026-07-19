@@ -34,6 +34,9 @@
 //! Modern terminals add their own extensions to the old codes. The new codes
 //! are in the terminal documentation. Many terminals support codes added by
 //! [kitty](https://sw.kovidgoyal.net/kitty/protocol-extensions/).
+//! 
+//! Other sources:
+//! - [ghostty documentation](https://ghostty.org/docs/vt/reference)
 
 use base64::Engine;
 use place_macro::place;
