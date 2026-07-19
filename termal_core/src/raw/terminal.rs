@@ -702,7 +702,7 @@ impl<T: IoProvider> Terminal<T> {
         Ok(())
     }
 
-    /// Append data to the internal buffer.
+    /// Append data to the internal input buffer.
     ///
     /// This effectively fakes input on the terminal for this instance only.
     ///
@@ -712,7 +712,7 @@ impl<T: IoProvider> Terminal<T> {
         self.buffer.extend(data.as_ref());
     }
 
-    /// Prepend data to the internal buffer.
+    /// Prepend data to the internal input buffer.
     ///
     /// This effectively fakes input on the terminal for this instance only.
     ///
@@ -722,6 +722,30 @@ impl<T: IoProvider> Terminal<T> {
         for v in data.as_ref() {
             self.buffer.push_front(*v);
         }
+    }
+
+    /// Prints the given data to the terminal as a batch. This makes sure that
+    /// the terminal doesn't update until all of the changes are done and thus
+    /// prevents unintentional blinking when refreshing screen in tui apps.
+    ///
+    /// This will use the codes [`codes::SYNCHRONIZED_BUFFER`] and
+    /// [`codes::SYNCHRONIZED_FLUSH`], if the output is terminal. If the output
+    /// is not therminal, the data is printed as provided.
+    pub fn synchronized_batch(
+        &mut self,
+        data: impl AsRef<[u8]>,
+    ) -> Result<()> {
+        if !self.io.is_out_terminal() {
+            self.io.get_out().write_all(data.as_ref())?;
+            return Ok(());
+        }
+
+        let mut out = self.io.get_out();
+        out.write_all(codes::SYNCHRONIZED_BUFFER.as_bytes())?;
+        out.write_all(data.as_ref())?;
+        out.write_all(codes::SYNCHRONIZED_FLUSH.as_bytes())?;
+        out.flush()?;
+        Ok(())
     }
 
     fn print_escaped(out: &mut T::Out, s: impl AsRef<str>) -> Result<()> {

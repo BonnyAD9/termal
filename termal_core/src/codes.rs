@@ -5509,27 +5509,27 @@ pub fn set_selection(
 }
 
 /// Start buffering for synchronized rendering.
-/// 
+///
 /// Equivalent to `CSI ? 2 0 2 6 h`.
-/// 
+///
 /// To flush use [`SYNCHRONIZED_FLUSH`].
-/// 
+///
 /// When this is sent, the terminal will stop displaying the results of any
 /// future input until it receives [`SYNCHRONIZED_FLUSH`]. This is useful to
 /// buffer multiple commands before displaying the output at once to prevent
 /// unintentional flashing when updating terminal content. This is necessary
 /// for some fast terminals such as ghostty.
-/// 
+///
 /// Terminals may automatically flush the contents after some timeout to
 /// prevent accidental freezing of the terminal contents.
 pub const SYNCHRONIZED_BUFFER: &str = enable!(2026);
 
 /// Flush all buffered changes for synchronized rendering.
-/// 
+///
 /// Equivalent to `CSI ? 2 0 2 6 l`.
-/// 
+///
 /// To start buffering before flush use [`SYNCHRONIZED_BUFFER`].
-/// 
+///
 /// When this is received by the terminal, all buffered changes since the event
 /// [`SYNCHRONIZED_BUFFER`] will be flushed at once to display the resulting
 /// output. This is useful to buffer multiple commands before displaying the
