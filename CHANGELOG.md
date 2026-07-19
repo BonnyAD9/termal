@@ -5,6 +5,7 @@
 - Add methods `Terminal::append_buffer` and `Terminal::prepend_buffer`.
 - Add codes `SYNCHRONIZED_BUFFER` and `SYNCHRONIZED_FLUSH`.
 - Add method `Terminal::synchronized_batch`.
+- Add codes `DOWN_SCRL` and `SCREEN_ALIGN_TEST`.
 
 ## v5.0.0
 ### Breaking changes

@@ -48,6 +48,7 @@ fn single(name: &str) -> Result<()> {
         "codes::column!" => codes::show_column(),
         "codes::MOVE_HOME" => codes::show_move_home(),
         "codes::UP_SCRL" => codes::show_up_scrl(),
+        "codes::DOWN_SCRL" => codes::show_down_scrl(),
         "codes::CUR_SAVE" => codes::show_cur_save_load(),
         "codes::CUR_LOAD" => codes::show_cur_save_load(),
         "codes::ERASE_TO_END" => codes::show_erase_to_end(),
@@ -140,6 +141,7 @@ fn single(name: &str) -> Result<()> {
             codes::show_enable_alternative_buffer()
         }
         "codes::FULL_RESET" => codes::show_full_reset(),
+        "codes::SCREEN_ALIGN_TEST" => codes::show_screen_align_test(),
         "codes::REQUEST_DEVICE_ATTRIBUTES" => {
             codes::show_request_device_attributes()
         }
@@ -314,6 +316,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'m i}repeat_char!{'_}
   {'c}codes{'y}::{'m i}column!{'_}
   {'c}codes{'y}::{'w bold}MOVE_HOME{'_}
+  {'c}codes{'y}::{'w bold}DOWN_SCRL{'_}
   {'c}codes{'y}::{'w bold}UP_SCRL{'_}
   {'c}codes{'y}::{'w bold}CUR_SAVE{'_}
   {'c}codes{'y}::{'w bold}CUR_LOAD{'_}
@@ -401,6 +404,7 @@ When running with cargo, instead of `{'c}feature{'_}` you use
   {'c}codes{'y}::{'w bold}ENABLE_ALTERNATIVE_BUFFER{'_}
   {'c}codes{'y}::{'w bold}DISABLE_ALTERNATIVE_BUFFER{'_}
   {'c}codes{'y}::{'w bold}FULL_RESET{'_}
+  {'c}codes{'y}::{'w bold}SCREEN_ALIGN_TEST{'_}
   {'c}codes{'y}::{'w bold}REQUEST_DEVICE_ATTRIBUTES{'_}
   {'c}codes{'y}::{'w bold}REQUEST_STATUS_REPORT{'_}
   {'c}codes{'y}::{'w bold}REQUEST_CURSOR_POSITION{'_}

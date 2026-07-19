@@ -281,6 +281,31 @@ pub fn show_move_home() -> Result<()> {
     Ok(())
 }
 
+pub fn show_down_scrl() -> Result<()> {
+    println!("{}", codes::CLEAR);
+
+    for i in 0..100 {
+        print!("\n{i}");
+    }
+
+    // Move to the second last line.
+    let mut buf = codes::set_up!(1).to_string();
+    // Move down, scrolling is not necesary so it is just move down.
+    buf += codes::DOWN_SCRL;
+    // Move down, cursor is already at the bottom of the screen, so empty line
+    // is inserted. Line at the top of the screen is discarded.
+    buf += codes::DOWN_SCRL;
+
+    print!("{buf}");
+
+    _ = Terminal::stdio().flush();
+
+    // Wait for enter. Screenshot is taken before enter is pressed.
+    _ = Terminal::stdio().read();
+
+    Ok(())
+}
+
 pub fn show_up_scrl() -> Result<()> {
     println!("{}", codes::CLEAR);
 
@@ -1100,6 +1125,17 @@ pub fn show_full_reset() -> Result<()> {
     buf += codes::FULL_RESET;
 
     print!("{buf}");
+
+    Ok(())
+}
+
+pub fn show_screen_align_test() -> Result<()> {
+    let mut term = Terminal::stdio();
+
+    _ = term.flushed(codes::SCREEN_ALIGN_TEST);
+
+    // Wait for input (screenshot is taken before the input)
+    _ = term.read();
 
     Ok(())
 }

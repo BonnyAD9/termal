@@ -58,26 +58,28 @@ macro_rules! seq {
 // Sequences:
 
 /// The escape character.
+///
+/// Equivalent to `0x1b`, known as `ESC`.
 pub const ESC: char = '\x1b';
 /// Control Sequence Introducer: Start of CSI sequence.
 ///
-/// Equivalent to `ESC [`.
+/// Equivalent to `ESC [`, known as `CSI`.
 pub const CSI: &str = "\x1b[";
 /// Device Control String: Start of DCS sequence.
 ///
-/// Equivalent to `ESC P`.
+/// Equivalent to `ESC P`, known as `DCS`.
 pub const DCS: &str = "\x1bP";
 /// Operating System Command: Start of OSC sequence.
 ///
-/// Equivalent to `ESC ]`
+/// Equivalent to `ESC ]`, known as `OSC`.
 pub const OSC: &str = "\x1b]";
 /// String terminator. Terminates for example DCS.
 ///
-/// Equivalent to `ESC \`
+/// Equivalent to `ESC \`, known as `ST`.
 pub const ST: &str = "\x1b\\";
 /// Single shift three.
 ///
-/// Equivalent to `ESC O`.
+/// Equivalent to `ESC O`, known as `SS3`.
 pub const SS3: &str = "\x1bO";
 
 /// Creates control escape sequence, the first literal is the end of the
@@ -135,8 +137,14 @@ macro_rules! disable {
 // General ASCII codes
 
 /// Produces terminal bell (audio or visual).
+///
+/// Eqivalent to `0x07`, known as `BEL`.
+///
+/// Sometimes can be used instead of `ST`.
 pub const BELL: char = '\x07';
 /// Moves the cursor left by one positoin.
+///
+/// Eqiovalent to `0x08`, known as `BS`.
 ///
 /// # Example
 /// ```no_run
@@ -157,6 +165,8 @@ pub const BELL: char = '\x07';
 pub const BACKSPACE: char = '\x08';
 /// Horizontal tabulator, moves cursor to the next stop. Same as `\t`
 ///
+/// Equivalent to `0x09`, known as `TAB`.
+///
 /// # Example
 /// ```no_run
 /// println!("1\t: number");
@@ -167,6 +177,8 @@ pub const BACKSPACE: char = '\x08';
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/htab.png)
 pub const HTAB: char = '\t';
 /// Moves the cursor to the start of the next line. Same as `\n`.
+///
+/// Equivalent to `0x0A`, known as `LF`.
 ///
 /// Nothe that in raw terminal, this will move cursor down and not to the start
 /// of the line.
@@ -227,6 +239,8 @@ pub const VTAB: char = '\x0b';
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/vtab.png)
 pub const FORMFEED: char = '\x0c';
 /// Moves cursor to the start of the line. Same as `\r`.
+///
+/// Equivalent to `0x0D`, known as `CR`.
 ///
 /// # Example
 /// ```no_run
@@ -297,7 +311,7 @@ macro_rules! code_macro {
 /// Moves cursor to the given position. Position of the top left conrner is
 /// (1, 1).
 ///
-/// Equivalent to `CSI Py ; Px H`
+/// Equivalent to `CSI Py ; Px H`, known as `CUP`.
 ///
 /// If used with literals, produces `&'static str`, otherwise produces
 /// [`String`].
@@ -348,7 +362,7 @@ code_macro!(csi != 0 =>
     move_up, n; 'A'
         ? "Moves cursor up by N positions.
 
-Equivalent to `CSI Pn A`.
+Equivalent to `CSI Pn A`, known as `CUU`.
 
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
@@ -369,7 +383,7 @@ printcln!(\"{'clear}\\n\\nhello{'mu2}up{'md}down{'md}\");
     move_down, n; 'B'
         ? "Moves cursor down by N positions.
 
-Equivalent to `CSI Pn B`.
+Equivalent to `CSI Pn B`, known as `CUD`.
 
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
@@ -390,7 +404,7 @@ printcln!(\"{'clear}\\n\\nhello{'mu2}up{'md}down{'md}\");
     move_right, n; 'C'
         ? "Moves cursor right by N positions.
 
-Equivalent to `CSI Pn C`.
+Equivalent to `CSI Pn C`, known as `CUF`.
 
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
@@ -409,7 +423,7 @@ printcln!(\"{'clear}{'mr7}there{'ml11}hello\");
     move_left, n; 'D'
         ? "Moves cursor left by N positions.
 
-Equivalent to `CSI Pn D`.
+Equivalent to `CSI Pn D`, known as `CUB`.
 
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
@@ -578,7 +592,7 @@ println!(\"{buf}\");
     set_down, n; 'E'
         ? "Moves cursor to the start of line N lines down.
 
-Equivalent to `CSI Pn E`.
+Equivalent to `CSI Pn E`, known as `CNL`.
 
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
@@ -602,7 +616,7 @@ println!(\"{buf}\");
     set_up, n; 'F'
         ? "Moves cursor to the start of line N lines up
 
-Equivalent to `CSI Pn F`.
+Equivalent to `CSI Pn F`, known as `CPL`.
 
 If used with literal, produces `&'static str`, otherwise produces [`String`].
 
@@ -699,9 +713,40 @@ println!(\"{buf}\");
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/move_home.png)
 pub const MOVE_HOME: &str = csi!('H');
 
+/// Moves the cursor one line down, scrolling if needed.
+///
+/// Equivalent to `ESC D`, known as `IND`.
+///
+/// # Example
+/// ```no_run
+/// println!("{}", codes::CLEAR);
+///
+/// for i in 0..100 {
+///     print!("\n{i}");
+/// }
+///
+/// // Move to the second last line.
+/// let mut buf = codes::set_up!(1).to_string();
+/// // Move down, scrolling is not necesary so it is just move down.
+/// buf += codes::DOWN_SCRL;
+/// // Move down, cursor is already at the bottom of the screen, so empty line
+/// // is inserted. Line at the top of the screen is discarded.
+/// buf += codes::DOWN_SCRL;
+///
+/// print!("{buf}");
+///
+/// _ = Terminal::stdio().flush();
+///
+/// // Wait for enter. Screenshot is taken before enter is pressed.
+/// _ = Terminal::stdio().read();
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/down_scrl.png)
+pub const DOWN_SCRL: &str = "\x1bD";
 /// Moves cursor one line up, 'scrolling' if needed.
 ///
-/// Equivalent to `ESC M`
+/// Equivalent to `ESC M`, known as `RI`.
 ///
 /// **THIS MAY NOT DO WHAT YOU EXPECT** read precise description below:
 ///
@@ -709,6 +754,7 @@ pub const MOVE_HOME: &str = csi!('H');
 /// insert one line at the top of the screen. The line at the bottom of the
 /// screen is discarded.
 ///
+/// # Example
 /// ```no_run
 /// use std::io::Write;
 /// use termal_core::{codes, raw::Terminal};
@@ -742,7 +788,7 @@ pub const UP_SCRL: &str = "\x1bM";
 /// Saves the cursor position (this is single save slot, not stack). Position
 /// can be later restored by [`CUR_LOAD`].
 ///
-/// Equivalent to `ESC 7`
+/// Equivalent to `ESC 7`, known as `DECSC`.
 ///
 /// # Example
 /// ```no_run
@@ -765,7 +811,7 @@ pub const CUR_SAVE: &str = "\x1b7";
 /// Restores the cursor position to the last saved position (this is single
 /// save slot, not stack). The position can be saved by [`CUR_SAVE`].
 ///
-/// Equivalent to `ESC 8`
+/// Equivalent to `ESC 8`, known as `DECRC`.
 ///
 /// # Example
 /// ```no_run
@@ -3474,7 +3520,7 @@ pub const DISABLE_ALTERNATIVE_BUFFER: &str = disable!(1049);
 // Other
 /// Full terminal reset. Clear the screen, buffer, reset all modes, ...
 ///
-/// Equivalent to `ESC c`.
+/// Equivalent to `ESC c`, known as `RIS`.
 ///
 /// # Example
 /// ```no_run
@@ -3492,6 +3538,30 @@ pub const DISABLE_ALTERNATIVE_BUFFER: &str = disable!(1049);
 /// ## Result in terminal
 /// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/full_reset.png)
 pub const FULL_RESET: &str = "\x1bc";
+
+/// Screen alignment test. Reset all text styles (bold, italic, ...) except
+/// foreground and background color, reset the scroll region, move the cursor
+/// to the top left and print the character `E` on all cells on the screen with
+/// the default text foreground and background.
+///
+/// Equivalent to `ESC # 8`, known as `DECALN`.
+///
+/// Some terminals may not move the cursor to the top left (e.g. zed builtin
+/// terminal).
+///
+/// # Example
+/// ```no_run
+/// let mut term = Terminal::stdio();
+///
+/// _ = term.flushed(codes::SCREEN_ALIGN_TEST);
+///
+/// // Wait for input (screenshot is taken before the input)
+/// _ = term.read();
+/// ```
+///
+/// ## Result in terminal
+/// ![](https://raw.githubusercontent.com/BonnyAD9/termal/refs/heads/master/assets/codes/screen_align_test.png)
+pub const SCREEN_ALIGN_TEST: &str = "\x1b#8";
 
 /// Request the device attributes.
 ///
@@ -4971,6 +5041,15 @@ pub enum CursorStyle {
 }
 
 /// Sets cursor to the given style.
+///
+/// Equivalent to `CSI Cn space q`, known as `DECSCUSR`. `Cn` is:
+/// - `0` - terminal default.
+/// - `1` - blinking block.
+/// - `2` - steady block.
+/// - `3` - blinking underline.
+/// - `4` - steady underline.
+/// - `5` - blinking vertical bar.
+/// - `6` - steady vertical bar.
 ///
 /// # Example
 /// ```
