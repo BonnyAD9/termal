@@ -7,6 +7,9 @@
 - Add method `Terminal::synchronized_batch`.
 - Add codes `DOWN_SCRL` and `SCREEN_ALIGN_TEST`.
 
+### Documentation
+- Add typical names for some codes.
+
 ## v5.0.0
 ### Breaking changes
 - The trait `IoProvider` now also requires that implementation of new trait
