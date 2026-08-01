@@ -146,6 +146,7 @@ fn test_events() {
     assert!(matches!(t.read_ambiguous(), Err(Error::StdInEof)));
 }
 
+#[test]
 fn test_append() {
     let mut term = Terminal::new(BufProvider::new(&[b"ab"]));
 
@@ -159,6 +160,7 @@ fn test_append() {
     assert_eq!(term.read_byte().unwrap(), b'd');
 }
 
+#[test]
 fn test_prepend() {
     let mut term = Terminal::new(BufProvider::new(&[b"ab"]));
 
