@@ -723,9 +723,9 @@ pub const MOVE_HOME: &str = csi!('H');
 /// # Example
 /// ```no_run
 /// use std::io::Write;
-/// 
+///
 /// use termal_core::{codes, raw::Terminal};
-/// 
+///
 /// println!("{}", codes::CLEAR);
 ///
 /// for i in 0..100 {
@@ -3559,7 +3559,7 @@ pub const FULL_RESET: &str = "\x1bc";
 /// # Example
 /// ```no_run
 /// use termal_core::{codes, raw::Terminal};
-/// 
+///
 /// let mut term = Terminal::stdio();
 ///
 /// _ = term.flushed(codes::SCREEN_ALIGN_TEST);

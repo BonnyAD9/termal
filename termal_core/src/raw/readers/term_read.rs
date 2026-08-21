@@ -642,7 +642,7 @@ where
         self.print_from_dont_move(pos);
 
         self.pos = self.buf.len();
-        if self.cur_pos().x == 0 && !self.buf.is_empty() {
+        if self.cur_pos().x == 0 && self.buf.len() - pos != 0 {
             self.pbuf += "\r\n";
         }
     }

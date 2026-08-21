@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## future
+- Fix reader jumping one line down when deleting last character of line.
+
 ## v5.1.0
 ### New features
 - Add methods `Terminal::append_buffer` and `Terminal::prepend_buffer`.
