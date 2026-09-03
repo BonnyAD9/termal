@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## future
+## v5.1.1
 ### Fixes
 - Fix reader jumping one line down when deleting last character of line.
 - Fix reader not properly determining the terminal width.
