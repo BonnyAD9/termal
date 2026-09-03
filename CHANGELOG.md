@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## future
+### Fixes
 - Fix reader jumping one line down when deleting last character of line.
 
 ## v5.1.0
