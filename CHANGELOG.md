@@ -10,6 +10,8 @@
 
 ### Fixes
 - Fix termal methods `flushed`, `println` and `print` when using raw mode.
+- Fix code macros producing invalid codes with hex literals (e.g.
+  `fg!(0xff, 0xff, 0xff)`).
 
 ## v5.1.1
 ### Fixes

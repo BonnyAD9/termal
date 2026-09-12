@@ -41,14 +41,17 @@
 use base64::Engine;
 use place_macro::place;
 
+#[doc(hidden)]
+pub use place_macro::string;
+
 /// Creates the given sequence, this is used internally.
 #[macro_export]
 macro_rules! seq {
     ($sq:literal, $i:literal) => {
-        concat!($sq, $i)
+        $crate::codes::string!($sq, $i)
     };
     ($sq:literal, $i:literal, $f:literal, $($a:literal),*) => {
-        concat!($sq, $f $(, ';', $a)*, $i)
+        $crate::codes::string!($sq, $f $(, ';', $a)*, $i)
     };
     ($sq:literal, $i:literal, $f:expr $(,$a:expr)*) => {
         $crate::seq!($sq, $i, $f, $(";{}"; $a),*)
