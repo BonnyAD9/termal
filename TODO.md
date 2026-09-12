@@ -1,6 +1,1 @@
 - Display name of ascii character.
-- Generic image with rgb offset and rgb xy stride.
-- Dithering for sixel image.
-- Better color quantization for sixel image.
-- Global terminal.
-- Erasure color mode see [here](https://unix.stackexchange.com/questions/586287/how-to-reverse-console-colours-to-have-black-letters-on-white-screen)
