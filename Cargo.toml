@@ -25,7 +25,7 @@ version = "5.1.1"
 default-features = false
 
 [features]
-default = ["all"]
+default = []
 all = ["termal_core/all"]
 term_image = ["termal_core/term_image"]
 image = ["termal_core/image"]
