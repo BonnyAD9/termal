@@ -1,6 +1,3 @@
-- `Terminal::consume_available_until`, `Terminal::consume_available_until_status`.
-- `Terminal::read_available`.
-- impl `BufRead` for `Terminal`.
 - Display name of ascii character.
 - Generic image with rgb offset and rgb xy stride.
 - Dithering for sixel image.

@@ -1,6 +1,14 @@
 # CHANGELOG
 
 ## future
+### New features
+- New methods `Terminal::read_available` and `Terminal::read_all_available` for
+  non blocking reads.
+- New methods `Terminal::consume_available_until` and
+  `Terminal::consume_available_until_status` for consuming available input
+  until finding a byte pattern
+
+### Fixes
 - Fix termal methods `flushed`, `println` and `print` when using raw mode.
 
 ## v5.1.1

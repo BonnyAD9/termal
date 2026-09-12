@@ -702,6 +702,80 @@ impl<T: IoProvider> Terminal<T> {
         Ok(())
     }
 
+    /// Read all available input into `buf`. Never blocks.
+    pub fn read_available(&mut self, buf: &mut [u8]) -> Result<usize> {
+        let mut cnt = self.buffer.read(buf)?;
+        while cnt < buf.len() && self.has_input() {
+            let mut stdin = self.io.get_in();
+            let b = stdin.fill_buf()?;
+            if b.is_empty() {
+                return Ok(cnt);
+            }
+            let amt = b.len().min(buf.len() - cnt);
+            buf[cnt..cnt + amt].copy_from_slice(&b[..amt]);
+            cnt += amt;
+            stdin.consume(amt);
+        }
+        Ok(cnt)
+    }
+
+    /// Read all available input into `buf`. Never blocks.
+    pub fn read_all_available(&mut self, buf: &mut Vec<u8>) -> Result<()> {
+        buf.extend(self.buffer.iter());
+        self.buffer.clear();
+        while self.has_input() {
+            let mut stdin = self.io.get_in();
+            let b = stdin.fill_buf()?;
+            if b.is_empty() {
+                return Ok(());
+            }
+            let amt = b.len();
+            buf.extend(b);
+            stdin.consume(amt);
+        }
+        Ok(())
+    }
+
+    /// Consumes that available input until it reaches pattern `pat` or when it
+    /// would block.
+    ///
+    /// # Returns
+    /// True if the pattern is found, otherwise false.
+    pub fn consume_available_until(&mut self, pat: &[u8]) -> Result<bool> {
+        let mut buf = vec![0; (pat.len() * 4).min(256)];
+        let mut pos = 0;
+        while self.has_input() {
+            let amt = self.read_available(&mut buf[pos..])?;
+            if amt == 0 {
+                return Ok(false);
+            }
+            pos += amt;
+            if pos < pat.len() {
+                continue;
+            }
+
+            if let Some(p) =
+                buf[..pos].windows(pat.len()).position(|w| w == pat)
+            {
+                self.prepend_buffer(&buf[p + pat.len()..pos]);
+                return Ok(true);
+            }
+
+            buf.copy_within(pos - pat.len() + 1.., 0);
+            pos = pat.len() - 1;
+        }
+        Ok(false)
+    }
+
+    /// Consumes available input until it finds status report (`CSI 0 n`) or
+    /// until further reading would block.
+    ///
+    /// # Returns
+    /// `true` if status report is found, otherwise false.
+    pub fn consume_available_until_status(&mut self) -> Result<bool> {
+        self.consume_available_until(b"\x1b[0n")
+    }
+
     /// Append data to the internal input buffer.
     ///
     /// This effectively fakes input on the terminal for this instance only.
@@ -719,6 +793,11 @@ impl<T: IoProvider> Terminal<T> {
     /// The data is prepended to the start of the buffer. All of the prepended
     /// data will have to be read before it reaches the already buffered data.
     pub fn prepend_buffer(&mut self, data: impl AsRef<[u8]>) {
+        if self.buffer.is_empty() {
+            self.append_buffer(data);
+            return;
+        }
+
         for v in data.as_ref() {
             self.buffer.push_front(*v);
         }

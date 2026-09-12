@@ -173,3 +173,18 @@ fn test_prepend() {
     assert_eq!(term.read_byte().unwrap(), b'c');
     assert_eq!(term.read_byte().unwrap(), b'b');
 }
+
+#[test]
+fn test_consume_available_until() {
+    let mut term = Terminal::new(BufProvider::eof_panic(
+        1,
+        &[b"hello there th", b"is is something"],
+    ));
+
+    assert!(term.consume_available_until(b"this").unwrap());
+
+    let mut buf = vec![];
+    term.read_all_available(&mut buf).unwrap();
+
+    assert_eq!(buf, b" is something");
+}
