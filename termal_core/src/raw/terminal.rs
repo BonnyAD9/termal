@@ -755,7 +755,7 @@ impl<T: IoProvider> Terminal<T> {
         };
         write!(out, "{n}")?;
         for s in spl {
-            write!(out, "{s}\n\r")?;
+            write!(out, "\n\r{s}")?;
         }
         Ok(())
     }

@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## future
+- Fix termal methods `flushed`, `println` and `print` when using raw mode.
+
 ## v5.1.1
 ### Fixes
 - Fix reader jumping one line down when deleting last character of line.
