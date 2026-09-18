@@ -886,10 +886,49 @@ impl<T: IoProvider> Terminal<T> {
     /// # Errors
     /// - [`Error::Io`] on Io error when reading from stdin, writing to stdout
     ///   or waiting for input on stdin.
-    pub fn read_line_to(&mut self, s: &mut String) -> Result<()> {
+    ///
+    /// # Returns
+    /// [`Some`] if the input was accepted, otherwise [`None`].
+    pub fn read_line_to<'a>(
+        &mut self,
+        s: &'a mut String,
+    ) -> Result<Option<&'a str>> {
         let mut reader = TermRead::lines(self);
         reader.read_to_str(s)?;
-        Ok(())
+        Ok((!reader.is_cancled()).then_some(s))
+    }
+
+    /// Pushes next line of input from stdin to the given history. May block.
+    ///
+    /// This is stable method that uses the unstable [`TermRead`] which is
+    /// usually more user friendly than the default readline implementation.
+    ///
+    /// For info about what editing features are supported see [`TermRead`].
+    ///
+    /// # Errors
+    /// - [`Error::Io`] on Io error when reading from stdin, writing to stdout
+    ///   or waiting for input on stdin.
+    ///
+    /// # Returns
+    /// [`Some`] if the input was accepted, otherwise [`None`].
+    ///
+    /// The new string will be pushed to the history even if the input was
+    /// canceled and it will not be added to the history if it is same as the
+    /// last item in the history.
+    pub fn read_line_to_history<'a>(
+        &mut self,
+        h: &'a mut Vec<String>,
+    ) -> Result<Option<&'a str>> {
+        let mut res = String::new();
+        let accepted = self.read_line_to(&mut res)?.is_some();
+        if h.last().is_some_and(|l| *l != res) {
+            h.push(res);
+        }
+        if accepted {
+            Ok(h.last().map(|a| a.as_str()))
+        } else {
+            Ok(None)
+        }
     }
 
     /// Read the next line from stdin. May block.
@@ -918,7 +957,10 @@ impl<T: IoProvider> Terminal<T> {
     /// # Errors
     /// - [`Error::Io`] on Io error when reading from stdin, writing to stdout
     ///   or waiting for input on stdin.
-    pub fn edit_line_in(&mut self, s: &mut String) -> Result<()> {
+    pub fn edit_line_in<'a>(
+        &mut self,
+        s: &'a mut String,
+    ) -> Result<Option<&'a str>> {
         let mut reader = TermRead::lines(self);
         reader.edit_str(s, None)
     }
@@ -936,6 +978,41 @@ impl<T: IoProvider> Terminal<T> {
     pub fn edit_line(&mut self, s: impl AsRef<str>) -> Result<String> {
         let mut reader = TermRead::lines(self);
         reader.edit(s, None)
+    }
+
+    /// Edit the given string and add it to the history.
+    ///
+    /// This is stable method that uses the unstable [`TermRead`] which is
+    /// usually more user friendly than the default readline implementation.
+    ///
+    /// For info about what editing features are supported see [`TermRead`].
+    ///
+    /// # Errors
+    /// - [`Error::Io`] on Io error when reading from stdin, writing to stdout
+    ///   or waiting for input on stdin.
+    ///
+    /// # Returns
+    /// [`Some`] if the input was accepted, otherwise [`None`].
+    ///
+    /// The new string will be pushed to the history even if the input was
+    /// canceled and it will not be added to the history if it is same as the
+    /// last item in the history.
+    pub fn edit_line_to_history<'a>(
+        &mut self,
+        s: impl AsRef<str>,
+        h: &'a mut Vec<String>,
+    ) -> Result<Option<&'a str>> {
+        let mut reader = TermRead::lines_history(self, h);
+        let res = reader.edit(s, None)?;
+        let accepted = !reader.is_cancled();
+        if h.last().is_some_and(|l| *l != res) {
+            h.push(res);
+        }
+        if accepted {
+            Ok(h.last().map(|a| a.as_str()))
+        } else {
+            Ok(None)
+        }
     }
 
     /// Prompt the user with the given prompt and return the entered result.
@@ -968,14 +1045,70 @@ impl<T: IoProvider> Terminal<T> {
     /// # Errors
     /// - [`Error::Io`] on Io error when reading from stdin, writing to stdout
     ///   or waiting for input on stdin.
-    pub fn prompt_to<'a>(
+    ///
+    /// # Returns
+    /// [`Some`] if the input was accepted, otherwise [`None`].
+    pub fn prompt_to<'b>(
         &mut self,
-        s: &mut String,
-        prompt: impl Into<TermText<'a>>,
-    ) -> Result<()> {
+        s: &'b mut String,
+        prompt: impl AsRef<str>,
+    ) -> Result<Option<&'b str>> {
+        let prompt = prompt.as_ref();
+        let prompt = if let Some((prev, cur)) = prompt.rsplit_once('\n') {
+            self.println(prev)?;
+            cur
+        } else {
+            prompt
+        };
+
         let mut reader = TermRead::lines(self);
         reader.set_prompt(prompt);
         reader.read_to_str(s)
+    }
+
+    /// Prompt the user with the given prompt and push the entered result to
+    /// the given history list.
+    ///
+    /// This is stable method that uses the unstable [`TermRead`] which is
+    /// usually more user friendly than the default readline implementation.
+    ///
+    /// For info about what editing features are supported see [`TermRead`].
+    ///
+    /// # Errors
+    /// - [`Error::Io`] on Io error when reading from stdin, writing to stdout
+    ///   or waiting for input on stdin.
+    ///
+    /// # Returns
+    /// [`Some`] if the input was accepted, otherwise [`None`].
+    ///
+    /// The new string will be pushed to the history even if the input was
+    /// canceled and it will not be added to the history if it is same as the
+    /// last item in the history.
+    pub fn prompt_to_history<'b>(
+        &mut self,
+        h: &'b mut Vec<String>,
+        prompt: impl AsRef<str>,
+    ) -> Result<Option<&'b str>> {
+        let prompt = prompt.as_ref();
+        let prompt = if let Some((prev, cur)) = prompt.rsplit_once('\n') {
+            self.println(prev)?;
+            cur
+        } else {
+            prompt
+        };
+
+        let mut reader = TermRead::lines_history(self, h);
+        reader.set_prompt(prompt);
+        let res = reader.read_str()?;
+        let accepted = !reader.is_cancled();
+        if h.last().is_none_or(|l| *l != res) {
+            h.push(res);
+        }
+        if accepted {
+            Ok(h.last().map(|a| a.as_str()))
+        } else {
+            Ok(None)
+        }
     }
 }
 

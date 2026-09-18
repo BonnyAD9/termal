@@ -1,6 +1,6 @@
 use termal::{
     Result, codes,
-    raw::{enable_raw_mode, readers::prompt},
+    raw::{Terminal, enable_raw_mode, readers::prompt},
     reset_terminal,
 };
 
@@ -16,6 +16,11 @@ fn main() -> Result<()> {
 }
 
 fn start() -> Result<()> {
-    println!("\n\rread: {}\r", prompt("type\nhere: ")?);
+    let mut history = vec![];
+    let mut term = Terminal::stdio();
+    while let Some(s) = term.prompt_to_history(&mut history, "type\nhere: ")? {
+        println!("\n\rread: {}\r", s);
+    }
+    println!("\r");
     Ok(())
 }

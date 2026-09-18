@@ -7,6 +7,27 @@
 - New methods `Terminal::consume_available_until` and
   `Terminal::consume_available_until_status` for consuming available input
   until finding a byte pattern
+- New constructor `TermRead::lines_history` to create reader with history.
+- New method `TermRead::is_canceled`.
+- New methods `Terminal::read_line_to_history`,
+  `Terminal::edit_line_to_history` and `Terminal::prompt_to_history` for adding
+  history to the reader.
+
+### Changes
+- `readers::prompt_to` now returns `Option<&str>` indicating whether the input
+  was accepted or canceled.
+- `readers::ReadConf` now can specify history.
+- `TermRead::new` now takes predicate for canceling.
+- `TermRead::from_config` now takes predicate for canceling.
+- `TermRead::edit_str` now returns `Option<&str>` indicating whether the input
+  was accepted or canceled.
+- `TermRead::read_to_str` now returns `Option<&str>` indicating whether the
+  input was accepted or canceled.
+- `TermRead::finish_to_str` now returns `Option<&str>` indicating whether the
+  input was accepted or canceled.
+- Methods `Terminal::read_line_to`, `Terminal::edit_line_in` and
+  `Terminal::prompt_to` now returns `Option<&str>` indicating whether the input
+  was accepted or canceled.
 
 ### Fixes
 - Fix termal methods `flushed`, `println` and `print` when using raw mode.

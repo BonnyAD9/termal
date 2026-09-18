@@ -19,7 +19,7 @@ pub fn read_line() -> Result<String> {
 
 /// Read one line from standard input. This will use custom readline if
 /// supported. Otherwise it will fallback to the default readline function.
-pub fn read_line_to(res: &mut String) -> Result<()> {
+pub fn read_line_to(res: &mut String) -> Result<Option<&str>> {
     prompt_to(res, "")
 }
 
@@ -33,20 +33,32 @@ pub fn prompt(prompt: impl AsRef<str>) -> Result<String> {
 
 /// Prompt the user with better read line capabilities.
 #[cfg(any(unix, windows))]
-pub fn prompt_to(res: &mut String, prompt: impl AsRef<str>) -> Result<()> {
-    prompt_to_inner(res, prompt.as_ref())
-        .or_else(|_| prompt_to_fallback(res, prompt))
+pub fn prompt_to(
+    res: &mut String,
+    prompt: impl AsRef<str>,
+) -> Result<Option<&str>> {
+    match prompt_to_inner(res, prompt.as_ref()) {
+        Ok(None) => Ok(None),
+        Ok(Some(_)) => Ok(Some(res)),
+        Err(_) => prompt_to_fallback(res, prompt),
+    }
 }
 
 /// Prompt the user. Better readline is not supported on this platform, so this
 /// will just fallback to default readline.
 #[cfg(not(any(unix, windows)))]
-pub fn prompt_to(res: &mut String, prompt: impl AsRef<str>) -> Result<()> {
+pub fn prompt_to(
+    res: &mut String,
+    prompt: impl AsRef<str>,
+) -> Result<Option<&str>> {
     prompt_to_fallback(res, prompt)
 }
 
 #[cfg(any(unix, windows))]
-fn prompt_to_inner(res: &mut String, prompt: impl AsRef<str>) -> Result<()> {
+fn prompt_to_inner(
+    res: &mut String,
+    prompt: impl AsRef<str>,
+) -> Result<Option<&str>> {
     use super::{
         Terminal, disable_raw_mode, enable_raw_mode, is_raw_mode_enabled,
     };
@@ -78,12 +90,12 @@ fn prompt_to_inner(res: &mut String, prompt: impl AsRef<str>) -> Result<()> {
 fn prompt_to_fallback(
     res: &mut String,
     prompt: impl AsRef<str>,
-) -> Result<()> {
+) -> Result<Option<&str>> {
     print!("{}", prompt.as_ref());
     io::stdout().flush()?;
     io::stdin().read_line(res)?;
     if res.ends_with('\n') {
         res.pop();
     }
-    Ok(())
+    Ok(Some(res))
 }

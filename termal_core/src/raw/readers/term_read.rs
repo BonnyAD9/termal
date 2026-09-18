@@ -25,16 +25,21 @@ use super::{Predicate, ReadConf, Vec2};
 /// ## Unstable API
 ///
 /// API of [`TermRead`] will likely change in the future.
-pub struct TermRead<'t, 'p, P, T: IoProvider = StdioProvider>
+pub struct TermRead<'t, 'p, 'h, P, C, T: IoProvider = StdioProvider>
 where
     P: Predicate<Event>,
+    C: Predicate<Event>,
 {
     buf: Vec<char>,
     prompt: TermText<'p>,
+    history: &'h [String],
+    history_pos: usize,
+    history_new: Option<String>,
     pbuf: String,
     pos: usize,
     term: &'t mut Terminal<T>,
     exit: P,
+    cancel: C,
     size: Vec2,
     // TODO: use bitflags
     // TODO: option to exit on ctrl+c
@@ -42,30 +47,53 @@ where
     paste: bool,
     last_event: Option<Event>,
     queue: VecDeque<Event>,
+    canceled: bool,
 }
 
-impl<'t, T: IoProvider> TermRead<'t, '_, KeyCode, T> {
-    /// Gets reader that ends on enter.
+impl<'t, 'p, 'h, T: IoProvider> TermRead<'t, 'p, 'h, KeyCode, Key, T> {
+    /// Gets reader that ends on enter and is cancled on ctrl+c.
     pub fn lines(term: &'t mut Terminal<T>) -> Self {
-        Self::new(term, KeyCode::Enter)
+        Self::new(
+            term,
+            KeyCode::Enter,
+            Key::mcode(KeyCode::Char('c'), Modifiers::CONTROL),
+        )
+    }
+
+    /// Gets reader that ends on enter and is cancled on ctrl+c.
+    pub fn lines_history(
+        term: &'t mut Terminal<T>,
+        history: &'h [String],
+    ) -> Self {
+        Self::from_config(
+            term,
+            KeyCode::Enter,
+            Key::mcode(KeyCode::Char('c'), Modifiers::CONTROL),
+            ReadConf {
+                history,
+                ..Default::default()
+            },
+        )
     }
 }
 
-impl<'t, 'p, P, T> TermRead<'t, 'p, P, T>
+impl<'t, 'p, 'h, P, C, T> TermRead<'t, 'p, 'h, P, C, T>
 where
     P: Predicate<Event>,
+    C: Predicate<Event>,
     T: IoProvider,
 {
     /// Creates new terminal reader that exits with the given predicate.
-    pub fn new(term: &'t mut Terminal<T>, exit: P) -> Self {
-        Self::from_config(term, exit, Default::default())
+    pub fn new(term: &'t mut Terminal<T>, exit: P, cancel: C) -> Self {
+        Self::from_config(term, exit, cancel, Default::default())
     }
 
     /// Create terminal reader from configuration.
     pub fn from_config(
         term: &'t mut Terminal<T>,
         exit: P,
-        mut conf: ReadConf<'p>,
+        cancel: C,
+        mut conf: ReadConf<'p, 'h>,
     ) -> Self {
         let pos = conf
             .edit_pos
@@ -73,17 +101,22 @@ where
             .min(conf.edit.len());
         conf.edit.retain(|c| !c.is_ascii_control());
         Self {
+            history: conf.history,
+            history_pos: 0,
+            history_new: None,
             buf: conf.edit,
             pbuf: String::new(),
             pos,
             term,
             exit,
+            cancel,
             prompt: conf.prompt,
             size: (usize::MAX, usize::MAX).into(),
             finished: false,
             paste: false,
             last_event: None,
             queue: VecDeque::new(),
+            canceled: false,
         }
     }
 
@@ -91,11 +124,11 @@ where
     ///
     /// # Errors
     /// - [`Error::Io`] on io write or read.
-    pub fn edit_str(
+    pub fn edit_str<'a>(
         &mut self,
-        s: &mut String,
+        s: &'a mut String,
         pos: Option<usize>,
-    ) -> Result<()> {
+    ) -> Result<Option<&'a str>> {
         self.set_edit(&s, pos);
         self.reshow()?;
         s.clear();
@@ -139,7 +172,10 @@ where
     ///
     /// # Errors
     /// - [`Error::Io`] on io write or read.
-    pub fn read_to_str(&mut self, s: &mut String) -> Result<()> {
+    pub fn read_to_str<'a>(
+        &mut self,
+        s: &'a mut String,
+    ) -> Result<Option<&'a str>> {
         self.clear();
         self.reshow()?;
         self.finish_to_str(s)
@@ -159,11 +195,14 @@ where
     ///
     /// # Errors
     /// - [`Error::Io`] on io write or read.
-    pub fn finish_to_str(&mut self, s: &mut String) -> Result<()> {
+    pub fn finish_to_str<'a>(
+        &mut self,
+        s: &'a mut String,
+    ) -> Result<Option<&'a str>> {
         self.get_all()?;
         s.extend(&self.buf);
         self.clear();
-        Ok(())
+        Ok((!self.canceled).then_some(s))
     }
 
     /// Continue reading all the data and reset.
@@ -220,9 +259,11 @@ where
     }
 
     /// Reconfigure the reader.
-    pub fn configure(&mut self, conf: ReadConf<'p>) {
+    pub fn configure(&mut self, conf: ReadConf<'p, 'h>) {
         self.set_buf(conf.edit, conf.edit_pos);
         self.set_prompt(conf.prompt);
+        self.history_pos = 0;
+        self.history = conf.history;
     }
 
     /// Set the read buffer. It is filtered for non control characters.
@@ -254,6 +295,11 @@ where
     /// Check if the reading is finished.
     pub fn is_finished(&self) -> bool {
         self.finished
+    }
+
+    /// Check whether the prompt was canceled.
+    pub fn is_cancled(&self) -> bool {
+        self.canceled
     }
 
     /// Sets the exit condition for the reader.
@@ -304,6 +350,7 @@ where
             return Ok(());
         }
 
+        self.canceled = false;
         while !self.read_one_inner()? {}
         self.finished = true;
         Ok(())
@@ -347,6 +394,7 @@ where
             Err(Error::StdInEof) => {
                 self.end();
                 self.commit()?;
+                self.canceled = true;
                 return Ok(true);
             }
             Err(e) => Err(e)?,
@@ -364,6 +412,14 @@ where
             self.last_event = Some(known);
             self.end();
             self.commit()?;
+            return Ok(true);
+        }
+
+        if self.cancel.matches(&known) {
+            self.last_event = Some(known);
+            self.end();
+            self.commit()?;
+            self.canceled = true;
             return Ok(true);
         }
 
@@ -441,6 +497,8 @@ where
                     self.delete();
                 }
             }
+            KeyCode::Down => self.history_next(),
+            KeyCode::Up => self.history_prev(),
             KeyCode::Home => self.home(),
             KeyCode::End => self.end(),
             KeyCode::Char('v') => {
@@ -461,6 +519,43 @@ where
         self.commit()?;
 
         Ok(false)
+    }
+
+    fn history_next(&mut self) {
+        if self.history_pos == 0 {
+            return;
+        }
+        self.history_pos -= 1;
+
+        self.move_start();
+        self.buf.clear();
+        if self.history_pos == 0 {
+            self.buf
+                .extend(self.history_new.take().unwrap_or_default().chars());
+        } else {
+            self.buf.extend(
+                self.history[self.history.len() - self.history_pos].chars(),
+            );
+        }
+        self.reprint_dont_move(0);
+    }
+
+    fn history_prev(&mut self) {
+        if self.history_pos >= self.history.len() {
+            return;
+        }
+        self.history_pos += 1;
+
+        if self.history_pos == 1 {
+            self.history_new = Some(self.buf.iter().collect());
+        }
+
+        self.move_start();
+        self.buf.clear();
+        self.buf.extend(
+            self.history[self.history.len() - self.history_pos].chars(),
+        );
+        self.reprint_dont_move(0);
     }
 
     fn insert(&mut self, s: &str) {
