@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## future
+## v5.2.0
 ### New features
 - New methods `Terminal::read_available` and `Terminal::read_all_available` for
   non blocking reads.
