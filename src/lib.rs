@@ -1,11 +1,30 @@
 //! Library for working with ansi codes to create beutiful terminal outputs.
 //!
-//! The main focus of this library are the macros [`formatc`], [`printc`],
-//! [`printcln`], [`eprintc`], [`eprintcln`], [`writecln`] adn [`writecln`].
-//! They can be used in the same way as you would use the standard rust macros
-//! [`format`], [`print`], [`println`], [`eprint`], [`eprintln`], [`write`] and
-//! [`writeln`]. In addition the macros in this crate have special syntax for
-//! encoding terminal commands.
+//! One of the main features of this library are the macros [`formatc`],
+//! [`printc`], [`printcln`], [`eprintc`], [`eprintcln`], [`writecln`] adn
+//! [`writecln`]. They can be used in the same way as you would use the
+//! standard rust macros [`format`], [`print`], [`println`], [`eprint`],
+//! [`eprintln`], [`write`] and [`writeln`]. In addition the macros in this
+//! crate have special syntax for encoding terminal commands.
+//! 
+//! This crate also contains many escape codes for comunicating with terminal.
+//! 
+//! Apart from this, this crate also supports reading events from terminal
+//! (enable with feature `events`), provides custom readline implementation
+//! (enable with `readers`, note that the lower level api for readline is
+//! unstable), allows drawing images to terminal (feature `term_image` and
+//! optionally `image`) and has api for determining apperent width of text in
+//! terminal (feature `term_text`).
+//! 
+//! ## Features
+//! - `raw`: enable features for raw terminal.
+//! - `term_image`: enables functionality for drawing images to terminal.
+//! - `image`: enables `term_image` and dependency for `image` with impl for
+//!   `Image` trait.
+//! - `events`: enables support for reading events from raw terminal.
+//! - `term_text`: enable features for basic parsing of ansi escape codes.
+//! - `all`: enable all features.
+//! - `readers`: enables custom readline.
 //!
 //! ## The macros
 //! For all these macros the following applies:

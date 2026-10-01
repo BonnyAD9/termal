@@ -2,11 +2,24 @@
 [![crates.io][version-badge]][crate]
 [![donwloads][downloads-badge]][releases]
 
-Rust library for terminal features.
+Rust library for working with terminal. One of the main features of this crate
+are the convinient macros for colored printing to the terminal. Their names
+follow the names of the normal macros but with added `c`, `ac` or `mc` after
+the main macro name (e.g `print` -> `printc`, `println` -> `printcln`). The
+macros add new features to the format string. The new format features appear
+within braces `{}` that start with `'` (e.g. `{'}`). Within the braces you can
+specify some commands to the terminal, such as color change. The macro will
+process the format string at compile time to produce the escape codes for the
+terminal.
 
-## RAW terminal support
-- Unix (linux)
-- Windows (not tested)
+This crate also contains many escape codes for comunicating with terminal.
+
+Apart from this, this crate also supports reading events from terminal (enable
+with feature `events`), provides custom readline implementation (enable with
+`readers`, note that the lower level api for readline is unstable), allows
+drawing images to terminal (feature `term_image` and optionally `image`) and
+has api for determining apperent width of text in terminal (feature
+`term_text`).
 
 ## Example
 ### With macro
@@ -83,12 +96,18 @@ cargo add termal
 ```
 
 ### Features
-+ `raw`: enable features for raw terminal.
+- `raw`: enable features for raw terminal.
 - `term_image`: enables functionality for drawing images to terminal.
 - `image`: enables `term_image` and dependency for `image` with impl for
   `Image` trait.
+- `events`: enables support for reading events from raw terminal.
 - `term_text`: enable features for basic parsing of ansi escape codes.
 - `all`: enable all features.
+- `readers`: enables custom readline.
+
+## RAW terminal support
+- Unix (linux)
+- Windows (not well tested)
 
 ## Links
 - **Author:** [BonnyAD9][author]
