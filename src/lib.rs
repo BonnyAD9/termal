@@ -295,10 +295,10 @@ pub use termal_proc as proc;
 #[macro_export]
 macro_rules! printcln {
     ($l:literal $(,)?) => {
-        println!("{}", $crate::proc::colorize!($l));
+        println!("{}", $crate::proc::colorize!($l))
     };
     ($l:literal, $($e:expr),+ $(,)?) => {
-        println!("{}", $crate::proc::colorize!($l, $($e),+));
+        println!("{}", $crate::proc::colorize!($l, $($e),+))
     };
 }
 
@@ -314,10 +314,10 @@ macro_rules! printcln {
 #[macro_export]
 macro_rules! printc {
     ($l:literal $(,)?) => {
-        print!("{}", $crate::proc::colorize!($l));
+        print!("{}", $crate::proc::colorize!($l))
     };
     ($l:literal, $($e:expr),+ $(,)?) => {
-        print!("{}", $crate::proc::colorize!($l, $($e),+));
+        print!("{}", $crate::proc::colorize!($l, $($e),+))
     };
 }
 
@@ -333,10 +333,10 @@ macro_rules! printc {
 #[macro_export]
 macro_rules! eprintcln {
     ($l:literal $(,)?) => {
-        eprintln!("{}", $crate::proc::colorize!($l));
+        eprintln!("{}", $crate::proc::colorize!($l))
     };
     ($l:literal, $($e:expr),+ $(,)?) => {
-        eprintln!("{}", $crate::proc::colorize!($l, $($e),+));
+        eprintln!("{}", $crate::proc::colorize!($l, $($e),+))
     };
 }
 
@@ -352,10 +352,10 @@ macro_rules! eprintcln {
 #[macro_export]
 macro_rules! eprintc {
     ($l:literal $(,)?) => {
-        eprint!("{}", $crate::proc::colorize!($l));
+        eprint!("{}", $crate::proc::colorize!($l))
     };
     ($l:literal, $($e:expr),+ $(,)?) => {
-        eprint!("{}", $crate::proc::colorize!($l, $($e),+));
+        eprint!("{}", $crate::proc::colorize!($l, $($e),+))
     };
 }
 
@@ -413,10 +413,10 @@ macro_rules! writec {
 #[macro_export]
 macro_rules! printncln {
     ($l:literal $(,)?) => {
-        println!("{}", $crate::proc::uncolor!($l));
+        println!("{}", $crate::proc::uncolor!($l))
     };
     ($l:literal, $($e:expr),+ $(,)?) => {
-        println!("{}", $crate::proc::uncolor!($l, $($e),+));
+        println!("{}", $crate::proc::uncolor!($l, $($e),+))
     };
 }
 
@@ -431,10 +431,10 @@ macro_rules! printncln {
 #[macro_export]
 macro_rules! printnc {
     ($l:literal $(,)?) => {
-        print!("{}", $crate::proc::uncolor!($l));
+        print!("{}", $crate::proc::uncolor!($l))
     };
     ($l:literal, $($e:expr),+ $(,)?) => {
-        print!("{}", $crate::proc::uncolor!($l, $($e),+));
+        print!("{}", $crate::proc::uncolor!($l, $($e),+))
     };
 }
 
@@ -449,10 +449,10 @@ macro_rules! printnc {
 #[macro_export]
 macro_rules! eprintncln {
     ($l:literal $(,)?) => {
-        eprintln!("{}", $crate::proc::uncolor!($l));
+        eprintln!("{}", $crate::proc::uncolor!($l))
     };
     ($l:literal, $($e:expr),+ $(,)?) => {
-        eprintln!("{}", $crate::proc::uncolor!($l, $($e),+));
+        eprintln!("{}", $crate::proc::uncolor!($l, $($e),+))
     };
 }
 
@@ -467,10 +467,10 @@ macro_rules! eprintncln {
 #[macro_export]
 macro_rules! eprintnc {
     ($l:literal $(,)?) => {
-        eprint!("{}", $crate::proc::uncolor!($l));
+        eprint!("{}", $crate::proc::uncolor!($l))
     };
     ($l:literal, $($e:expr),+ $(,)?) => {
-        eprint!("{}", $crate::proc::uncolor!($l, $($e),+));
+        eprint!("{}", $crate::proc::uncolor!($l, $($e),+))
     };
 }
 
@@ -526,16 +526,16 @@ macro_rules! writenc {
 macro_rules! printmcln {
     ($cond:expr, $l:literal $(,)?) => {
         if $cond {
-            println!("{}", $crate::proc::colorize!($l));
+            println!("{}", $crate::proc::colorize!($l))
         } else {
-            println!("{}", $crate::proc::uncolor!($l));
+            println!("{}", $crate::proc::uncolor!($l))
         }
     };
     ($cond:expr, $l:literal, $($e:expr),+ $(,)?) => {
         if $cond {
-            println!("{}", $crate::proc::colorize!($l, $($e),+));
+            println!("{}", $crate::proc::colorize!($l, $($e),+))
         } else {
-            println!("{}", $crate::proc::uncolor!($l, $($e),+));
+            println!("{}", $crate::proc::uncolor!($l, $($e),+))
         }
     };
 }
@@ -552,16 +552,16 @@ macro_rules! printmcln {
 macro_rules! printmc {
     ($cond:expr, $l:literal $(,)?) => {
         if $cond {
-            print!("{}", $crate::proc::colorize!($l));
+            print!("{}", $crate::proc::colorize!($l))
         } else {
-            print!("{}", $crate::proc::uncolor!($l));
+            print!("{}", $crate::proc::uncolor!($l))
         }
     };
     ($cond:expr, $l:literal, $($e:expr),+ $(,)?) => {
         if $cond {
-            print!("{}", $crate::proc::colorize!($l, $($e),+));
+            print!("{}", $crate::proc::colorize!($l, $($e),+))
         } else {
-            print!("{}", $crate::proc::uncolor!($l, $($e),+));
+            print!("{}", $crate::proc::uncolor!($l, $($e),+))
         }
     };
 }
@@ -579,16 +579,16 @@ macro_rules! printmc {
 macro_rules! eprintmcln {
     ($cond:expr, $l:literal $(,)?) => {
         if $cond {
-            eprintln!("{}", $crate::proc::colorize!($l));
+            eprintln!("{}", $crate::proc::colorize!($l))
         } else {
-            eprintln!("{}", $crate::proc::uncolor!($l));
+            eprintln!("{}", $crate::proc::uncolor!($l))
         }
     };
     ($cond:expr, $l:literal, $($e:expr),+ $(,)?) => {
         if $cond {
-            eprintln!("{}", $crate::proc::colorize!($l, $($e),+));
+            eprintln!("{}", $crate::proc::colorize!($l, $($e),+))
         } else {
-            eprintln!("{}", $crate::proc::uncolor!($l, $($e),+));
+            eprintln!("{}", $crate::proc::uncolor!($l, $($e),+))
         }
     };
 }
@@ -605,16 +605,16 @@ macro_rules! eprintmcln {
 macro_rules! eprintmc {
     ($cond:expr, $l:literal $(,)?) => {
         if $cond {
-            eprint!("{}", $crate::proc::colorize!($l));
+            eprint!("{}", $crate::proc::colorize!($l))
         } else {
-            eprint!("{}", $crate::proc::uncolor!($l));
+            eprint!("{}", $crate::proc::uncolor!($l))
         }
     };
     ($cond:expr, $l:literal, $($e:expr),+ $(,)?) => {
         if $cond {
-            eprint!("{}", $crate::proc::colorize!($l, $($e),+));
+            eprint!("{}", $crate::proc::colorize!($l, $($e),+))
         } else {
-            eprint!("{}", $crate::proc::uncolor!($l, $($e),+));
+            eprint!("{}", $crate::proc::uncolor!($l, $($e),+))
         }
     };
 }
@@ -699,14 +699,14 @@ macro_rules! printacln {
         $crate::printmcln!(
             std::io::IsTerminal::is_terminal(&std::io::stdout()),
             $l,
-        );
+        )
     };
     ($l:literal, $($e:expr),+ $(,)?) => {
         $crate::printmcln!(
             std::io::IsTerminal::is_terminal(&std::io::stdout()),
             $l,
             $($e),+,
-        );
+        )
     };
 }
 
@@ -726,14 +726,14 @@ macro_rules! printac {
         $crate::printmc!(
             std::io::IsTerminal::is_terminal(&std::io::stdout()),
             $l,
-        );
+        )
     };
     ($l:literal, $($e:expr),+ $(,)?) => {
         $crate::printmc!(
             std::io::IsTerminal::is_terminal(&std::io::stdout()),
             $l,
             $($e),+,
-        );
+        )
     };
 }
 
@@ -753,14 +753,14 @@ macro_rules! eprintacln {
         $crate::eprintmcln!(
             std::io::IsTerminal::is_terminal(&std::io::stderr()),
             $l,
-        );
+        )
     };
     ($l:literal, $($e:expr),+ $(,)?) => {
         $crate::eprintmcln!(
             std::io::IsTerminal::is_terminal(&std::io::stderr()),
             $l,
             $($e),+,
-        );
+        )
     };
 }
 
@@ -780,14 +780,14 @@ macro_rules! eprintac {
         $crate::eprintmc!(
             std::io::IsTerminal::is_terminal(&std::io::stderr()),
             $l,
-        );
+        )
     };
     ($l:literal, $($e:expr),+ $(,)?) => {
         $crate::eprintmc!(
             std::io::IsTerminal::is_terminal(&std::io::stderr()),
             $l,
             $($e),+,
-        );
+        )
     };
 }
 

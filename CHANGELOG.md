@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## future
+### Changes
+- Remove trailing semicolons in macro expansions.
+
 ## v5.2.0
 ### New features
 - New methods `Terminal::read_available` and `Terminal::read_all_available` for
