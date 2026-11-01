@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## future
+## v5.2.1
 ### Changes
 - Remove trailing semicolons in macro expansions.
 
