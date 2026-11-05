@@ -38,7 +38,7 @@ pub fn colorize(item: TokenStream) -> ProcResult<TokenStream> {
     // invoking the macro
     let mut res = TokenStream::new();
     res.extend([
-        TokenTree::Ident(Ident::new("format", Span::call_site())),
+        TokenTree::Ident(Ident::new("format_args", Span::call_site())),
         TokenTree::Punct(Punct::new('!', Spacing::Alone)),
         TokenTree::Group(Group::new(Delimiter::Parenthesis, rargs)),
     ]);
@@ -65,7 +65,7 @@ pub fn uncolor(item: TokenStream) -> ProcResult<TokenStream> {
     // invoking the macro
     let mut res = TokenStream::new();
     res.extend([
-        TokenTree::Ident(Ident::new("format", Span::call_site())),
+        TokenTree::Ident(Ident::new("format_args", Span::call_site())),
         TokenTree::Punct(Punct::new('!', Spacing::Alone)),
         TokenTree::Group(Group::new(Delimiter::Parenthesis, rargs)),
     ]);

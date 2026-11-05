@@ -371,6 +371,25 @@ macro_rules! eprintc {
 #[macro_export]
 macro_rules! formatc {
     ($l:literal $(,)?) => {
+        format!("{}", $crate::proc::colorize!($l))
+    };
+    ($l:literal, $($e:expr),+ $(,)?) => {
+        format!("{}", $crate::proc::colorize!($l, $($e),+))
+    };
+}
+
+/// Works as [`format_args!`], in addition can generate ansi escape codes.
+/// To generate the ansi codes use `"{'...}"`.
+///
+/// # Examples
+/// ```
+/// use termal::*;
+/// // Generate 'hello' in yellow:
+/// format!("{}", formatc_args!("{'yellow}hello{'reset}"));
+/// ```
+#[macro_export]
+macro_rules! formatc_args {
+    ($l:literal $(,)?) => {
         $crate::proc::colorize!($l)
     };
     ($l:literal, $($e:expr),+ $(,)?) => {
@@ -484,6 +503,24 @@ macro_rules! eprintnc {
 /// ```
 #[macro_export]
 macro_rules! formatnc {
+    ($l:literal $(,)?) => {
+        format!("{}", $crate::proc::uncolor!($l))
+    };
+    ($l:literal, $($e:expr),+ $(,)?) => {
+        format!("{}", $crate::proc::uncolor!($l, $($e),+))
+    };
+}
+
+/// Works as [`format_args!`], skips terminal commands in `"{'...}"`.
+///
+/// # Examples
+/// ```
+/// use termal::*;
+/// // Generate 'hello' (not in yellow, the terminal commands are skipped):
+/// printcln!("{}", formatnc_args!("{'yellow}hello{'reset}"));
+/// ```
+#[macro_export]
+macro_rules! formatnc_args {
     ($l:literal $(,)?) => {
         $crate::proc::uncolor!($l)
     };
@@ -625,10 +662,36 @@ macro_rules! eprintmc {
 /// ```
 /// use termal::*;
 /// // Generate 'hello' (not in yellow, the terminal commands are skipped):
-/// printmcln!(false, "{'yellow}hello{'reset}");
+/// formatmc!(false, "{'yellow}hello{'reset}");
 /// ```
 #[macro_export]
 macro_rules! formatmc {
+    ($cond:expr, $l:literal $(,)?) => {
+        if $cond {
+            format!("{}", $crate::proc::colorize!($l))
+        } else {
+            format!("{}", $crate::proc::uncolor!($l))
+        }
+    };
+    ($cond:expr, $l:literal, $($e:expr),+ $(,)?) => {
+        if $cond {
+            format!("{}", $crate::proc::colorize!($l, $($e),+))
+        } else {
+            format!("{}", $crate::proc::uncolor!($l, $($e),+))
+        }
+    };
+}
+
+/// Works as [`format!`], conditionally skips terminal commands in `"{'...}"`.
+///
+/// # Examples
+/// ```
+/// use termal::*;
+/// // Generate 'hello' (not in yellow, the terminal commands are skipped):
+/// println!("{}", formatmc_args!(false, "{'yellow}hello{'reset}"));
+/// ```
+#[macro_export]
+macro_rules! formatmc_args {
     ($cond:expr, $l:literal $(,)?) => {
         if $cond {
             $crate::proc::colorize!($l)
@@ -838,6 +901,16 @@ mod tests {
         assert_eq!(
             formatmc!(false, "{'y}{s} {num}{'_}"),
             formatnc!("{'y}{s} {num}{'_}")
+        );
+    }
+
+    #[test]
+    fn test_args() {
+        let s = "Hello";
+        let num = 4;
+        assert_eq!(
+            formatc!("{'y}{s} {num}{'_}"),
+            format!("{}", formatc_args!("{'y}{s} {num}{'_}"))
         );
     }
 

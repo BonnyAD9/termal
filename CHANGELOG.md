@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## future
+### New features
+- Add `formatc_args!`, `formatnc_args!` and `formatmc_args!` for allocation
+  free formatting.
+
+### Changes
+- All the coloring macros are now allocation free.
+
 ## v5.2.1
 ### Changes
 - Remove trailing semicolons in macro expansions.
